@@ -8,15 +8,28 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class SaperApplication extends Application {
+
+    private static final int WIDTH = 520;
+    private static final int HEIGHT = 565;
+
+
+    public static Stage StageApp;
+
+    public static void SetSizeStage(int width, int height){
+        StageApp.setMinHeight(height);
+        StageApp.setMaxHeight(height);
+
+        StageApp.setMinWidth(width);
+        StageApp.setMaxWidth(width);
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
+        StageApp = stage;
+        SetSizeStage(WIDTH, HEIGHT);
         FXMLLoader fxmlLoader = new FXMLLoader(SaperApplication.class.getResource("MainView.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+        Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Сапёр!");
-        stage.setWidth(500);
-        stage.setMaxWidth(500);
-        stage.setHeight(500);
-        stage.setMaxHeight(500);
         stage.setScene(scene);
         stage.show();
     }
