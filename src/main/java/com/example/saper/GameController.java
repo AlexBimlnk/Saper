@@ -24,10 +24,16 @@ public class GameController {
     }
 
     public void StartGame(GameDifficulty gameDifficulty){
+        OverGame();
         int countField = gameDifficulty.GetCountField();
 
-        for(int i = 0; i < countField; i++){
-            flowPane.getChildren().add(new Field());
-        }
+        Field gameField = new Field(countField);
+
+        gameField.Display(flowPane);
+    }
+
+    public void OverGame()
+    {
+        flowPane.getChildren().clear();
     }
 }
