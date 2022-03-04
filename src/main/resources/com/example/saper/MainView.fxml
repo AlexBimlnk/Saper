@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.saper.GameController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.saper.GameController">
     <children>
         <MenuBar layoutY="-1.0" prefHeight="25.0" prefWidth="500.0">
             <menus>
@@ -21,6 +18,11 @@
                         </Menu>
                     </items>
                 </Menu>
+            <Menu fx:id = "debugMenu" mnemonicParsing="false" text="Debug">
+              <items>
+                  <MenuItem mnemonicParsing="false" onAction="#openAllDebugClick" text="OpenAll" />
+              </items>
+            </Menu>
             </menus>
         </MenuBar>
         <FlowPane fx:id="flowPane" layoutY="23.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="525.0" prefWidth="500.0">
