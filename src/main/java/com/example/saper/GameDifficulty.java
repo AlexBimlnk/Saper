@@ -2,14 +2,14 @@ package com.example.saper;
 
 public enum GameDifficulty {
     Easy{
-        public int GetCountField() { return 25; }
+        public Config GetConfigField() { return new Config(100, 50); }
     },
     Normal{
-        public int GetCountField() { return 50; }
+        public Config GetConfigField() { return null; }
     },
     Hard{
-        public int GetCountField() { return 100; }
+        public Config GetConfigField() { return null; }
     };
 
-    public  abstract int GetCountField();
+    public  abstract Config GetConfigField();
 }

@@ -1,6 +1,5 @@
 package com.example.saper;
 
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
@@ -12,6 +11,7 @@ public class Tile extends Button {
 
     private static final int SIZE_WIDTH = 50;
     private static final int SIZE_HEIGHT = 50;
+    private static int _size;
 
     private int _minesAround; //quantity of mines around
     private int _rowIndex;
@@ -19,75 +19,72 @@ public class Tile extends Button {
 
     private static CallNearby _call; //используется при нажатии по пустой клетке
 
-    public Tile(int i,int y){
+    public Tile(int rowIndex, int columnIndex){
         LoadDefaultSettiings(this);
-        _rowIndex = i;
-        _columIndex = y;
+        _rowIndex = rowIndex;
+        _columIndex = columnIndex;
     }
 
-    public  boolean IsDisabled = false;
     public boolean IsMine = false; //prop
-    public boolean IsClicked = false;
-    public boolean IsBorder = false; //являеься ли кнопкой лежащей на краю
 
-    public static  void MouseHandle(Tile tile,MouseButton button)
-    {
-        //Если нажали на ЛКМ
-        if(button == MouseButton.PRIMARY && !tile.IsDisabled){
-            tile.IsClicked = true;
-            if (tile.IsMine)
-                tile.setText("*");
-            else
-            {
-                if (tile.getMinesAround() == 0)
-                {
-                    if (tile._call != null)
-                        tile._call.Invoke(tile._rowIndex,tile._columIndex);
-                }
-                else
-                {
-                    tile.setText(Integer.toString(tile.getMinesAround()));
-                }
-            }
-        }
-        if(button == MouseButton.SECONDARY && !tile.IsClicked){
-            if (tile.IsDisabled)
-                tile.setText("");
-            else
-                tile.setText("!");
-            tile.IsDisabled = !tile.IsDisabled;
-        }
-    }
+    private void LoadDefaultSettiings(Tile tile){
 
-    private static void LoadDefaultSettiings(Tile tile){
-
-        tile.setMinSize(SIZE_WIDTH, SIZE_HEIGHT);
+        tile.setMinSize(_size, _size);
+        tile.setMaxSize(_size, _size);
 
         tile.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event)
             {
-                Tile.MouseHandle(tile,event.getButton());
+                MouseHandler(event.getButton());
             }
         });
     }
 
-
-    public void setMinesAround(int value){
+    public void SetMinesAround(int value){
         if(value < 0)
             throw new InvalidParameterException();
         _minesAround = value;
     }
-    public int getMinesAround(){
+    public int GetMinesAround(){
         return _minesAround;
     }
 
-    public static void setCall(CallNearby call) {
-        _call = call;
+    public static void SetSize(int size){
+        _size = size;
+    }
+    public static int GetSize(){
+        return _size;
     }
 
-    public interface CallNearby
-    {
+    public void MouseHandler(MouseButton button) {
+        //Если нажали на ЛКМ
+        if(button == MouseButton.PRIMARY){
+            if (IsMine)
+                setText("*");
+            else
+            {
+                if (GetMinesAround() == 0)
+                {
+                    if (_call != null)
+                        _call.Invoke(_rowIndex,_columIndex);
+                }
+                else
+                {
+                    setText(Integer.toString(GetMinesAround()));
+                }
+                setDisable(true);
+            }
+        }
+        if(button == MouseButton.SECONDARY){
+            setText("!!");
+        }
+    }
+
+    public static void SetCall(CallNearby call) {
+        _call = call;
+    }
+    public interface CallNearby {
         void Invoke(int i,int y);
     }
 }

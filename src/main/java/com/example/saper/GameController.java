@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Menu;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 
 import java.net.URL;
@@ -43,28 +42,50 @@ public class GameController implements Initializable {
         StartGame(GameDifficulty.Hard);
     }
     @FXML
-    private void openAllDebugClick(ActionEvent event)
-    {
+    private void openAllDebugClick(ActionEvent event) {
         for (int i = 1;i <= 10;i++)
             for (int y = 1;y <= 10;y++)
-                _field[i][y].setText((_field[i][y].IsMine)?"*":(_field[i][y].getMinesAround() == 0) ? "":Integer.toString(_field[i][y].getMinesAround()));
+                _field[i][y].setText((_field[i][y].IsMine)?"*":(_field[i][y].GetMinesAround() == 0) ? "":Integer.toString(_field[i][y].GetMinesAround()));
+    }
+
+    private void OpenTile(int i, int j){
+        if(0 <= i && i < _field.length &&
+                0 <= j && j < _field.length){
+
+            Tile tile = _field[i][j];
+            if(!tile.isDisabled())
+                tile.MouseHandler(MouseButton.PRIMARY);
+        }
+    }
+    private void CallNearby(int i, int y) {
+        OpenTile(i + 1,y + 1);
+        OpenTile(i - 1,y - 1);
+        OpenTile(i + 1,y - 1);
+        OpenTile(i - 1,y + 1);
+
+        OpenTile(i,y + 1);
+        OpenTile(i,y - 1);
+        OpenTile(i + 1, y);
+        OpenTile(i - 1,y);
     }
 
     public void StartGame(GameDifficulty gameDifficulty){
         OverGame();
-        int countField = gameDifficulty.GetCountField();
+        Config config = gameDifficulty.GetConfigField();
+        Tile.SetSize(config.SizeTile);
+        int rankOfTileMatrix = 500 / config.SizeTile;
 
-        _field = FieldGenerator.MineGeneration(10,10,countField / 4);
+        _field = FieldGenerator.FieldGeneration(rankOfTileMatrix);
+        FieldGenerator.MineGeneration(_field, config.CountTile / 4);
+
 
         Tile.CallNearby call = (p1,p2) -> CallNearby(p1,p2);
-        Tile.setCall(call);
+        Tile.SetCall(call);
 
-        for (int i = 1;i <= 10;i++)
-            for (int y = 1;y <= 10;y++)
+        for (int i = 0; i < _field.length; i++)
+            for (int j = 0; j < _field.length; j++)
             {
-
-
-                flowPane.getChildren().add(_field[i][y]);
+                flowPane.getChildren().add(_field[i][j]);
             }
     }
 
@@ -72,31 +93,5 @@ public class GameController implements Initializable {
     {
         flowPane.getChildren().clear();
     }
-    
-    public void CallNearby(int i, int y)
-    {
-        interface CallTile{
-            public void Call(Tile tile);
-        }
 
-        CallTile callTile = new CallTile(){
-
-            public void Call(Tile tile){
-                if (!tile.IsBorder && !tile.IsClicked)
-                {
-                    Tile.MouseHandle(tile, MouseButton.PRIMARY);
-                }
-            }
-        };
-
-        callTile.Call(_field[i + 1][y + 1]);
-        callTile.Call(_field[i - 1][y - 1]);
-        callTile.Call(_field[i + 1][y - 1]);
-        callTile.Call(_field[i - 1][y + 1]);
-
-        callTile.Call(_field[i][y + 1]);
-        callTile.Call(_field[i][y - 1]);
-        callTile.Call(_field[i + 1][y]);
-        callTile.Call(_field[i - 1][y]);
-    }
 }
