@@ -16,10 +16,16 @@ public class Tile extends Button {
     private int _minesAround; //quantity of mines around
     private int _rowIndex;
     private int _columIndex;
+    private boolean _isFlaged = false;
+
+    public boolean isFlaged() {
+        return _isFlaged;
+    }
 
     private static CallNearby _call; //используется при нажатии по пустой клетке
 
     public Tile(int rowIndex, int columnIndex){
+
         LoadDefaultSettiings(this);
         _rowIndex = rowIndex;
         _columIndex = columnIndex;
@@ -64,6 +70,7 @@ public class Tile extends Button {
                 setText("*");
             else
             {
+                setDisable(true);
                 if (GetMinesAround() == 0)
                 {
                     if (_call != null)
@@ -73,11 +80,18 @@ public class Tile extends Button {
                 {
                     setText(Integer.toString(GetMinesAround()));
                 }
-                setDisable(true);
             }
         }
         if(button == MouseButton.SECONDARY){
-            setText("!!");
+            if (_isFlaged)
+            {
+                setText("");
+            }
+            else
+            {
+                setText("!!");
+            }
+            _isFlaged = !_isFlaged;
         }
     }
 

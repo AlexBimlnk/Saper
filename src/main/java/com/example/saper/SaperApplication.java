@@ -46,6 +46,9 @@ public class SaperApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Сапёр!");
         stage.setScene(scene);
+
+        scene.getStylesheets().add("src/main/resources/config/style.css");
+        var s  = scene.getStylesheets();
         stage.show();
 
     }

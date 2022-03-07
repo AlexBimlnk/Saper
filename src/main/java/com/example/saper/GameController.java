@@ -53,7 +53,7 @@ public class GameController implements Initializable {
                 0 <= j && j < _field.length){
 
             Tile tile = _field[i][j];
-            if(!tile.isDisabled())
+            if(!tile.isDisabled() && !tile.isFlaged())
                 tile.MouseHandler(MouseButton.PRIMARY);
         }
     }
