@@ -55,6 +55,9 @@ public class FieldGenerator{
             for (int y = 0; y < rank; y++)
             {
                 field[i][y] = new Tile(i,y);
+
+                field[i][y].getStyleClass().add("tile");
+//                field[i][y].getStyleClass().add("hard");
                 field[i][y].SetMinesAround(0);
             }
 

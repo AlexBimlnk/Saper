@@ -1,5 +1,32 @@
-button:focused {
-    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
-    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
-    -fx-background-radius: 3px, 3px, 2px, 1px;
+
+.tile:focused {
+    -fx-background-color: -fx-outer-border, -fx-inner-border, -fx-body-color;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 5, 4, 3;
 }
+
+.tile.hard{
+    -fx-border-color: white;
+    -fx-background-color: white;
+    /*-fx-border-*/
+}
+#submenu{
+    -fx-background-color: white;
+}
+
+#lTimer{
+    -fx-font-size: 4.5ex;
+}
+#lMineCount{
+    -fx-font-size: 4.5ex;
+}
+
+#bRestart{
+    -fx-background-color: white;
+    -fx-border-color: black;
+    -fx-font-size: 1.4em;
+}
+
+
+
+

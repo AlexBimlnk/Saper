@@ -5,12 +5,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 public class SaperApplication extends Application {
 
     private static final int WIDTH = 520;
-    private static final int HEIGHT = 565;
+    private static final int HEIGHT = 665;
 
     // для args[]
     private static GameDifficulty _dif = null;
@@ -47,8 +49,10 @@ public class SaperApplication extends Application {
         stage.setTitle("Сапёр!");
         stage.setScene(scene);
 
-        scene.getStylesheets().add("src/main/resources/config/style.css");
-        var s  = scene.getStylesheets();
+//        scene.getStylesheets().add((new File("src/main/resources/config/style.css")).toURI().toString());
+
+        scene.getStylesheets().add(getClass().getResource("/config/style.css").toExternalForm());
+
         stage.show();
 
     }

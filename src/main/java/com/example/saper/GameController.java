@@ -4,6 +4,8 @@ package com.example.saper;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.FlowPane;
@@ -15,6 +17,15 @@ public class GameController implements Initializable {
 
     @FXML
     private FlowPane flowPane;
+
+    @FXML
+    private Button bRestart;
+
+    @FXML
+    private Label lTimer;
+
+    @FXML
+    private Label lMineCount;
 
     @FXML
     private Menu debugMenu;
@@ -70,7 +81,8 @@ public class GameController implements Initializable {
     }
 
     public void StartGame(GameDifficulty gameDifficulty){
-        OverGame();
+        ClearField();
+        bRestart.setText(": (");
         Config config = gameDifficulty.GetConfigField();
         Tile.SetSize(config.SizeTile);
         int rankOfTileMatrix = 500 / config.SizeTile;
@@ -86,12 +98,19 @@ public class GameController implements Initializable {
             for (int j = 0; j < _field.length; j++)
             {
                 flowPane.getChildren().add(_field[i][j]);
+
+
             }
+    }
+
+    public void ClearField()
+    {
+        flowPane.getChildren().clear();
     }
 
     public void OverGame()
     {
-        flowPane.getChildren().clear();
+        bRestart.setText(": (");
     }
 
 }
