@@ -2,7 +2,7 @@ package com.example.saper;
 
 public enum GameDifficulty {
     Easy{
-        public Config GetConfigField() { return new Config(100, 50); }
+        public Config GetConfigField() { return new Config(100, 50, "tile"); }
     },
     Normal{
         public Config GetConfigField() { return null; }

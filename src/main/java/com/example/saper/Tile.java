@@ -9,8 +9,6 @@ import java.security.InvalidParameterException;
 
 public class Tile extends Button {
 
-    private static final int SIZE_WIDTH = 50;
-    private static final int SIZE_HEIGHT = 50;
     private static int _size;
 
     private int _minesAround; //quantity of mines around
@@ -18,27 +16,28 @@ public class Tile extends Button {
     private int _columIndex;
     private boolean _isFlaged = false;
 
-    public boolean isFlaged() {
+    public boolean IsFlaged() {
         return _isFlaged;
     }
 
-    private static CallNearby _call; //используется при нажатии по пустой клетке
+    private static CallNearby _callHandler; //используется при нажатии по пустой клетке
+    private static ExplosionEvent _explosionEventHandler; //вызывается при взрыве мины
 
     public Tile(int rowIndex, int columnIndex){
 
-        LoadDefaultSettiings(this);
+        LoadDefaultSettiings();
         _rowIndex = rowIndex;
         _columIndex = columnIndex;
     }
 
     public boolean IsMine = false; //prop
 
-    private void LoadDefaultSettiings(Tile tile){
+    private void LoadDefaultSettiings(){
 
-        tile.setMinSize(_size, _size);
-        tile.setMaxSize(_size, _size);
+        setMinSize(_size, _size);
+        setMaxSize(_size, _size);
 
-        tile.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+        addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event)
             {
@@ -67,14 +66,18 @@ public class Tile extends Button {
         //Если нажали на ЛКМ
         if(button == MouseButton.PRIMARY){
             if (IsMine)
+            {
                 setText("*");
+                if(_explosionEventHandler != null)
+                    _explosionEventHandler.Invoke();
+            }
             else
             {
                 setDisable(true);
                 if (GetMinesAround() == 0)
                 {
-                    if (_call != null)
-                        _call.Invoke(_rowIndex,_columIndex);
+                    if (_callHandler != null)
+                        _callHandler.Invoke(_rowIndex,_columIndex);
                 }
                 else
                 {
@@ -95,10 +98,18 @@ public class Tile extends Button {
         }
     }
 
-    public static void SetCall(CallNearby call) {
-        _call = call;
-    }
+
     public interface CallNearby {
         void Invoke(int i,int y);
+    }
+    public static void SetCall(CallNearby call) {
+        _callHandler = call;
+    }
+
+    public interface ExplosionEvent{
+        void Invoke();
+    }
+    public static void SetExplosionEvent(ExplosionEvent explosion) {
+        _explosionEventHandler = explosion;
     }
 }

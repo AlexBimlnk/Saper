@@ -12,7 +12,7 @@ import java.net.URL;
 public class SaperApplication extends Application {
 
     private static final int WIDTH = 520;
-    private static final int HEIGHT = 665;
+    private static final int HEIGHT = 625;
 
     // для args[]
     private static GameDifficulty _dif = null;
@@ -48,8 +48,6 @@ public class SaperApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Сапёр!");
         stage.setScene(scene);
-
-//        scene.getStylesheets().add((new File("src/main/resources/config/style.css")).toURI().toString());
 
         scene.getStylesheets().add(getClass().getResource("/config/style.css").toExternalForm());
 

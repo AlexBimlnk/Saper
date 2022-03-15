@@ -64,7 +64,7 @@ public class GameController implements Initializable {
                 0 <= j && j < _field.length){
 
             Tile tile = _field[i][j];
-            if(!tile.isDisabled() && !tile.isFlaged())
+            if(!tile.isDisabled() && !tile.IsFlaged())
                 tile.MouseHandler(MouseButton.PRIMARY);
         }
     }
@@ -82,23 +82,24 @@ public class GameController implements Initializable {
 
     public void StartGame(GameDifficulty gameDifficulty){
         ClearField();
-        bRestart.setText(": (");
+        bRestart.setText(": )");
+
         Config config = gameDifficulty.GetConfigField();
         Tile.SetSize(config.SizeTile);
         int rankOfTileMatrix = 500 / config.SizeTile;
-
-        _field = FieldGenerator.FieldGeneration(rankOfTileMatrix);
+        _field = FieldGenerator.FieldGeneration(rankOfTileMatrix, config.StyleName);
         FieldGenerator.MineGeneration(_field, config.CountTile / 4);
 
 
         Tile.CallNearby call = (p1,p2) -> CallNearby(p1,p2);
         Tile.SetCall(call);
+        Tile.ExplosionEvent explosionEvent = () -> OverGame();
+        Tile.SetExplosionEvent(explosionEvent);
 
         for (int i = 0; i < _field.length; i++)
             for (int j = 0; j < _field.length; j++)
             {
                 flowPane.getChildren().add(_field[i][j]);
-
 
             }
     }
@@ -110,7 +111,14 @@ public class GameController implements Initializable {
 
     public void OverGame()
     {
-        bRestart.setText(": (");
+        bRestart.setText("Game over!  ;(");
+        for (int i = 0; i < _field.length; i++)
+        {
+            for (int j = 0; j < _field.length; j++)
+            {
+                _field[i][j].setDisable(true);
+            }
+        }
     }
 
 }

@@ -48,7 +48,7 @@ public class FieldGenerator{
             }
     }
 
-    public static Tile[][] FieldGeneration(int rank) {
+    public static Tile[][] FieldGeneration(int rank, String style) {
         Tile[][] field = new Tile[rank][rank];
 
         for (int i = 0; i < rank; i++)
@@ -56,7 +56,7 @@ public class FieldGenerator{
             {
                 field[i][y] = new Tile(i,y);
 
-                field[i][y].getStyleClass().add("tile");
+                field[i][y].getStyleClass().add(style);
 //                field[i][y].getStyleClass().add("hard");
                 field[i][y].SetMinesAround(0);
             }
