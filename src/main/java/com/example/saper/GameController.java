@@ -54,9 +54,27 @@ public class GameController implements Initializable {
     }
     @FXML
     private void openAllDebugClick(ActionEvent event) {
-        for (int i = 1;i <= 10;i++)
-            for (int y = 1;y <= 10;y++)
+        for (int i = 0;i < _field.length;i++)
+            for (int y = 0;y < _field[i].length;y++)
+            {
                 _field[i][y].setText((_field[i][y].IsMine)?"*":(_field[i][y].GetMinesAround() == 0) ? "":Integer.toString(_field[i][y].GetMinesAround()));
+
+                if (_field[i][y].IsMine)
+                {
+                    _field[i][y].getStyleClass().add("mine");
+
+                }
+
+                //_field[i][y].setDisable(true);
+            }
+    }
+
+    @FXML
+    public void restartButtonClick(ActionEvent event)
+    {
+        ClearField();
+        if (SaperApplication.getDif() != null)
+            StartGame(SaperApplication.getDif());
     }
 
     private void OpenTile(int i, int j){

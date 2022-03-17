@@ -27,6 +27,11 @@
     -fx-font-size: 1.4em;
 }
 
+.tile.mine{
+    -fx-border-color: red;
+}
+
+
 
 
 
