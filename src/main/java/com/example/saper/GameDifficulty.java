@@ -11,5 +11,5 @@ public enum GameDifficulty {
         public Config GetConfigField() { return null; }
     };
 
-    public  abstract Config GetConfigField();
+    public abstract Config GetConfigField();
 }

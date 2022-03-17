@@ -14,53 +14,18 @@ public class Tile extends Button {
     private int _minesAround; //quantity of mines around
     private int _rowIndex;
     private int _columIndex;
-    private boolean _isFlaged = false;
 
-    public boolean isStartPoint = false;
-    public boolean IsFlaged() {
-        return _isFlaged;
-    }
+    private boolean _isFlaged = false;
 
     private static CallNearby _callHandler; //используется при нажатии по пустой клетке
     private static ExplosionEvent _explosionEventHandler; //вызывается при взрыве мины
+
 
     public Tile(int rowIndex, int columnIndex){
 
         LoadDefaultSettiings();
         _rowIndex = rowIndex;
         _columIndex = columnIndex;
-    }
-
-    public boolean IsMine = false; //prop
-
-    private void LoadDefaultSettiings(){
-
-        setMinSize(_size, _size);
-        setMaxSize(_size, _size);
-
-        addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event)
-            {
-                MouseHandler(event.getButton());
-            }
-        });
-    }
-
-    public void SetMinesAround(int value){
-        if(value < 0)
-            throw new InvalidParameterException();
-        _minesAround = value;
-    }
-    public int GetMinesAround(){
-        return _minesAround;
-    }
-
-    public static void SetSize(int size){
-        _size = size;
-    }
-    public static int GetSize(){
-        return _size;
     }
 
     public void MouseHandler(MouseButton button) {
@@ -97,6 +62,43 @@ public class Tile extends Button {
             }
             _isFlaged = !_isFlaged;
         }
+    }
+
+    public boolean IsMine = false; //prop
+    public boolean IsStartPoint = false; //prop
+
+    private void LoadDefaultSettiings(){
+
+        setMinSize(_size, _size);
+        setMaxSize(_size, _size);
+
+        addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event)
+            {
+                MouseHandler(event.getButton());
+            }
+        });
+    }
+
+    public boolean IsFlaged() {
+        return _isFlaged;
+    }
+
+    public void SetMinesAround(int value){
+        if(value < 0)
+            throw new InvalidParameterException();
+        _minesAround = value;
+    }
+    public int GetMinesAround(){
+        return _minesAround;
+    }
+
+    public static void SetSize(int size){
+        _size = size;
+    }
+    public static int GetSize(){
+        return _size;
     }
 
 

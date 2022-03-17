@@ -91,6 +91,4 @@ public class SaperApplication extends Application {
         }
         launch();
     }
-
-
 }

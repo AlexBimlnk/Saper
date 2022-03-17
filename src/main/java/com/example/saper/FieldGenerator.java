@@ -7,60 +7,78 @@ import javafx.util.Pair;
 
 public class FieldGenerator{
 
-    final private int _RandomCount = 2;
+    //Проверяет корректны ли заданные коориднаты, т.е. индексы не выходят за границы поля.
+    private static boolean IsCorrectCoordinate(int fieldLength, int iPos, int jPos){
+        if(0 <= iPos && iPos < fieldLength &&
+           0 <= jPos && jPos < fieldLength){
+            return true;
+        }
 
+        return false;
+    }
 
+    //Проверяет находится ли точка рядом с границей поля
+    private static boolean IsNearWithBorder(Tile[][] field, int iPos, int jpos){
+        return (iPos <= 1 || jpos <= 1 || iPos >= field.length - 2 || jpos >= field[0].length - 2);
+    }
 
-    //увелечение MinesAround в соседних клетках на 1
-    private static void IncMinesAround(Tile[][] field, int i, int j) {
-        //Пробуем инкрементировать число мин вокруг клетки
-        if(0 <= i && i < field.length &&
-           0 <= j && j < field.length){
+    //Возвращает список всех клеток, находящихся вокруг заданной индексами клеткой.
+    private static ArrayList<Tile> GetTilesAround(Tile[][] field, int iPos, int jPos){
+        ArrayList<Tile> tiles = new ArrayList<Tile>();
 
-            Tile tile = field[i][j];
+        //Перебор всех индексов, находящихся вокруг
+        for(int i = -1; i < 2; i++){
+            for(int j = -1; j < 2; j++){
+                if(i == 0 && j == 0)
+                    continue;
+                if(IsCorrectCoordinate(field.length, iPos + i, jPos + j)){
+                    tiles.add(field[iPos + i][jPos + j]);
+                }
+            }
+        }
+
+        return  tiles;
+    }
+
+    //Возвращает список координат всех клеток, находящихся вокруг заданной индексами клеткой.
+    private static ArrayList<Pair<Integer, Integer>> GetCoordinateTilesAround(Tile[][] field, int iPos, int jPos){
+        ArrayList<Pair<Integer, Integer>> tiles = new ArrayList<Pair<Integer, Integer>>();
+
+        //Перебор всех индексов, находящихся вокруг
+        for(int i = -1; i < 2; i++){
+            for(int j = -1; j < 2; j++){
+                if(i == 0 && j == 0)
+                    continue;
+                if(IsCorrectCoordinate(field.length, iPos + i, jPos + j)){
+                    tiles.add(new Pair<>(iPos + i, jPos + j));
+                }
+            }
+        }
+
+        return  tiles;
+    }
+
+    //Инкрементирует свойство MinesAround у всех клеток вокруг заданной с помощью координат клетки
+    private static void IncCountMinesAroundOfTile(Tile[][] field, int iPos, int jPos){
+        for(Tile tile : GetTilesAround(field, iPos, jPos)){
             tile.SetMinesAround(tile.GetMinesAround() + 1);
         }
     }
 
-    private static void IncAround(Tile[][] field, int i, int j){
-        IncMinesAround(field, i + 1, j + 1);
-        IncMinesAround(field, i - 1, j - 1);
-        IncMinesAround(field, i + 1, j - 1);
-        IncMinesAround(field, i - 1, j + 1);
-
-        IncMinesAround(field, i, j + 1);
-        IncMinesAround(field, i, j - 1);
-        IncMinesAround(field, i + 1, j);
-        IncMinesAround(field, i - 1, j);
+    private static int CountMinesAround(Tile [][] field, int i, int j){
+        return GetTilesAround(field, i, j).size();
     }
 
-    private static boolean IsNearWithBorder(Tile[][] field, int i, int j)
-    {
-        return (i <= 1 || j <= 1 || i >= field.length - 2 || j >= field[0].length - 2);
-    }
-    private static int CheckStartPointAround(Tile[][] field, int i, int j)
-    {
+    //?
+    private static int CheckStartPointAround(Tile[][] field, int iPos, int jPos){
         int[] debuf = new int[] {9,2,0};
 
-        final Pair<Integer,Integer>[] ways = new Pair[]{
-                new Pair(-1,-1),
-                new Pair(-1,0),
-                new Pair(-1,1),
-                new Pair(0,1),
-                new Pair(1,1),
-                new Pair(1,0),
-                new Pair(1,-1),
-                new Pair(0,-1)
-        };
         int tri = 0;
         while (tri != 2)
         {
-            for (var way : ways)
+            for (var tile : GetTilesAround(field, iPos, jPos))
             {
-                int tI = i + way.getKey() * (tri + 1);
-                int tJ = j + way.getValue() * (tri + 1);
-
-                if (tI >= 0 && tJ >= 0 && tI < field.length && tJ < field[0].length && field[tI][tJ].isStartPoint)
+                if (tile.IsStartPoint)
                     return debuf[tri];
             }
             tri++;
@@ -69,23 +87,10 @@ public class FieldGenerator{
         return debuf[tri];
     }
 
-    private static int CountMinesAround(Tile [][] field, int i, int j)
-    {
-        return (i - 1 >= 0 && j - 1 >= 0 ?
-                (field[i-1][j-1].IsMine ? 1 : 0) + (field[i-1][j].IsMine ? 1 : 0) + (field[i][j-1].IsMine ? 1 : 0) :
-                (i - 1 >= 0 ? (field[i-1][j].IsMine ? 1 : 0) : (j - 1 >= 0 ? (field[i][j - 1].IsMine ? 1 : 0):0))) +
 
-                (i + 1 <= field.length - 1 && j + 1 <= field[0].length - 1 ?
-                        (field[i+1][j+1].IsMine ? 1 : 0) + (field[i+1][j].IsMine ? 1 : 0) + (field[i][j+1].IsMine ? 1 : 0) :
-                        (i + 1 <= field.length - 1 ? (field[i+1][j].IsMine ? 1 : 0) : (j + 1 <= field[0].length - 1?(field[i][j + 1].IsMine ? 1 : 0):0))) +
 
-                (i + 1 <= field.length - 1 && j - 1 >= 0 && field[i+1][j-1].IsMine? 1: 0) +
-                (j + 1 <= field[0].length - 1 && i - 1 >= 0 && field[i-1][j+1].IsMine? 1: 0);
-    }
-
-    private static TilePrio GetTilePrio(Tile[][] field, int i, int j)
-    {
-        int sum = CountMinesAround(field, i, j) + (IsNearWithBorder(field, i, j) ? 1 : 0) + CheckStartPointAround(field, i, j);
+    private static TilePrio GetTilePrio(Tile[][] field, int iPos, int jPos){
+        int sum = CountMinesAround(field, iPos, jPos) + (IsNearWithBorder(field, iPos, jPos) ? 1 : 0) + CheckStartPointAround(field, iPos, jPos);
 
         if (sum <= TilePrio.counts[0])
             return TilePrio.UltraLow;
@@ -97,30 +102,18 @@ public class FieldGenerator{
             return TilePrio.High;
     }
 
-   private static ArrayList<Pair<Integer,Integer>>[] CheckAllWays(Tile[][] field,int i, int j)
-    {
+    private static ArrayList<Pair<Integer, Integer>>[] CheckAllWays(Tile[][] field,int iPos, int jPos){
         ArrayList<Pair<Integer,Integer>>[] arr = new ArrayList[4];
 
-        for (int y = 0;y < arr.length;y++)
+        for (int y = 0; y < arr.length; y++)
             arr[y] = new ArrayList<Pair<Integer,Integer>>();
 
-        final Pair<Integer,Integer>[] ways = new Pair[]{
-                new Pair(-1,-1),
-                new Pair(-1,0),
-                new Pair(-1,1),
-                new Pair(0,1),
-                new Pair(1,1),
-                new Pair(1,0),
-                new Pair(1,-1),
-                new Pair(0,-1)
-        };
-
-        for (var way : ways)
+        for (var way : GetCoordinateTilesAround(field, iPos, jPos))
         {
-            int tI = i + way.getKey();
-            int tJ = j + way.getValue();
+            int tI = way.getKey();
+            int tJ = way.getValue();
 
-            if (tI >= 0 && tJ >= 0 && tI < field.length && tJ < field[0].length && !field[tI][tJ].IsMine && !field[tI][tJ].isStartPoint)
+            if (!field[tI][tJ].IsMine && !field[tI][tJ].IsStartPoint)
                 arr[GetTilePrio(field,tI,tJ).GetInt()].add(new Pair<>(tI,tJ));
         }
 
@@ -152,7 +145,7 @@ public class FieldGenerator{
                 if (ind == 0 || startPorintCheck)
                 {
                     ind = step;
-                    if (field[i][y].isStartPoint)
+                    if (field[i][y].IsStartPoint)
                     {
                         startPorintCheck = true;
                     }
@@ -227,7 +220,7 @@ public class FieldGenerator{
 
                 field[i][j].IsMine = true;
             }
-            IncAround(field, i, j);
+            IncCountMinesAroundOfTile(field, i, j);
         }
 
     }

@@ -7,10 +7,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
-import javafx.scene.control.Pagination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.FlowPane;
-import javafx.util.Pair;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -76,18 +74,13 @@ public class GameController implements Initializable {
             }
     }
     @FXML
-    public void restartButtonClick(ActionEvent event)
-    {
+    public void restartButtonClick(ActionEvent event){
         ClearField();
         _isGameStarted = false;
         if (SaperApplication.getDif() != null)
             StartGame(SaperApplication.getDif());
     }
 
-    public static boolean GetGameCondition()
-    {
-        return _isGameStarted;
-    }
 
     private void OpenTile(int i, int j){
         if(0 <= i && i < _field.length &&
@@ -102,7 +95,7 @@ public class GameController implements Initializable {
         if (!_isGameStarted)
         {
             _isGameStarted = true;
-            _field[i][y].isStartPoint = true;
+            _field[i][y].IsStartPoint = true;
             StartGen(i,y);
 
             _field[i][y].MouseHandler(MouseButton.PRIMARY);
@@ -141,6 +134,11 @@ public class GameController implements Initializable {
             }
     }
 
+    public static boolean GetGameCondition()
+    {
+        return _isGameStarted;
+    }
+
     public void StartGen(int i, int y)
     {
         FieldGenerator.MineGeneration(_field, _config.CountTile / 5);
@@ -151,8 +149,7 @@ public class GameController implements Initializable {
         flowPane.getChildren().clear();
     }
 
-    public void OverGame()
-    {
+    public void OverGame(){
         bRestart.setText(":(");
         for (int i = 0; i < _field.length; i++)
         {
