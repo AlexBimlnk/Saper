@@ -16,6 +16,7 @@ public class Tile extends Button {
     private int _columIndex;
     private boolean _isFlaged = false;
 
+    public boolean isStartPoint = false;
     public boolean IsFlaged() {
         return _isFlaged;
     }
@@ -85,7 +86,7 @@ public class Tile extends Button {
                 }
             }
         }
-        if(button == MouseButton.SECONDARY){
+        if(button == MouseButton.SECONDARY && GameController.GetGameCondition()){
             if (_isFlaged)
             {
                 setText("");

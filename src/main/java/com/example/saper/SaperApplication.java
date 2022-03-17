@@ -5,9 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.File;
+
 import java.io.IOException;
-import java.net.URL;
 
 public class SaperApplication extends Application {
 
@@ -49,7 +48,7 @@ public class SaperApplication extends Application {
         stage.setTitle("Сапёр!");
         stage.setScene(scene);
 
-        scene.getStylesheets().add(getClass().getResource("/config/style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/_config/style.css").toExternalForm());
 
         stage.show();
 
@@ -83,6 +82,12 @@ public class SaperApplication extends Application {
                 if (argWithVal[1].equals("on"))
                     _debugOption = true;
             }
+        }
+
+        if (_dif == null)
+        {
+            //доабвление послденей вырбанной сложности
+            _dif = GameDifficulty.Easy;
         }
         launch();
     }

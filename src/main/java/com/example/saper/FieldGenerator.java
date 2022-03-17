@@ -9,6 +9,8 @@ public class FieldGenerator{
 
     final private int _RandomCount = 2;
 
+
+
     //увелечение MinesAround в соседних клетках на 1
     private static void IncMinesAround(Tile[][] field, int i, int j) {
         //Пробуем инкрементировать число мин вокруг клетки
@@ -36,6 +38,36 @@ public class FieldGenerator{
     {
         return (i <= 1 || j <= 1 || i >= field.length - 2 || j >= field[0].length - 2);
     }
+    private static int CheckStartPointAround(Tile[][] field, int i, int j)
+    {
+        int[] debuf = new int[] {9,2,0};
+
+        final Pair<Integer,Integer>[] ways = new Pair[]{
+                new Pair(-1,-1),
+                new Pair(-1,0),
+                new Pair(-1,1),
+                new Pair(0,1),
+                new Pair(1,1),
+                new Pair(1,0),
+                new Pair(1,-1),
+                new Pair(0,-1)
+        };
+        int tri = 0;
+        while (tri != 2)
+        {
+            for (var way : ways)
+            {
+                int tI = i + way.getKey() * (tri + 1);
+                int tJ = j + way.getValue() * (tri + 1);
+
+                if (tI >= 0 && tJ >= 0 && tI < field.length && tJ < field[0].length && field[tI][tJ].isStartPoint)
+                    return debuf[tri];
+            }
+            tri++;
+        }
+
+        return debuf[tri];
+    }
 
     private static int CountMinesAround(Tile [][] field, int i, int j)
     {
@@ -53,7 +85,7 @@ public class FieldGenerator{
 
     private static TilePrio GetTilePrio(Tile[][] field, int i, int j)
     {
-        int sum = CountMinesAround(field, i, j) + (IsNearWithBorder(field, i, j) ? 1 : 0);
+        int sum = CountMinesAround(field, i, j) + (IsNearWithBorder(field, i, j) ? 1 : 0) + CheckStartPointAround(field, i, j);
 
         if (sum <= TilePrio.counts[0])
             return TilePrio.UltraLow;
@@ -88,7 +120,7 @@ public class FieldGenerator{
             int tI = i + way.getKey();
             int tJ = j + way.getValue();
 
-            if (tI >= 0 && tJ >= 0 && tI < field.length && tJ < field[0].length && !field[tI][tJ].IsMine)
+            if (tI >= 0 && tJ >= 0 && tI < field.length && tJ < field[0].length && !field[tI][tJ].IsMine && !field[tI][tJ].isStartPoint)
                 arr[GetTilePrio(field,tI,tJ).GetInt()].add(new Pair<>(tI,tJ));
         }
 
@@ -113,15 +145,27 @@ public class FieldGenerator{
 
         //очередь для запоминания координат раставленных мин
         ArrayDeque<Pair<Integer,Integer>> mines = new ArrayDeque<>();
-
+        boolean startPorintCheck = false;
         for (int i = 0;i < field.length;i++)
             for (int y = 0;y < field[i].length;y++)
             {
-                if (ind == 0)
+                if (ind == 0 || startPorintCheck)
                 {
-                    field[i][y].IsMine = true;
-                    mines.add(new Pair<Integer,Integer>(i,y));
                     ind = step;
+                    if (field[i][y].isStartPoint)
+                    {
+                        startPorintCheck = true;
+                    }
+                    else
+                    {
+                        field[i][y].IsMine = true;
+                        mines.add(new Pair<Integer,Integer>(i,y));
+                    }
+                    if (startPorintCheck)
+                    {
+                        startPorintCheck = false;
+                        ind = step - 1;
+                    }
                 }
                 ind--;
             }
@@ -177,6 +221,7 @@ public class FieldGenerator{
                 int selectedIndex = random.nextInt(waysWithPrio[y].size());
 
                 field[i][j].IsMine = false;
+
                 i = waysWithPrio[y].get(selectedIndex).getKey();
                 j = waysWithPrio[y].get(selectedIndex).getValue();
 
@@ -230,7 +275,7 @@ public class FieldGenerator{
         };
 
         public abstract int GetInt();
-        final public static int[] probability = new int[] {45,30,15,10}; //вероятность
+        final public static int[] probability = new int[] {45,30,20,5}; //вероятность
         final public static int[] counts = new int[] {0,2,5,7}; //кол-во мин во круг для соответсвующего типа
     }
 }

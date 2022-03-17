@@ -7,8 +7,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
+import javafx.scene.control.Pagination;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.FlowPane;
+import javafx.util.Pair;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -32,8 +34,13 @@ public class GameController implements Initializable {
 
     private Tile[][] _field;
 
+    private static boolean _isGameStarted;
+
+    private Config _config;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        _isGameStarted = false;
         if (!SaperApplication.getDebugOpton())
             debugMenu.setVisible(false);
         if (SaperApplication.getDif() != null)
@@ -68,13 +75,18 @@ public class GameController implements Initializable {
                 //_field[i][y].setDisable(true);
             }
     }
-
     @FXML
     public void restartButtonClick(ActionEvent event)
     {
         ClearField();
+        _isGameStarted = false;
         if (SaperApplication.getDif() != null)
             StartGame(SaperApplication.getDif());
+    }
+
+    public static boolean GetGameCondition()
+    {
+        return _isGameStarted;
     }
 
     private void OpenTile(int i, int j){
@@ -87,6 +99,15 @@ public class GameController implements Initializable {
         }
     }
     private void CallNearby(int i, int y) {
+        if (!_isGameStarted)
+        {
+            _isGameStarted = true;
+            _field[i][y].isStartPoint = true;
+            StartGen(i,y);
+
+            _field[i][y].MouseHandler(MouseButton.PRIMARY);
+            return;
+        }
         OpenTile(i + 1,y + 1);
         OpenTile(i - 1,y - 1);
         OpenTile(i + 1,y - 1);
@@ -102,12 +123,10 @@ public class GameController implements Initializable {
         ClearField();
         bRestart.setText(": )");
 
-        Config config = gameDifficulty.GetConfigField();
-        Tile.SetSize(config.SizeTile);
-        int rankOfTileMatrix = 500 / config.SizeTile;
-        _field = FieldGenerator.FieldGeneration(rankOfTileMatrix, config.StyleName);
-        FieldGenerator.MineGeneration(_field, config.CountTile / 4);
-
+        _config = gameDifficulty.GetConfigField();
+        Tile.SetSize(_config.SizeTile);
+        int rankOfTileMatrix = 500 / _config.SizeTile;
+        _field = FieldGenerator.FieldGeneration(rankOfTileMatrix, _config.StyleName);
 
         Tile.CallNearby call = (p1,p2) -> CallNearby(p1,p2);
         Tile.SetCall(call);
@@ -122,6 +141,11 @@ public class GameController implements Initializable {
             }
     }
 
+    public void StartGen(int i, int y)
+    {
+        FieldGenerator.MineGeneration(_field, _config.CountTile / 5);
+    }
+
     public void ClearField()
     {
         flowPane.getChildren().clear();
@@ -129,7 +153,7 @@ public class GameController implements Initializable {
 
     public void OverGame()
     {
-        bRestart.setText("Game over!  ;(");
+        bRestart.setText(":(");
         for (int i = 0; i < _field.length; i++)
         {
             for (int j = 0; j < _field.length; j++)
