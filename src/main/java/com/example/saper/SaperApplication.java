@@ -79,7 +79,6 @@ public class SaperApplication extends Application {
             }
             else if (argWithVal[0].equals("-debugtool")) //включение пункта debug в menubar
             {
-                if (argWithVal[1].equals("on"))
                     _debugOption = true;
             }
         }

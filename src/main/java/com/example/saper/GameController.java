@@ -141,7 +141,7 @@ public class GameController implements Initializable {
 
     public void StartGen(int i, int y)
     {
-        FieldGenerator.MineGeneration(_field, _config.CountTile / 5);
+        FieldGenerator.MineGeneration(_field, _config.getCountMines());
     }
 
     public void ClearField()
