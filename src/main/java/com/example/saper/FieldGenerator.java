@@ -9,8 +9,7 @@ import javafx.util.Pair;
 public class FieldGenerator{
 
     //Проверяет корректны ли заданные коориднаты, т.е. индексы не выходят за границы поля.
-    private static boolean IsCorrectCoordinate(int iLen, int jLen, int iPos, int jPos)
-    {
+    private static boolean IsCorrectCoordinate(int iLen, int jLen, int iPos, int jPos) {
         if(0 <= iPos && iPos < iLen &&
                 0 <= jPos && jPos < jLen){
             return true;
