@@ -10,12 +10,8 @@ public class FieldGenerator{
 
     //Проверяет корректны ли заданные коориднаты, т.е. индексы не выходят за границы поля.
     private static boolean IsCorrectCoordinate(int iLen, int jLen, int iPos, int jPos) {
-        if(0 <= iPos && iPos < iLen &&
-                0 <= jPos && jPos < jLen){
-            return true;
-        }
-
-        return false;
+        return 0 <= iPos && iPos < iLen &&
+                0 <= jPos && jPos < jLen;
     }
 
     private static boolean IsCorrectCoordinate(int fieldLength, int iPos, int jPos){
@@ -29,7 +25,7 @@ public class FieldGenerator{
 
     //Возвращает список всех клеток, находящихся вокруг заданной индексами клеткой.
     private static ArrayList<Tile> GetTilesAround(Tile[][] field, int iPos, int jPos){
-        ArrayList<Tile> tiles = new ArrayList<Tile>();
+        ArrayList<Tile> tiles = new ArrayList<>();
 
         //Перебор всех индексов, находящихся вокруг
         for(int i = -1; i < 2; i++){
@@ -45,11 +41,71 @@ public class FieldGenerator{
         return  tiles;
     }
 
+//    не удолять
+//    private static ArrayList<Tile> GetSetBorderTiles(Tile[][]field, Pair<Integer,Integer> upLeft, Pair<Integer,Integer> downRight)
+//    {
+//        if (field.length == 0)
+//            throw new InvalidParameterException();
+//
+//        if (upLeft.getKey() > downRight.getKey() ||
+//                upLeft.getValue() > downRight.getValue())
+//            throw new InvalidParameterException();
+//
+//        ArrayList<Tile> ret = new ArrayList<>();
+//
+//        /*
+//        * >@######
+//        *  .......
+//        *  .......
+//        *  ######@<
+//        */
+//        int index = 0;
+//        for (int i = 0;i <= downRight.getValue() - upLeft.getValue();i++)
+//        {
+//            if (IsCorrectCoordinate(field.length, field[0].length, upLeft.getKey(), upLeft.getValue() + i))
+//            {
+//                ret.add(index,field[upLeft.getKey()][upLeft.getValue() + i]);
+//                field[upLeft.getKey()][upLeft.getValue() + i].SetMinesAround(index + 1);
+//                index++;
+//            }
+//            if (IsCorrectCoordinate(field.length, field[0].length, downRight.getKey(), downRight.getValue() - i) &&
+//                    (upLeft.getKey() != downRight.getKey() && upLeft.getValue() + i != downRight.getValue() - i)){
+//                ret.add(field[downRight.getKey()][downRight.getValue()-i]);
+//            }
+//
+//        }
+//
+//        /*
+//         *  @......
+//         * >#.....#
+//         *  #.....#<
+//         *  ......@
+//         */
+//
+//        for (int i = 1;i < downRight.getKey() - upLeft.getKey();i++)
+//        {
+//
+//            if (IsCorrectCoordinate(field.length, field[0].length, downRight.getKey() - i, downRight.getValue())){
+//                ret.add(index,field[downRight.getKey() - i][downRight.getValue()]);
+//                field[downRight.getKey() - i][downRight.getValue()].SetMinesAround(index+downRight.getKey() - upLeft.getKey()-i);
+//                //index++;
+//            }
+//
+//
+//            if (IsCorrectCoordinate(field.length, field[0].length, upLeft.getKey() + i, upLeft.getValue()) &&
+//                    (upLeft.getKey() + i != downRight.getKey() - i && upLeft.getValue() != downRight.getValue()))
+//            {
+//                ret.add(index,field[upLeft.getKey() + i][upLeft.getValue()]);
+//            }
+//        }
+//        return ret;
+//    }
+
     private static ArrayList<Tile> GetTilesAround(Tile[][] field, int iPos, int jPos, int depth){
         if (depth <= 0)
             throw new InvalidParameterException("depth has dispositive value");
 
-        ArrayList<Tile> tiles = new ArrayList<Tile>();
+        ArrayList<Tile> tiles = new ArrayList<>();
 
         for (int i = -1*depth;i <= depth;i++)
         {
@@ -82,7 +138,7 @@ public class FieldGenerator{
 
     //Возвращает список координат всех клеток, находящихся вокруг заданной индексами клеткой.
     private static ArrayList<Pair<Integer, Integer>> GetCoordinateTilesAround(Tile[][] field, int iPos, int jPos){
-        ArrayList<Pair<Integer, Integer>> tiles = new ArrayList<Pair<Integer, Integer>>();
+        ArrayList<Pair<Integer, Integer>> tiles = new ArrayList<>();
 
         //Перебор всех индексов, находящихся вокруг
         for(int i = -1; i < 2; i++){
@@ -116,77 +172,43 @@ public class FieldGenerator{
     }
 
     private static int CheckStartPointAround(Tile[][] field, int iPos, int jPos){
-        boolean check = true;
+        int depth;
 
-        int depth = 0;
-
-        for (depth = 0; depth < TilePrio.debuff.length - 1 && check; depth++){
+        for (depth = 0; depth < TilePrior.debuff.length - 1; depth++){
             for (var tile : GetTilesAround(field, iPos, jPos,depth + 1)){
                 if (tile.IsStartPoint){
-                    check = false;
-                    break;
+                    return TilePrior.debuff[depth];
                 }
             }
+
         }
 
-        return TilePrio.debuff[depth];
+        return TilePrior.debuff[depth];
     }
 
+    private static int GetRandomBinMatrix(int len, int unitCount, Random random){
+        int result = 0;
 
-
-    private static TilePrio GetTilePrio(Tile[][] field, int iPos, int jPos){
-        int sum = CountMinesAround(field, iPos, jPos) + (IsNearWithBorder(field, iPos, jPos) ? 5 : 0) + CheckStartPointAround(field, iPos, jPos);
-
-        if (sum <= TilePrio.counts[0])
-            return TilePrio.UltraLow;
-        else if (sum <= TilePrio.counts[1])
-            return TilePrio.Low;
-        else if (sum <= TilePrio.counts[2])
-            return TilePrio.Average;
-        else
-            return TilePrio.High;
-    }
-
-    private static ArrayList<Pair<Integer, Integer>>[] CheckAllWays(Tile[][] field,int iPos, int jPos){
-        ArrayList<Pair<Integer,Integer>>[] arr = new ArrayList[4];
-
-        for (int y = 0; y < arr.length; y++)
-            arr[y] = new ArrayList<>();
-
-        for (var way : GetCoordinateTilesAround(field, iPos, jPos))
-        {
-            int tI = way.getKey();
-            int tJ = way.getValue();
-
-            if (!field[tI][tJ].IsMine && !field[tI][tJ].IsStartPoint)
-                arr[GetTilePrio(field,tI,tJ).GetInt()].add(new Pair<>(tI,tJ));
-        }
-
-        return arr;
-    }
-
-    public static void MineGeneration(Tile[][] field, int countMine){
-        Random random;
-        if (SaperApplication.getSeed() != -1)
-            random = new Random(SaperApplication.getSeed());
-        else
+        if(len <= 0 || unitCount < 0)
+            throw new InvalidParameterException("Negative values");
+        if (random == null)
             random = new Random();
 
-        int s = field.length * field[0].length;
+        for (int i = unitCount-1;i >= 0;i--){
+            int shift = random.nextInt(len - i) + i;
+            int newUnit = 1 << shift;
 
-        int step = s / countMine;
+            if ((newUnit & result) != 0) {
+                newUnit = 1 << i;
+            }
+            result += newUnit;
+        }
+        return result;
+    }
 
-        if (step < 2)
-            step = 2;
+    private static int IntSqrt(int n){
+        //целочисленное извлечение корня : ) пока без коментов
 
-        int ind = 0;
-
-        int aS = field.length;
-        int bS = field[0].length;
-
-        int n = countMine * aS / bS;
-
-        //целочисленно извекаем корень из n ( :
         int shift = 2;
         int nShift = n >> shift;
 
@@ -206,67 +228,138 @@ public class FieldGenerator{
             }
             shift -=2;
         }
+        return result;
+    }
 
-        int aNMine = result;
-        int bNMine = (countMine + result - 1)/ result;
+    private static boolean StartPointCheck(Tile[][] field, Pair<Integer,Integer> upLeft, Pair<Integer,Integer> downRight){
+        for (int i = upLeft.getKey();i <= downRight.getKey();i++){
+            for (int j = upLeft.getValue();j <= downRight.getValue();j++)
+                if (field[i][j].IsStartPoint){
+                    return true;
+                }
+        }
 
-        int aMine = aS / aNMine;
-        int bMine = bS / bNMine;
+        return false;
+    }
+
+    private static TilePrior GetTilePrior(Tile[][] field, int iPos, int jPos){
+        int sum = CountMinesAround(field, iPos, jPos) + (IsNearWithBorder(field, iPos, jPos) ? 2 : 0) + CheckStartPointAround(field, iPos, jPos);
+
+        if (sum <= TilePrior.counts[0])
+            return TilePrior.UltraHigh;
+        else if (sum <= TilePrior.counts[1])
+            return TilePrior.High;
+        else if (sum <= TilePrior.counts[2])
+            return TilePrior.Average;
+        else if (sum <= TilePrior.counts[3])
+            return TilePrior.Low;
+        else
+            return TilePrior.UltraLow;
+    }
+
+    private static ArrayList<Pair<Integer, Integer>>[] CheckAllWays(Tile[][] field,int iPos, int jPos){
+        ArrayList<Pair<Integer,Integer>>[] arr = new ArrayList[5];
+
+        for (int y = 0; y < arr.length; y++)
+            arr[y] = new ArrayList<>();
+
+        for (var way : GetCoordinateTilesAround(field, iPos, jPos))
+        {
+            int tI = way.getKey();
+            int tJ = way.getValue();
+
+            if (!field[tI][tJ].IsMine && !field[tI][tJ].IsStartPoint)
+                arr[GetTilePrior(field,tI,tJ).GetInt()].add(new Pair<>(tI,tJ));
+        }
+
+        return arr;
+    }
+
+    public static void MineGeneration(Tile[][] field, int countMine){
+        Random random;
+        if (SaperApplication.getSeed() != -1)
+            random = new Random(SaperApplication.getSeed());
+        else
+            random = new Random();
+
+        int s = field.length * field[0].length;
+
+        int ind = 0;
+
+        int aS = field.length; //a
+        int bS = field[0].length; //b
+
+        int n = countMine + 1;
+
+        // a * b = s
+        // p * q = n
+        // a/b = p/q => qa = pb
+        //
+        // p * q * a = n * a => p^2 * b = n * a => p = (n * a / b)^1/2
+
+        int p = n * aS / bS;
+
+        p = IntSqrt(p);
+
+        int q = n / p;
+
+        int subMinesCount = n % p; //пока считается = 0 всегда
+
+        int aMineSize = aS / p;
+        //4 = for
+        int add4AMIneSize = aS % p;
+        int distribution4AMineSize = GetRandomBinMatrix(p,add4AMIneSize,random);  //случайное распдределение остатка от деленения межу всеми блоками
+
+        int[] aMineSizes = new int[p]; //разбиаение поля по одной стороне
+
+        for (int i = 0;i < p;i++){
+            aMineSizes[i] = aMineSize;
+            if ((1 << i & distribution4AMineSize) != 0){
+                aMineSizes[i]++;
+            }
+        }
+
+        int bMineSize = bS / q;
+
+        int add4BMIneSize = bS % q;
+        int distribution4BMineSize = GetRandomBinMatrix(q,add4BMIneSize,random); //случайное распдределение остатка от деленения межу всеми блоками
+
+        int[] bMineSizes = new int[q]; //разбиаение поля по другой стороне
+
+        for (int i = 0;i < q;i++){
+            bMineSizes[i] = bMineSize;
+            if ((1 << i & distribution4BMineSize) != 0){
+                bMineSizes[i]++;
+            }
+        }
+
 
         //очередь для запоминания координат раставленных мин
         ArrayDeque<Pair<Integer,Integer>> mines = new ArrayDeque<>();
 
-        for (int i = 0;i < aNMine && countMine != 0;i++)
-            for (int j = 0;j < bNMine && countMine != 0;j++)
-            {
-                int posI = (aS % aNMine != 0 ? 1 : 0) + i*aMine + random.nextInt(aMine);
-                int posJ = (bS % bNMine != 0 ? 1 : 0) + j*bMine + random.nextInt(bMine);
+        int iLeft = 0;
 
-                if (field[posI][posJ].IsStartPoint){
-                    if (bNMine != 1){
-                        int add = (posJ - j*bMine - (bS % bNMine != 0 ? 1 : 0) - (bMine-1) == 0 ? -1 : 1);
-                        posJ += add;
-                    }
-                    else{
-                        int add = (posI - i*aMine - (aS % aNMine != 0 ? 1 : 0) - (aMine-1) > 0 ? 1 : -1);
-                        posI += add;
-                    }
+        for (int iMineSize : aMineSizes) {
+            int jUp = 0;
+            for (int jMineSize : bMineSizes) {
+
+                Pair<Integer, Integer> upLeft = new Pair<>(iLeft, jUp); //верхняя лева точка блока
+                Pair<Integer, Integer> downRight = new Pair<>(iLeft + iMineSize - 1, jUp + jMineSize - 1); //правая нижняя
+
+                if (!StartPointCheck(field, upLeft, downRight)) {
+                    //рандомизация индекса внутри блока
+                    int aI = random.nextInt(downRight.getKey() - upLeft.getKey() + 1) + upLeft.getKey();
+                    int bJ = random.nextInt(downRight.getValue() - upLeft.getValue() + 1) + upLeft.getValue();
+
+                    field[aI][bJ].IsMine = true;
+                    mines.add(new Pair<>(aI, bJ));
                 }
 
-                if (field[posI][posJ].IsMine)
-                    throw new RuntimeException("collision happen");
-
-                field[posI][posJ].IsMine = true;
-
-                mines.add(new Pair<>(posI,posJ));
-
-                countMine--;
+                jUp += jMineSize;
             }
+            iLeft += iMineSize;
+        }
 
-//        boolean startPorintCheck = false;
-//        for (int i = 0;i < field.length;i++)
-//            for (int y = 0;y < field[i].length;y++)
-//            {
-//                if (ind == 0 || startPorintCheck)
-//                {
-//                    ind = step;
-//                    if (field[i][y].IsStartPoint)
-//                    {
-//                        startPorintCheck = true;
-//                    }
-//                    else
-//                    {
-//                        field[i][y].IsMine = true;
-//                        mines.add(new Pair<Integer,Integer>(i,y));
-//                    }
-//                    if (startPorintCheck)
-//                    {
-//                        startPorintCheck = false;
-//                        ind = step - 1;
-//                    }
-//                }
-//                ind--;
-//            }
 
         while (!mines.isEmpty())
         {
@@ -280,17 +373,17 @@ public class FieldGenerator{
             for (int tri = 0; tri < count;tri++)
             {
                 //разбиение всех возможных путей наприоритеты
-                ArrayList<Pair<Integer,Integer>>[] waysWithPrio = CheckAllWays(field,i,j);
+                ArrayList<Pair<Integer,Integer>>[] waysWithPrior = CheckAllWays(field,i,j);
 
                 int upperBound = 0;
 
                 //для пропуска пуствх приоритетов
-                int[] check = new int[] {0,0,0,0};
+                int[] check = new int[] {0,0,0,0,0};
 
-                for (int y = 0;y < TilePrio.probability.length;y++)
-                    if (waysWithPrio[y].size() != 0)
+                for (int y = 0; y < TilePrior.probability.length; y++)
+                    if (waysWithPrior[y].size() != 0)
                     {
-                        upperBound += TilePrio.probability[y];
+                        upperBound += TilePrior.probability[y];
                         check[y] = 1;
                     }
                 //если вариантов куда сдвинуть мину нет
@@ -306,22 +399,22 @@ public class FieldGenerator{
                 do
                 {
                     if (check[y] == 1)
-                        sum += TilePrio.probability[y];
+                        sum += TilePrior.probability[y];
 
                     if (randomVal < sum)
                         break;
 
                     y++;
                 }
-                while(y < TilePrio.probability.length);
+                while(y < TilePrior.probability.length);
 
                 //случайный выбор мин среди выбраного приоритета
-                int selectedIndex = random.nextInt(waysWithPrio[y].size());
+                int selectedIndex = random.nextInt(waysWithPrior[y].size());
 
                 field[i][j].IsMine = false;
 
-                i = waysWithPrio[y].get(selectedIndex).getKey();
-                j = waysWithPrio[y].get(selectedIndex).getValue();
+                i = waysWithPrior[y].get(selectedIndex).getKey();
+                j = waysWithPrior[y].get(selectedIndex).getValue();
 
                 field[i][j].IsMine = true;
             }
@@ -348,8 +441,14 @@ public class FieldGenerator{
         return field;
     }
 
-    private enum TilePrio{
-        High {
+    private enum TilePrior {
+        UltraLow {
+            @Override
+            public int GetInt() {
+                return 4;
+            }
+        },
+        Low {
             @Override
             public int GetInt() {
                 return 3;
@@ -361,13 +460,13 @@ public class FieldGenerator{
                 return 2;
             }
         },
-        Low {
+        High {
             @Override
             public int GetInt() {
                 return 1;
             }
         },
-        UltraLow {
+        UltraHigh {
             @Override
             public int GetInt() {
                 return 0;
@@ -375,9 +474,9 @@ public class FieldGenerator{
         };
 
         public abstract int GetInt();
-        final public static int[] probability = new int[] {45,30,20,5}; //вероятность
-        final public static int[] counts = new int[] {0,2,5,7}; //кол-во мин во круг для соответсвующего типа
-        final public static int[] debuff = new int[] {11,2,0};
+        final public static int[] probability = new int[] {45,30,20,5,1}; //вероятность
+        final public static int[] counts = new int[] {0,2,5,7,10}; //кол-во мин во круг для соответсвующего типа
+        final public static int[] debuff = new int[] {8,4,0};
     }
 }
 

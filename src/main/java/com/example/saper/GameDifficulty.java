@@ -11,14 +11,14 @@ public enum GameDifficulty {
     Normal{
         public Config GetConfigField() {
             Config config = new Config(400, 25, "normal");
-            config.setCountMines(16);
+            config.setCountMines(64);
             return config;
         }
     },
     Hard{
         public Config GetConfigField() {
-            Config config = new Config(625, 20, "hard");
-            config.setCountMines(16);
+            Config config = new Config(625, 25, "hard");
+            config.setCountMines(64);
             return config;
         }
     };

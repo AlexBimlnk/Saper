@@ -36,51 +36,69 @@ public class GameController implements Initializable {
 
     private Config _config;
 
+    private GameDifficulty _gameDif = GameDifficulty.Easy;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         _isGameStarted = false;
         if (!SaperApplication.getDebugOpton())
             debugMenu.setVisible(false);
         if (SaperApplication.getDif() != null)
-            StartGame(SaperApplication.getDif());
+            _gameDif = SaperApplication.getDif();
+
+        StartGame();
     }
 
     @FXML
     private void easyItemClick(ActionEvent event) {
-        StartGame(GameDifficulty.Easy);
+        _gameDif = GameDifficulty.Easy;
+        _isGameStarted = false;
+        StartGame();
     }
     @FXML
     private void normalItemClick(ActionEvent event) {
-        StartGame(GameDifficulty.Normal);
+        _gameDif = GameDifficulty.Normal;
+        _isGameStarted = false;
+        StartGame();
     }
     @FXML
     private void hardItemClick(ActionEvent event) {
-        StartGame(GameDifficulty.Hard);
+        _gameDif = GameDifficulty.Hard;
+        _isGameStarted = false;
+        StartGame();
     }
     @FXML
     private void openAllDebugClick(ActionEvent event) {
-        for (int i = 0;i < _field.length;i++)
-            for (int y = 0;y < _field[i].length;y++)
-            {
-                _field[i][y].setText((_field[i][y].IsMine)?"*":(_field[i][y].GetMinesAround() == 0) ? "":Integer.toString(_field[i][y].GetMinesAround()));
-
-                if (_field[i][y].IsMine)
-                {
-                    _field[i][y].getStyleClass().add("mine");
-
-                }
-
-                //_field[i][y].setDisable(true);
-            }
+        OpenAll(false,true);
     }
+
+
     @FXML
     public void restartButtonClick(ActionEvent event){
         ClearField();
         _isGameStarted = false;
         if (SaperApplication.getDif() != null)
-            StartGame(SaperApplication.getDif());
+            StartGame();
     }
 
+
+    private void OpenAll(boolean isDisabling,boolean isShowAll){
+        for (int i = 0;i < _field.length;i++)
+            for (int y = 0;y < _field[i].length;y++)
+            {
+                if (_field[i][y].IsMine){
+                    _field[i][y].getStyleClass().add("mine");
+                    _field[i][y].setText("*");
+                }
+                else if (isShowAll){
+                    _field[i][y].setText((_field[i][y].GetMinesAround() == 0) ? "":Integer.toString(_field[i][y].GetMinesAround()));
+                }
+
+                if (isDisabling){
+                    _field[i][y].setDisable(true);
+                }
+            }
+    }
 
     private void OpenTile(int i, int j){
         if(0 <= i && i < _field.length &&
@@ -112,18 +130,18 @@ public class GameController implements Initializable {
         OpenTile(i - 1,y);
     }
 
-    public void StartGame(GameDifficulty gameDifficulty){
+    public void StartGame(){
         ClearField();
         bRestart.setText(": )");
 
-        _config = gameDifficulty.GetConfigField();
+        _config = _gameDif.GetConfigField();
         Tile.SetSize(_config.SizeTile);
         int rankOfTileMatrix = 500 / _config.SizeTile;
         _field = FieldGenerator.FieldGeneration(rankOfTileMatrix, _config.StyleName);
 
-        Tile.CallNearby call = (p1,p2) -> CallNearby(p1,p2);
+        Tile.CallNearby call = this::CallNearby;
         Tile.SetCall(call);
-        Tile.ExplosionEvent explosionEvent = () -> OverGame();
+        Tile.ExplosionEvent explosionEvent = this::OverGame;
         Tile.SetExplosionEvent(explosionEvent);
 
         for (int i = 0; i < _field.length; i++)
@@ -151,13 +169,7 @@ public class GameController implements Initializable {
 
     public void OverGame(){
         bRestart.setText(":(");
-        for (int i = 0; i < _field.length; i++)
-        {
-            for (int j = 0; j < _field.length; j++)
-            {
-                _field[i][j].setDisable(true);
-            }
-        }
+        OpenAll(true,false);
     }
 
 }

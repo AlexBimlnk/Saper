@@ -8,6 +8,7 @@
 .tile.hard{
     -fx-border-color: white;
     -fx-background-color: white;
+    /*-fx-text-fill: red;*/
     /*-fx-border-*/
 }
 #submenu{
