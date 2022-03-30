@@ -2,6 +2,8 @@ package com.example.saper;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
@@ -33,7 +35,7 @@ public class Tile extends Button {
         if(button == MouseButton.PRIMARY){
             if (IsMine)
             {
-                setText("*");
+                this.setGraphic(GameController.GetMineImage());
                 if(_explosionEventHandler != null)
                     _explosionEventHandler.Invoke();
             }
@@ -54,11 +56,11 @@ public class Tile extends Button {
         if(button == MouseButton.SECONDARY && GameController.GetGameCondition()){
             if (_isFlaged)
             {
-                setText("");
+                this.setGraphic(null);
             }
             else
             {
-                setText("!!");
+                this.setGraphic(GameController.GetFlagImage());
             }
             _isFlaged = !_isFlaged;
         }

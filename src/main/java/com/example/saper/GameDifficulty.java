@@ -17,7 +17,7 @@ public enum GameDifficulty {
     },
     Hard{
         public Config GetConfigField() {
-            Config config = new Config(625, 25, "hard");
+            Config config = new Config(400, 25, "hard");
             config.setCountMines(64);
             return config;
         }

@@ -3,6 +3,7 @@ package com.example.saper;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 
@@ -18,6 +19,10 @@ public class SaperApplication extends Application {
     private static int _seed = -1;
     private static boolean _debugOption = false;
 
+
+
+
+
     public static Stage StageApp;
 
     public static GameDifficulty getDif()
@@ -29,7 +34,6 @@ public class SaperApplication extends Application {
     {
         return _debugOption;
     }
-
 
     public static void SetSizeStage(int width, int height){
         StageApp.setMinHeight(height);
@@ -49,6 +53,9 @@ public class SaperApplication extends Application {
         stage.setScene(scene);
 
         scene.getStylesheets().add(getClass().getResource("/_config/style.css").toExternalForm());
+
+
+
 
         stage.show();
 

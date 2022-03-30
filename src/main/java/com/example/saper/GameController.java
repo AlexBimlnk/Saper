@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.FlowPane;
 
@@ -38,6 +39,16 @@ public class GameController implements Initializable {
 
     private GameDifficulty _gameDif = GameDifficulty.Easy;
 
+
+    private static ImageView _mineImage;
+    private static ImageView _flagImage;
+    public static ImageView GetMineImage(){
+        return _mineImage;
+    }
+    public static ImageView GetFlagImage(){
+        return _flagImage;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         _isGameStarted = false;
@@ -45,6 +56,9 @@ public class GameController implements Initializable {
             debugMenu.setVisible(false);
         if (SaperApplication.getDif() != null)
             _gameDif = SaperApplication.getDif();
+
+        _mineImage = new ImageView(getClass().getResource("/Images/mine_style2.png").toExternalForm());
+        _flagImage = new ImageView(getClass().getResource("/Images/flag_style1.png").toExternalForm());
 
         StartGame();
     }
@@ -102,7 +116,7 @@ public class GameController implements Initializable {
 
     private void OpenTile(int i, int j){
         if(0 <= i && i < _field.length &&
-                0 <= j && j < _field.length){
+           0 <= j && j < _field.length){
 
             Tile tile = _field[i][j];
             if(!tile.isDisabled() && !tile.IsFlaged())
@@ -110,8 +124,7 @@ public class GameController implements Initializable {
         }
     }
     private void CallNearby(int i, int y) {
-        if (!_isGameStarted)
-        {
+        if (!_isGameStarted) {
             _isGameStarted = true;
             _field[i][y].IsStartPoint = true;
             StartGen(i,y);
@@ -144,9 +157,13 @@ public class GameController implements Initializable {
         Tile.ExplosionEvent explosionEvent = this::OverGame;
         Tile.SetExplosionEvent(explosionEvent);
 
+        _mineImage.setFitHeight(_config.SizeTile);
+        _mineImage.setFitWidth(_config.SizeTile);
+        _flagImage.setFitHeight(_config.SizeTile);
+        _flagImage.setFitWidth(_config.SizeTile);
+
         for (int i = 0; i < _field.length; i++)
-            for (int j = 0; j < _field.length; j++)
-            {
+            for (int j = 0; j < _field.length; j++) {
                 flowPane.getChildren().add(_field[i][j]);
 
             }
@@ -171,5 +188,4 @@ public class GameController implements Initializable {
         bRestart.setText(":(");
         OpenAll(true,false);
     }
-
 }

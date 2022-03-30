@@ -205,31 +205,7 @@ public class FieldGenerator{
         }
         return result;
     }
-
-    private static int IntSqrt(int n){
-        //целочисленное извлечение корня : ) пока без коментов
-
-        int shift = 2;
-        int nShift = n >> shift;
-
-        while (nShift != 0 && nShift != n){
-            shift +=2;
-            nShift = n >> shift;
-        }
-        shift -= 2;
-
-        int result = 0;
-
-        while (shift >= 0){
-            result <<= 1;
-            int tmpRes = result + 1;
-            if (tmpRes*tmpRes <= n >> shift){
-                result = tmpRes;
-            }
-            shift -=2;
-        }
-        return result;
-    }
+    
 
     private static boolean StartPointCheck(Tile[][] field, Pair<Integer,Integer> upLeft, Pair<Integer,Integer> downRight){
         for (int i = upLeft.getKey();i <= downRight.getKey();i++){
@@ -299,7 +275,7 @@ public class FieldGenerator{
 
         int p = n * aS / bS;
 
-        p = IntSqrt(p);
+        p = (int) Math.sqrt(p);
 
         int q = n / p;
 
@@ -322,7 +298,9 @@ public class FieldGenerator{
         int bMineSize = bS / q;
 
         int add4BMIneSize = bS % q;
-        int distribution4BMineSize = GetRandomBinMatrix(q,add4BMIneSize,random); //случайное распдределение остатка от деленения межу всеми блоками
+
+        //случайное распдределение остатка от деленения межу всеми блоками
+        int distribution4BMineSize = GetRandomBinMatrix(q,add4BMIneSize,random);
 
         int[] bMineSizes = new int[q]; //разбиаение поля по другой стороне
 
@@ -361,8 +339,7 @@ public class FieldGenerator{
         }
 
 
-        while (!mines.isEmpty())
-        {
+        while (!mines.isEmpty()) {
             int i = mines.getFirst().getKey();
             int j = mines.getFirst().getValue();
             mines.pop();
@@ -370,8 +347,7 @@ public class FieldGenerator{
             //генерация кол-ва смещения мины
             int count = random.nextInt(6) + 5;
 
-            for (int tri = 0; tri < count;tri++)
-            {
+            for (int tri = 0; tri < count;tri++) {
                 //разбиение всех возможных путей наприоритеты
                 ArrayList<Pair<Integer,Integer>>[] waysWithPrior = CheckAllWays(field,i,j);
 
@@ -381,8 +357,7 @@ public class FieldGenerator{
                 int[] check = new int[] {0,0,0,0,0};
 
                 for (int y = 0; y < TilePrior.probability.length; y++)
-                    if (waysWithPrior[y].size() != 0)
-                    {
+                    if (waysWithPrior[y].size() != 0) {
                         upperBound += TilePrior.probability[y];
                         check[y] = 1;
                     }
@@ -396,8 +371,7 @@ public class FieldGenerator{
                 int y = 0;
                 int sum = 0;
 
-                do
-                {
+                do {
                     if (check[y] == 1)
                         sum += TilePrior.probability[y];
 
@@ -434,7 +408,6 @@ public class FieldGenerator{
                 field[i][y].getStyleClass().add("tile");
                 field[i][y].getStyleClass().add(style);
 
-//                field[i][y].getStyleClass().add("hard");
                 field[i][y].SetMinesAround(0);
             }
 
