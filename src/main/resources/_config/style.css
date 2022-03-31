@@ -11,6 +11,7 @@
     -fx-font-size: 8px;
     /*-fx-text-fill: red;*/
     /*-fx-border-*/
+
 }
 #submenu{
     -fx-background-color: white;
@@ -28,9 +29,18 @@
     -fx-border-color: black;
     -fx-font-size: 1.4em;
 }
+.tile#default{
 
-.tile.mine{
+}
+
+.tile#mine{
+    -fx-background-size: 100%,100%;
+    -fx-background-image: url('../Images/mine_style2.png');
     -fx-border-color: red;
+}
+.tile#flag{
+    -fx-background-size: 100%,100%;
+    -fx-background-image: url('../Images/flag_style1.png');
 }
 
 

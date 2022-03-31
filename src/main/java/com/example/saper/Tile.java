@@ -2,8 +2,6 @@ package com.example.saper;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
@@ -25,42 +23,42 @@ public class Tile extends Button {
 
     public Tile(int rowIndex, int columnIndex){
 
-        LoadDefaultSettiings();
+        LoadDefaultSettings();
         _rowIndex = rowIndex;
         _columIndex = columnIndex;
     }
 
     public void MouseHandler(MouseButton button) {
         //Если нажали на ЛКМ
-        if(button == MouseButton.PRIMARY){
-            if (IsMine)
-            {
-                this.setGraphic(GameController.GetMineImage());
-                if(_explosionEventHandler != null)
+        if(button == MouseButton.PRIMARY) {
+            if (IsMine) {
+//                this.setGraphic(GameController.GetMineImage());
+                this.setId("mine");
+                if(_explosionEventHandler != null) {
                     _explosionEventHandler.Invoke();
-            }
-            else
-            {
-                setDisable(true);
-                if (GetMinesAround() == 0)
-                {
-                    if (_callHandler != null)
-                        _callHandler.Invoke(_rowIndex,_columIndex);
                 }
-                else
-                {
+
+            }
+            else {
+                setDisable(true);
+                if (GetMinesAround() == 0) {
+                    if (_callHandler != null) {
+                        _callHandler.Invoke(_rowIndex,_columIndex);
+                    }
+                }
+                else {
                     setText(Integer.toString(GetMinesAround()));
                 }
             }
         }
-        if(button == MouseButton.SECONDARY && GameController.GetGameCondition()){
-            if (_isFlaged)
-            {
-                this.setGraphic(null);
+        if(button == MouseButton.SECONDARY && GameController.GetGameCondition()) {
+            if (_isFlaged) {
+//                this.setGraphic(null);
+                this.setId("default");
             }
-            else
-            {
-                this.setGraphic(GameController.GetFlagImage());
+            else {
+//                this.setGraphic(GameController.GetFlagImage());
+                this.setId("flag");
             }
             _isFlaged = !_isFlaged;
         }
@@ -69,7 +67,7 @@ public class Tile extends Button {
     public boolean IsMine = false; //prop
     public boolean IsStartPoint = false; //prop
 
-    private void LoadDefaultSettiings(){
+    private void LoadDefaultSettings() {
 
         setMinSize(_size, _size);
         setMaxSize(_size, _size);
@@ -83,23 +81,23 @@ public class Tile extends Button {
         });
     }
 
-    public boolean IsFlaged() {
+    public boolean IsFlagged() {
         return _isFlaged;
     }
 
-    public void SetMinesAround(int value){
+    public void SetMinesAround(int value) {
         if(value < 0)
             throw new InvalidParameterException();
         _minesAround = value;
     }
-    public int GetMinesAround(){
+    public int GetMinesAround() {
         return _minesAround;
     }
 
-    public static void SetSize(int size){
+    public static void SetSize(int size) {
         _size = size;
     }
-    public static int GetSize(){
+    public static int GetSize() {
         return _size;
     }
 
@@ -111,7 +109,7 @@ public class Tile extends Button {
         _callHandler = call;
     }
 
-    public interface ExplosionEvent{
+    public interface ExplosionEvent {
         void Invoke();
     }
     public static void SetExplosionEvent(ExplosionEvent explosion) {

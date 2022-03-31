@@ -7,7 +7,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.FlowPane;
 
@@ -40,14 +39,14 @@ public class GameController implements Initializable {
     private GameDifficulty _gameDif = GameDifficulty.Easy;
 
 
-    private static ImageView _mineImage;
-    private static ImageView _flagImage;
-    public static ImageView GetMineImage(){
-        return _mineImage;
-    }
-    public static ImageView GetFlagImage(){
-        return _flagImage;
-    }
+//    private static ImageView _mineImage;
+//    private static ImageView _flagImage;
+//    public static ImageView GetMineImage(){
+//        return _mineImage;
+//    }
+//    public static ImageView GetFlagImage(){
+//        return _flagImage;
+//    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -57,8 +56,8 @@ public class GameController implements Initializable {
         if (SaperApplication.getDif() != null)
             _gameDif = SaperApplication.getDif();
 
-        _mineImage = new ImageView(getClass().getResource("/Images/mine_style2.png").toExternalForm());
-        _flagImage = new ImageView(getClass().getResource("/Images/flag_style1.png").toExternalForm());
+//        _mineImage = new ImageView(getClass().getResource("/Images/mine_style2.png").toExternalForm());
+//        _flagImage = new ImageView(getClass().getResource("/Images/flag_style1.png").toExternalForm());
 
         StartGame();
     }
@@ -101,8 +100,9 @@ public class GameController implements Initializable {
             for (int y = 0;y < _field[i].length;y++)
             {
                 if (_field[i][y].IsMine){
-                    _field[i][y].getStyleClass().add("mine");
-                    _field[i][y].setText("*");
+                    //_field[i][y].getStyleClass().add("mine");
+                    _field[i][y].setId("mine");
+                    //_field[i][y].setText("*");
                 }
                 else if (isShowAll){
                     _field[i][y].setText((_field[i][y].GetMinesAround() == 0) ? "":Integer.toString(_field[i][y].GetMinesAround()));
@@ -119,7 +119,7 @@ public class GameController implements Initializable {
            0 <= j && j < _field.length){
 
             Tile tile = _field[i][j];
-            if(!tile.isDisabled() && !tile.IsFlaged())
+            if(!tile.isDisabled() && !tile.IsFlagged())
                 tile.MouseHandler(MouseButton.PRIMARY);
         }
     }
@@ -157,10 +157,10 @@ public class GameController implements Initializable {
         Tile.ExplosionEvent explosionEvent = this::OverGame;
         Tile.SetExplosionEvent(explosionEvent);
 
-        _mineImage.setFitHeight(_config.SizeTile);
-        _mineImage.setFitWidth(_config.SizeTile);
-        _flagImage.setFitHeight(_config.SizeTile);
-        _flagImage.setFitWidth(_config.SizeTile);
+//        _mineImage.setFitHeight(_config.SizeTile);
+//        _mineImage.setFitWidth(_config.SizeTile);
+//        _flagImage.setFitHeight(_config.SizeTile);
+//        _flagImage.setFitWidth(_config.SizeTile);
 
         for (int i = 0; i < _field.length; i++)
             for (int j = 0; j < _field.length; j++) {
