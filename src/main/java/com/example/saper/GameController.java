@@ -36,17 +36,11 @@ public class GameController implements Initializable {
 
     private Config _config;
 
-    private GameDifficulty _gameDif = GameDifficulty.Easy;
+    private static GameDifficulty _gameDif = GameDifficulty.Easy;
+    public static GameDifficulty GetGameDifficulty(){
+        return _gameDif;
+    }
 
-
-//    private static ImageView _mineImage;
-//    private static ImageView _flagImage;
-//    public static ImageView GetMineImage(){
-//        return _mineImage;
-//    }
-//    public static ImageView GetFlagImage(){
-//        return _flagImage;
-//    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -145,9 +139,11 @@ public class GameController implements Initializable {
 
     public void StartGame(){
         ClearField();
-        bRestart.setText(": )");
-
         _config = _gameDif.GetConfigField();
+
+        bRestart.setText(": )");
+        lMineCount.setText("Кол-во мин: " + Integer.toString(_config.getCountMines()));
+
         Tile.SetSize(_config.SizeTile);
         int rankOfTileMatrix = 500 / _config.SizeTile;
         _field = FieldGenerator.FieldGeneration(rankOfTileMatrix, _config.StyleName);
@@ -157,10 +153,6 @@ public class GameController implements Initializable {
         Tile.ExplosionEvent explosionEvent = this::OverGame;
         Tile.SetExplosionEvent(explosionEvent);
 
-//        _mineImage.setFitHeight(_config.SizeTile);
-//        _mineImage.setFitWidth(_config.SizeTile);
-//        _flagImage.setFitHeight(_config.SizeTile);
-//        _flagImage.setFitWidth(_config.SizeTile);
 
         for (int i = 0; i < _field.length; i++)
             for (int j = 0; j < _field.length; j++) {
