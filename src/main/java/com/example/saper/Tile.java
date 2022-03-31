@@ -60,13 +60,9 @@ public class Tile extends Button {
 
             if(lowerBound < 0)
                 lowerBound = 0;
-            if(lowerBound == 0)
-                upperBound = _minesAround;
 
-            if(upperBound < 0)
-                upperBound = 0;
-            if(upperBound == 0)
-                lowerBound = _minesAround;
+            if(upperBound > 8)
+                upperBound = 8;
 
             if(upperBound != lowerBound)
                 setText(lowerBound + "-" + upperBound);
