@@ -1,5 +1,7 @@
 package com.example.saper;
 
+import java.security.InvalidParameterException;
+
 public class Config {
     public int CountTile;
     public int SizeTile;
@@ -14,7 +16,7 @@ public class Config {
     public void setCountMines(int countMines) {
 
         if (CountTile / countMines < 3)
-            throw new RuntimeException("too hard");
+            throw new InvalidParameterException("too hard");
 
         CountMines = countMines;
     }

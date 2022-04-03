@@ -45,7 +45,7 @@ public class GameController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         _isGameStarted = false;
-        if (!SaperApplication.getDebugOpton())
+        if (!SaperApplication.getDebugOption())
             debugMenu.setVisible(false);
         if (SaperApplication.getDif() != null)
             _gameDif = SaperApplication.getDif();

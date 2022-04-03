@@ -3,7 +3,6 @@ package com.example.saper;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 
@@ -19,10 +18,6 @@ public class SaperApplication extends Application {
     private static int _seed = -1;
     private static boolean _debugOption = false;
 
-
-
-
-
     public static Stage StageApp;
 
     public static GameDifficulty getDif()
@@ -30,7 +25,7 @@ public class SaperApplication extends Application {
         return _dif;
     }
     public static int getSeed() {return _seed;}
-    public static boolean getDebugOpton()
+    public static boolean getDebugOption()
     {
         return _debugOption;
     }
