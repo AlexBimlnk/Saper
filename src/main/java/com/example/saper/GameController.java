@@ -93,18 +93,17 @@ public class GameController implements Initializable {
         for (int i = 0;i < _field.length;i++)
             for (int y = 0;y < _field[i].length;y++)
             {
-                if (_field[i][y].IsMine){
-                    //_field[i][y].getStyleClass().add("mine");
-                    _field[i][y].setId("mine");
-                    //_field[i][y].setText("*");
-                }
-                else if (isShowAll){
-                    _field[i][y].setText((_field[i][y].GetMinesAround() == 0) ? "":Integer.toString(_field[i][y].GetMinesAround()));
+                if (isShowAll){
+                    _field[i][y].TextView.Invoke();
                 }
 
                 if (isDisabling){
                     _field[i][y].setDisable(true);
                 }
+                else {
+                    _field[i][y].getStyleClass().add("debug");
+                }
+
             }
     }
 
@@ -113,7 +112,7 @@ public class GameController implements Initializable {
            0 <= j && j < _field.length){
 
             Tile tile = _field[i][j];
-            if(!tile.isDisabled() && !tile.IsFlagged())
+            if(!tile.isClicked() && !tile.isFlag())
                 tile.MouseHandler(MouseButton.PRIMARY);
         }
     }
@@ -142,16 +141,16 @@ public class GameController implements Initializable {
         _config = _gameDif.GetConfigField();
 
         bRestart.setText(": )");
-        lMineCount.setText("Кол-во мин: " + Integer.toString(_config.getCountMines()));
+        lMineCount.setText(Integer.toString(_config.getCountMines()));
 
-        Tile.SetSize(_config.SizeTile);
+        Tile.setSize(_config.SizeTile);
         int rankOfTileMatrix = 500 / _config.SizeTile;
         _field = FieldGenerator.FieldGeneration(rankOfTileMatrix, _config.StyleName);
 
         Tile.CallNearby call = this::CallNearby;
-        Tile.SetCall(call);
+        Tile.setCall(call);
         Tile.ExplosionEvent explosionEvent = this::OverGame;
-        Tile.SetExplosionEvent(explosionEvent);
+        Tile.setExplosionEvent(explosionEvent);
 
 
         for (int i = 0; i < _field.length; i++)

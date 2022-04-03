@@ -157,7 +157,7 @@ public class FieldGenerator{
     //Инкрементирует свойство MinesAround у всех клеток вокруг заданной с помощью координат клетки
     private static void IncCountMinesAroundOfTile(Tile[][] field, int iPos, int jPos){
         for(Tile tile : GetTilesAround(field, iPos, jPos)){
-            tile.SetMinesAround(tile.GetMinesAround() + 1);
+            tile.setMinesAround(tile.getMinesAround() + 1);
         }
     }
 
@@ -260,10 +260,8 @@ public class FieldGenerator{
 
         int s = field.length * field[0].length;
 
-        int ind = 0;
-
-        int aS = field.length; //a
-        int bS = field[0].length; //b
+        int fieldHeight = field.length; //a
+        int fieldWidth = field[0].length; //b
 
         int n = countMine + 1;
 
@@ -273,7 +271,7 @@ public class FieldGenerator{
         //
         // p * q * a = n * a => p^2 * b = n * a => p = (n * a / b)^1/2
 
-        int p = n * aS / bS;
+        int p = n * fieldHeight / fieldWidth;
 
         p = (int) Math.sqrt(p);
 
@@ -281,33 +279,33 @@ public class FieldGenerator{
 
         int subMinesCount = n % p; //пока считается = 0 всегда
 
-        int aMineSize = aS / p;
+        int tileHeight = fieldHeight / p;
         //4 = for
-        int add4AMIneSize = aS % p;
-        int distribution4AMineSize = GetRandomBinMatrix(p,add4AMIneSize,random);  //случайное распдределение остатка от деленения межу всеми блоками
+        int add4TileHeight = fieldHeight % p;
+        int distribution4TileHeight = GetRandomBinMatrix(p,add4TileHeight,random);  //случайное распдределение остатка от деленения межу всеми блоками
 
-        int[] aMineSizes = new int[p]; //разбиаение поля по одной стороне
+        int[] tilesHeight = new int[p]; //разбиаение поля по одной стороне
 
         for (int i = 0;i < p;i++){
-            aMineSizes[i] = aMineSize;
-            if ((1 << i & distribution4AMineSize) != 0){
-                aMineSizes[i]++;
+            tilesHeight[i] = tileHeight;
+            if ((1 << i & distribution4TileHeight) != 0){
+                tilesHeight[i]++;
             }
         }
 
-        int bMineSize = bS / q;
+        int tileWidth = fieldWidth / q;
 
-        int add4BMIneSize = bS % q;
+        int add4TileWidth = fieldWidth % q;
 
         //случайное распдределение остатка от деленения межу всеми блоками
-        int distribution4BMineSize = GetRandomBinMatrix(q,add4BMIneSize,random);
+        int distribution4TileWidth = GetRandomBinMatrix(q,add4TileWidth,random);
 
-        int[] bMineSizes = new int[q]; //разбиаение поля по другой стороне
+        int[] tilesWidth = new int[q]; //разбиаение поля по другой стороне
 
         for (int i = 0;i < q;i++){
-            bMineSizes[i] = bMineSize;
-            if ((1 << i & distribution4BMineSize) != 0){
-                bMineSizes[i]++;
+            tilesWidth[i] = tileWidth;
+            if ((1 << i & distribution4TileWidth) != 0){
+                tilesWidth[i]++;
             }
         }
 
@@ -317,12 +315,12 @@ public class FieldGenerator{
 
         int iLeft = 0;
 
-        for (int iMineSize : aMineSizes) {
+        for (int iHeight : tilesHeight) {
             int jUp = 0;
-            for (int jMineSize : bMineSizes) {
+            for (int jWidth : tilesWidth) {
 
                 Pair<Integer, Integer> upLeft = new Pair<>(iLeft, jUp); //верхняя лева точка блока
-                Pair<Integer, Integer> downRight = new Pair<>(iLeft + iMineSize - 1, jUp + jMineSize - 1); //правая нижняя
+                Pair<Integer, Integer> downRight = new Pair<>(iLeft + iHeight - 1, jUp + jWidth - 1); //правая нижняя
 
                 if (!StartPointCheck(field, upLeft, downRight)) {
                     //рандомизация индекса внутри блока
@@ -333,9 +331,9 @@ public class FieldGenerator{
                     mines.add(new Pair<>(aI, bJ));
                 }
 
-                jUp += jMineSize;
+                jUp += jWidth;
             }
-            iLeft += iMineSize;
+            iLeft += iHeight;
         }
 
 
@@ -393,6 +391,7 @@ public class FieldGenerator{
                 field[i][j].IsMine = true;
             }
             IncCountMinesAroundOfTile(field, i, j);
+            field[i][j].setId("mine");
         }
 
     }
@@ -407,8 +406,9 @@ public class FieldGenerator{
 
                 field[i][y].getStyleClass().add("tile");
                 field[i][y].getStyleClass().add(style);
+                field[i][y].setId("default");
 
-                field[i][y].SetMinesAround(0);
+                field[i][y].setMinesAround(0);
             }
 
         return field;

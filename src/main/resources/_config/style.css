@@ -1,18 +1,3 @@
-
-.tile:focused {
-    -fx-background-color: -fx-outer-border, -fx-inner-border, -fx-body-color;
-    -fx-background-insets: 0, 1, 2;
-    -fx-background-radius: 5, 4, 3;
-}
-
-.tile.hard{
-    -fx-border-color: white;
-    -fx-background-color: white;
-    -fx-font-size: 7px;
-    /*-fx-text-fill: red;*/
-    /*-fx-border-*/
-
-}
 #submenu{
     -fx-background-color: white;
 }
@@ -29,21 +14,89 @@
     -fx-border-color: black;
     -fx-font-size: 1.4em;
 }
+
+.tile {
+    -fx-background-color: white;
+    -fx-border-color: lightgrey;
+}
+
+.tile:disabled, .tile:disabled > *{
+    -fx-opacity: 0.7;
+}
+
+.tile:focused {
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 5, 4, 3;
+}
+
+.tile:hover {
+    -fx-border-width: 1px;
+    -fx-border-color: black;
+}
+
+.tile:pressed {
+    -fx-background-color: #f5f5f5;
+}
+.tile.hard{
+    -fx-border-color: white;
+    -fx-background-color: white;
+    -fx-font-size: 7px;
+/*-fx-text-fill: red;*/
+/*-fx-border-*/
+}
+
+/*noinspection CssInvalidPseudoSelector*/
+.tile:clicked {
+    -fx-background-color: lightgrey;
+}
+
+/*noinspection CssInvalidPseudoSelector*/
+.tile:clicked:hover {
+    -fx-border-color: none;
+    -fx-background-color: #e8e8e8;
+}
+
 .tile#default{
 
 }
 
 .tile#mine{
-    -fx-background-size: 100%,100%;
-    -fx-background-image: url('../Images/mine_style2.png');
-    -fx-border-color: red;
+
 }
-.tile#flag{
+
+/*noinspection CssInvalidPseudoSelector*/
+.tile:flag {
     -fx-background-size: 100%,100%;
     -fx-background-image: url('../Images/flag_style1.png');
 }
 
+.debug#mine {
+    -fx-background-size: 100%,100%;
+    -fx-background-image: url('../Images/mine_style2.png');
+    -fx-border-color: red;
+}
 
+#mine:disabled {
+    -fx-background-size: 100%,100%;
+    -fx-background-image: url('../Images/mine_style2.png');
+    /*-fx-border-color: red;*/
+}
 
+/*noinspection CssInvalidPseudoSelector*/
+#mine:disabled:flag {
+    -fx-border-color: green;
+    -fx-border-width: 2px;
+    -fx-opacity: 0.7;
+}
 
+/*.tile:not(#mine) {*/
+/*    -fx-background-color: green;*/
+/*}*/
+
+/*noinspection CssInvalidPseudoSelector*/
+.tile:disabled:flag {
+    -fx-border-color: red;
+    -fx-border-width: 1px;
+    -fx-opacity: 0.3;
+}
 

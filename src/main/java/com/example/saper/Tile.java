@@ -1,6 +1,8 @@
 package com.example.saper;
 
-import javafx.event.EventHandler;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -10,29 +12,46 @@ import java.security.InvalidParameterException;
 import java.util.Random;
 
 public class Tile extends Button {
-
     private static int _size;
 
     private int _minesAround; //quantity of mines around
-    private int _rowIndex;
-    private int _columIndex;
-
-    private boolean _isFlaged = false;
+    private final int _rowIndex;
+    private final int _columIndex;
 
     private static CallNearby _callHandler; //используется при нажатии по пустой клетке
     private static ExplosionEvent _explosionEventHandler; //вызывается при взрыве мины
 
+    public final ShownTextHandler TextView;
 
-    private Random rnd = new Random();
+    private BooleanProperty _clicked;
+    private BooleanProperty _flag;
+
+    private final static Random rnd = (SaperApplication.getSeed() != -1 ? new Random(SaperApplication.getSeed()) : new Random());
 
     public Tile(int rowIndex, int columnIndex){
+        _clicked = new SimpleBooleanProperty(false);
+        _clicked.addListener( e -> pseudoClassStateChanged(PseudoClass.getPseudoClass("clicked"),_clicked.get()));
+
+        _flag = new SimpleBooleanProperty(false);
+        _flag.addListener( e -> pseudoClassStateChanged(PseudoClass.getPseudoClass("flag"),_flag.get()));
 
         LoadDefaultSettings();
         _rowIndex = rowIndex;
         _columIndex = columnIndex;
+
+
+        if (GameController.GetGameDifficulty() == GameDifficulty.Hard) {
+            TextView = (rnd.nextBoolean() ? this::ShowTextHard : this::ShowTextSimple);
+        }
+        else {
+            TextView = this::ShowTextSimple;
+        }
     }
 
-    private void ShowText(){
+    private void ShowTextSimple(){
+        if (_minesAround == 0)
+            return;
+
         setText(Integer.toString(_minesAround));
 
         if(_minesAround == 1)
@@ -53,29 +72,28 @@ public class Tile extends Button {
             setTextFill(Color.BLACK);
     }
     private void ShowTextHard(){
-        if(rnd.nextBoolean()){
-            setTextFill(Color.BLACK);
-            int lowerBound = _minesAround - rnd.nextInt(3);
-            int upperBound = _minesAround + rnd.nextInt(3);
+        if (_minesAround == 0)
+            return;
 
-            if(lowerBound < 0)
-                lowerBound = 0;
+        setTextFill(Color.BLACK);
+        int lowerBound = _minesAround - rnd.nextInt(3);
+        int upperBound = _minesAround + rnd.nextInt(3);
 
-            if(upperBound > 8)
-                upperBound = 8;
+        if(lowerBound < 0)
+            lowerBound = 0;
 
-            if(upperBound != lowerBound)
-                setText(lowerBound + "-" + upperBound);
-            else
-                ShowText();
-        }
+        if(upperBound > 8)
+            upperBound = 8;
+
+        if(upperBound != lowerBound)
+            setText(lowerBound + "-" + upperBound);
         else
-            ShowText();
+            ShowTextSimple();
     }
 
     public void MouseHandler(MouseButton button) {
         //Если нажали на ЛКМ
-        if(button == MouseButton.PRIMARY) {
+        if(button == MouseButton.PRIMARY && !isFlag()) {
             if (IsMine) {
                 this.setId("mine");
                 if(_explosionEventHandler != null) {
@@ -83,30 +101,20 @@ public class Tile extends Button {
                 }
             }
             else {
-                setDisable(true);
-                if (GetMinesAround() == 0) {
+                //setDisable(true);
+                setClicked(true);
+                if (getMinesAround() == 0) {
                     if (_callHandler != null) {
                         _callHandler.Invoke(_rowIndex,_columIndex);
                     }
                 }
                 else {
-                    if(GameController.GetGameDifficulty() == GameDifficulty.Hard) {
-                        ShowTextHard();
-                    }
-                    else {
-                        ShowText();
-                    }
+                    TextView.Invoke();
                 }
             }
         }
         if(button == MouseButton.SECONDARY && GameController.GetGameCondition()) {
-            if (_isFlaged) {
-                setId("default");
-            }
-            else {
-                setId("flag");
-            }
-            _isFlaged = !_isFlaged;
+            setFlag(!isFlag());
         }
     }
 
@@ -118,47 +126,66 @@ public class Tile extends Button {
         setMinSize(_size, _size);
         setMaxSize(_size, _size);
 
-        addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event)
-            {
-                MouseHandler(event.getButton());
+        addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if (isClicked())
+                return;
+
+            if (event.getButton() == MouseButton.PRIMARY){
+                setClicked(true);
             }
+
+            MouseHandler(event.getButton());
         });
     }
 
-    public boolean IsFlagged() {
-        return _isFlaged;
-    }
-
-    public void SetMinesAround(int value) {
+    public void setMinesAround(int value) {
         if(value < 0)
             throw new InvalidParameterException();
         _minesAround = value;
     }
-    public int GetMinesAround() {
+    public int getMinesAround() {
         return _minesAround;
     }
 
-    public static void SetSize(int size) {
+    public static void setSize(int size) {
         _size = size;
     }
-    public static int GetSize() {
+    public static int getSize() {
         return _size;
     }
 
+    public static void setExplosionEvent(ExplosionEvent explosion) {
+        _explosionEventHandler = explosion;
+    }
+
+    public boolean isClicked() {
+        return _clicked.get();
+    }
+
+    public void setClicked(boolean clicked) {
+        this._clicked.set(clicked);
+    }
+
+    public boolean isFlag() {
+        return _flag.get();
+    }
+
+    public void setFlag(boolean flag) {
+        _flag.set(flag);
+    }
 
     public interface CallNearby {
         void Invoke(int i,int y);
     }
-    public static void SetCall(CallNearby call) {
+    public static void setCall(CallNearby call) {
         _callHandler = call;
     }
 
     public interface ExplosionEvent {
         void Invoke();
     }
-    public static void SetExplosionEvent(ExplosionEvent explosion) {
-        _explosionEventHandler = explosion;
+
+    public interface ShownTextHandler {
+        void Invoke();
     }
 }
