@@ -18,21 +18,21 @@
                         </Menu>
                     </items>
                 </Menu>
-            <Menu fx:id="debugMenu" mnemonicParsing="false" text="Debug">
+            <Menu fx:id="_debugMenu" mnemonicParsing="false" text="Debug">
               <items>
                   <MenuItem mnemonicParsing="false" onAction="#openAllDebugClick" text="OpenAll" />
               </items>
             </Menu>
             </menus>
         </MenuBar>
-        <FlowPane fx:id="flowPane" layoutY="80.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="468.0" prefWidth="500.0">
+        <FlowPane fx:id="_flowPane" layoutY="80.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="468.0" prefWidth="500.0">
 
         </FlowPane>
       <Pane fx:id="submenu" layoutX="-13.0" layoutY="24.0" prefHeight="55.0" prefWidth="524.0">
          <children>
-            <Button fx:id="bRestart" layoutX="236.0" layoutY="15.0" mnemonicParsing="false" text=": )" onAction="#restartButtonClick"/>
-            <Label fx:id="lMineCount" contentDisplay="TOP" layoutX="25.0" layoutY="7.0" text="000" />
-            <Label fx:id="lTimer" alignment="CENTER_RIGHT" contentDisplay="TOP" layoutX="459.0" layoutY="6.0" text="000" textAlignment="RIGHT" />
+            <Button fx:id="_bRestart" layoutX="236.0" layoutY="15.0" mnemonicParsing="false" text=": )" onAction="#restartButtonClick"/>
+            <Label fx:id="_lMineCount" contentDisplay="TOP" layoutX="25.0" layoutY="7.0" text="000" />
+            <Label fx:id="_lTimer" alignment="CENTER_RIGHT" contentDisplay="TOP" layoutX="459.0" layoutY="6.0" text="Time 0:0" textAlignment="RIGHT" />
          </children></Pane>
     </children>
 </Pane>

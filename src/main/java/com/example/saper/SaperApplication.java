@@ -49,8 +49,7 @@ public class SaperApplication extends Application {
 
         scene.getStylesheets().add(getClass().getResource("/_config/style.css").toExternalForm());
 
-
-
+        stage.setOnCloseRequest(e -> GameController.CloseApp());
 
         stage.show();
 

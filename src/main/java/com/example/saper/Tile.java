@@ -56,19 +56,19 @@ public class Tile extends Button {
 
         if(_minesAround == 1)
             setTextFill(Color.BLUE);
-        if(_minesAround == 2)
+        else if(_minesAround == 2)
             setTextFill(Color.GREEN);
-        if(_minesAround == 3)
+        else if(_minesAround == 3)
             setTextFill(Color.RED);
-        if(_minesAround == 4)
+        else if(_minesAround == 4)
             setTextFill(Color.PURPLE);
-        if(_minesAround == 5)
+        else if(_minesAround == 5)
             setTextFill(Color.ORANGE);
-        if(_minesAround == 6)
+        else if(_minesAround == 6)
             setTextFill(Color.YELLOW);
-        if(_minesAround == 7)
+        else if(_minesAround == 7)
             setTextFill(Color.PINK);
-        if(_minesAround == 8)
+        else if(_minesAround == 8)
             setTextFill(Color.BLACK);
     }
     private void ShowTextHard(){
