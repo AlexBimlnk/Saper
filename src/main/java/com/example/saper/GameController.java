@@ -53,10 +53,12 @@ public class GameController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         _isGameStarted = false;
 
-        if (!SaperApplication.getDebugOption())
+        if (!SaperApplication.getDebugOption()) {
             _debugMenu.setVisible(false);
-        if (SaperApplication.getDif() != null)
+        }
+        if (SaperApplication.getDif() != null) {
             _gameDif = SaperApplication.getDif();
+        }
 
         StartGame();
     }
@@ -84,11 +86,12 @@ public class GameController implements Initializable {
         OpenAll(false,true);
     }
     @FXML
-    private void restartButtonClick(ActionEvent event){
+    private void restartButtonClick(ActionEvent event) {
         ClearField();
         _isGameStarted = false;
-        if (SaperApplication.getDif() != null)
+        if (SaperApplication.getDif() != null) {
             StartGame();
+        }
     }
 
 
@@ -114,13 +117,11 @@ public class GameController implements Initializable {
     }
     private void OpenAll(boolean isDisabling,boolean isShowAll){
         for (int i = 0;i < _field.length;i++)
-            for (int y = 0;y < _field[i].length;y++)
-            {
-                if (isShowAll){
+            for (int y = 0;y < _field[i].length;y++) {
+                if (isShowAll) {
                     _field[i][y].TextView.Invoke();
                 }
-
-                if (isDisabling){
+                if (isDisabling) {
                     _field[i][y].setDisable(true);
                 }
                 else {
@@ -131,11 +132,12 @@ public class GameController implements Initializable {
     }
     private void OpenTile(int i, int j){
         if(0 <= i && i < _field.length &&
-           0 <= j && j < _field.length){
+           0 <= j && j < _field.length) {
 
             Tile tile = _field[i][j];
-            if(!tile.isClicked() && !tile.isFlag())
+            if(!tile.isClicked() && !tile.isFlag()) {
                 tile.MouseHandler(MouseButton.PRIMARY);
+            }
         }
     }
     private void CallNearby(int i, int y) {
@@ -159,16 +161,17 @@ public class GameController implements Initializable {
     }
 
 
-    public static boolean GetGameCondition()
-    {
+    public static boolean GetGameCondition() {
         return _isGameStarted;
     }
     public static void CloseApp(){
-        if(_timer != null)
+        if(_timer != null) {
             _timer.cancel();
+        }
+
     }
 
-    public void StartGame(){
+    public void StartGame() {
         ClearField();
         _config = _gameDif.GetConfigField();
 
@@ -197,11 +200,10 @@ public class GameController implements Initializable {
 
         ResetTimer();
     }
-    public void ClearField()
-    {
+    public void ClearField() {
         _flowPane.getChildren().clear();
     }
-    public void OverGame(){
+    public void OverGame() {
         _bRestart.setText(":(");
 
         _lTimer.setText("Time 0:0");

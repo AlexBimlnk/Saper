@@ -94,7 +94,7 @@
 /*}*/
 
 /*noinspection CssInvalidPseudoSelector*/
-.tile:disabled:flag {
+.tile:disabled:flag, .tile.hard:disabled:flag {
     -fx-border-color: red;
     -fx-border-width: 1px;
     -fx-opacity: 0.3;

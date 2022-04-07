@@ -14,10 +14,9 @@ public class Config {
     }
 
     public void setCountMines(int countMines) {
-
-        if (CountTile / countMines < 3)
+        if (CountTile / countMines < 3) {
             throw new InvalidParameterException("too hard");
-
+        }
         CountMines = countMines;
     }
 

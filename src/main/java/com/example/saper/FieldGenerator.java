@@ -189,10 +189,12 @@ public class FieldGenerator{
     private static int GetRandomBinMatrix(int len, int unitCount, Random random){
         int result = 0;
 
-        if(len <= 0 || unitCount < 0)
+        if(len <= 0 || unitCount < 0) {
             throw new InvalidParameterException("Negative values");
-        if (random == null)
+        }
+        if (random == null) {
             random = new Random();
+        }
 
         for (int i = unitCount-1;i >= 0;i--){
             int shift = random.nextInt(len - i) + i;
@@ -221,31 +223,38 @@ public class FieldGenerator{
     private static TilePrior GetTilePrior(Tile[][] field, int iPos, int jPos){
         int sum = CountMinesAround(field, iPos, jPos) + (IsNearWithBorder(field, iPos, jPos) ? 2 : 0) + CheckStartPointAround(field, iPos, jPos);
 
-        if (sum <= TilePrior.counts[0])
+        if (sum <= TilePrior.counts[0]) {
             return TilePrior.UltraHigh;
-        else if (sum <= TilePrior.counts[1])
+        }
+        else if (sum <= TilePrior.counts[1]) {
             return TilePrior.High;
-        else if (sum <= TilePrior.counts[2])
+        }
+        else if (sum <= TilePrior.counts[2]) {
             return TilePrior.Average;
-        else if (sum <= TilePrior.counts[3])
+        }
+        else if (sum <= TilePrior.counts[3]) {
             return TilePrior.Low;
-        else
+        }
+        else {
             return TilePrior.UltraLow;
+        }
     }
 
     private static ArrayList<Pair<Integer, Integer>>[] CheckAllWays(Tile[][] field,int iPos, int jPos){
         ArrayList<Pair<Integer,Integer>>[] arr = new ArrayList[5];
 
-        for (int y = 0; y < arr.length; y++)
+        for (int y = 0; y < arr.length; y++) {
             arr[y] = new ArrayList<>();
+        }
 
         for (var way : GetCoordinateTilesAround(field, iPos, jPos))
         {
             int tI = way.getKey();
             int tJ = way.getValue();
 
-            if (!field[tI][tJ].IsMine && !field[tI][tJ].IsStartPoint)
+            if (!field[tI][tJ].IsMine && !field[tI][tJ].IsStartPoint) {
                 arr[GetTilePrior(field,tI,tJ).GetInt()].add(new Pair<>(tI,tJ));
+            }
         }
 
         return arr;
@@ -253,143 +262,148 @@ public class FieldGenerator{
 
     public static void MineGeneration(Tile[][] field, int countMine){
         Random random;
-        if (SaperApplication.getSeed() != -1)
+        if (SaperApplication.getSeed() != -1) {
             random = new Random(SaperApplication.getSeed());
-        else
+        }
+        else {
             random = new Random();
-
-        int s = field.length * field[0].length;
+        }
 
         int fieldHeight = field.length; //a
         int fieldWidth = field[0].length; //b
 
-        int n = countMine + 1;
 
-        // a * b = s
-        // p * q = n
-        // a/b = p/q => qa = pb
-        //
-        // p * q * a = n * a => p^2 * b = n * a => p = (n * a / b)^1/2
+        int numberOfBlocks = countMine + 1; //кол-во блоков на которое надо разбить поле один блок под одну мину и один блок будет зарезервирован для начальной точки
 
-        int p = n * fieldHeight / fieldWidth;
+        int iNumberOfBlocks = numberOfBlocks * fieldHeight / fieldWidth; //кол-во блоков по i
 
-        p = (int) Math.sqrt(p);
+        iNumberOfBlocks = (int) Math.sqrt(iNumberOfBlocks);
 
-        int q = n / p;
+        int jNumberOfBlocks = numberOfBlocks / iNumberOfBlocks; //кол-во блоков по j
 
-        int subMinesCount = n % p; //пока считается = 0 всегда
+        int subMinesCount = numberOfBlocks % iNumberOfBlocks; // кол-во мин для которых не хватило блоков и которые будут помещенны в блоки с другими минами  пока считается = 0 всегда
 
-        int tileHeight = fieldHeight / p;
+        int blockHeight = fieldHeight / iNumberOfBlocks; //высота блока в Tile-ах
+
         //4 = for
-        int add4TileHeight = fieldHeight % p;
-        int distribution4TileHeight = GetRandomBinMatrix(p,add4TileHeight,random);  //случайное распдределение остатка от деленения межу всеми блоками
 
-        int[] tilesHeight = new int[p]; //разбиаение поля по одной стороне
+        //распределение остатка от деления между высотами кадого блока в проекции на i так чтобы в сумме они давали высоту всего поля
+        int add4BlockHeight = fieldHeight % iNumberOfBlocks;
+        int distribution4BlockHeight = GetRandomBinMatrix(iNumberOfBlocks,add4BlockHeight,random);  //случайное распдределение остатка от деленения между высотами всех блоков в проекции на i
 
-        for (int i = 0;i < p;i++){
-            tilesHeight[i] = tileHeight;
-            if ((1 << i & distribution4TileHeight) != 0){
+        int[] tilesHeight = new int[iNumberOfBlocks]; //массив с высотами блоков в проекции на i
+
+        //заполнение массива с учётом распределния остатка
+        for (int i = 0;i < iNumberOfBlocks;i++){
+            tilesHeight[i] = blockHeight;
+            if ((1 << i & distribution4BlockHeight) != 0){
                 tilesHeight[i]++;
             }
         }
 
-        int tileWidth = fieldWidth / q;
+        int blockWidth = fieldWidth / jNumberOfBlocks; //ширина блока в Tile-ах
 
-        int add4TileWidth = fieldWidth % q;
+        //распределение остатка от деления между ширинами кадого блока в проекции на j так чтобы в сумме они давали ширину всего поля
+        int add4BlockWidth = fieldWidth % jNumberOfBlocks;
+        int distribution4TileWidth = GetRandomBinMatrix(jNumberOfBlocks,add4BlockWidth,random); //случайное распдределение остатка от деленения между широтами всех блоков в проекции на j
 
-        //случайное распдределение остатка от деленения межу всеми блоками
-        int distribution4TileWidth = GetRandomBinMatrix(q,add4TileWidth,random);
+        int[] tilesWidth = new int[jNumberOfBlocks]; //массив с широтами блоков в проекции на j
 
-        int[] tilesWidth = new int[q]; //разбиаение поля по другой стороне
-
-        for (int i = 0;i < q;i++){
-            tilesWidth[i] = tileWidth;
+        //заполнение массива с учётом распределния остатка
+        for (int i = 0;i < jNumberOfBlocks;i++){
+            tilesWidth[i] = blockWidth;
             if ((1 << i & distribution4TileWidth) != 0){
                 tilesWidth[i]++;
             }
         }
 
 
-        //очередь для запоминания координат раставленных мин
-        ArrayDeque<Pair<Integer,Integer>> mines = new ArrayDeque<>();
 
-        int iLeft = 0;
+        ArrayDeque<Pair<Integer,Integer>> mines = new ArrayDeque<>(); //очередь для запоминания положения мин
+
+
+        int iUp = 0; //верхняя граница выбраного блока
 
         for (int iHeight : tilesHeight) {
-            int jUp = 0;
+            int jLeft = 0; //левая граница выбраного блока
             for (int jWidth : tilesWidth) {
 
-                Pair<Integer, Integer> upLeft = new Pair<>(iLeft, jUp); //верхняя лева точка блока
-                Pair<Integer, Integer> downRight = new Pair<>(iLeft + iHeight - 1, jUp + jWidth - 1); //правая нижняя
+                Pair<Integer, Integer> upLeft = new Pair<>(iUp, jLeft); //верхняя лева точка блока выбраного блока
+                Pair<Integer, Integer> downRight = new Pair<>(iUp + iHeight - 1, jLeft + jWidth - 1); //правая нижняя точка выбранного блока
 
                 if (!StartPointCheck(field, upLeft, downRight)) {
-                    //рандомизация индекса внутри блока
-                    int aI = random.nextInt(downRight.getKey() - upLeft.getKey() + 1) + upLeft.getKey();
-                    int bJ = random.nextInt(downRight.getValue() - upLeft.getValue() + 1) + upLeft.getValue();
+                    //рандомизация координат внутри текущего блока
+                    int aI = random.nextInt(downRight.getKey() - upLeft.getKey() + 1) + upLeft.getKey(); //координата по i
+                    int bJ = random.nextInt(downRight.getValue() - upLeft.getValue() + 1) + upLeft.getValue(); //координата по j
 
                     field[aI][bJ].IsMine = true;
                     mines.add(new Pair<>(aI, bJ));
                 }
 
-                jUp += jWidth;
+                jLeft += jWidth; //смещение левой границы при переходе на другой блок
             }
-            iLeft += iHeight;
+            iUp += iHeight; //смещение верхней границы при переходе на другой блок
         }
 
-
+        //обход всех добавленных мин
         while (!mines.isEmpty()) {
-            int i = mines.getFirst().getKey();
-            int j = mines.getFirst().getValue();
+            int i = mines.getFirst().getKey(); //координата мины по i
+            int j = mines.getFirst().getValue(); //координата мины по j
             mines.pop();
 
-            //генерация кол-ва смещения мины
-            int count = random.nextInt(6) + 5;
 
-            for (int tri = 0; tri < count;tri++) {
-                //разбиение всех возможных путей наприоритеты
-                ArrayList<Pair<Integer,Integer>>[] waysWithPrior = CheckAllWays(field,i,j);
+            int changePositionCount = random.nextInt(6) + 5; // кол-во смещений одной мины
 
-                int upperBound = 0;
+            //процесс повторения смещения для одной мины одна итерация цикла одно смещение
+            for (int changePos = 0; changePos < changePositionCount;changePos++) {
 
-                //для пропуска пуствх приоритетов
-                int[] check = new int[] {0,0,0,0,0};
+                ArrayList<Pair<Integer,Integer>>[] waysWithPrior = CheckAllWays(field,i,j); //присваивание всем доступным путям "редкости" (шанса выпадения) в зависмиомти от различных параметров
+
+                int upperBound = 0; //верхняя граница для рандомизации с вероятностью
+
+                int[] priorityCheck = new int[] {0,0,0,0,0}; //используется для пропуска не используемых "редкостей"
 
                 for (int y = 0; y < TilePrior.probability.length; y++)
                     if (waysWithPrior[y].size() != 0) {
                         upperBound += TilePrior.probability[y];
-                        check[y] = 1;
+                        priorityCheck[y] = 1;
                     }
-                //если вариантов куда сдвинуть мину нет
+                //если нет путей куда сдвинуть мину инициализация перехода к следующей
                 if (upperBound == 0)
                     break;
 
-                //радомизация с вероятностью
+                //процесс рандомизации с верояностью
+
                 int randomVal = random.nextInt(upperBound);
 
-                int y = 0;
-                int sum = 0;
+                int selectedRarity = 0; //выбранная "редкость"
+                int currentBound = 0; //текущая граница
 
+                //определение получившейся вероятности
                 do {
-                    if (check[y] == 1)
-                        sum += TilePrior.probability[y];
+                    if (priorityCheck[selectedRarity] == 1)
+                        currentBound += TilePrior.probability[selectedRarity];
 
-                    if (randomVal < sum)
+                    if (randomVal < currentBound)
                         break;
 
-                    y++;
+                    selectedRarity++;
                 }
-                while(y < TilePrior.probability.length);
+                while(selectedRarity < TilePrior.probability.length);
 
-                //случайный выбор мин среди выбраного приоритета
-                int selectedIndex = random.nextInt(waysWithPrior[y].size());
+                //выбор мин из получившиеся "редкости"
+                int selectedIndex = random.nextInt(waysWithPrior[selectedRarity].size());
+
+                //процесс смещения мины в выбранную клетку
 
                 field[i][j].IsMine = false;
 
-                i = waysWithPrior[y].get(selectedIndex).getKey();
-                j = waysWithPrior[y].get(selectedIndex).getValue();
+                i = waysWithPrior[selectedRarity].get(selectedIndex).getKey();
+                j = waysWithPrior[selectedRarity].get(selectedIndex).getValue();
 
                 field[i][j].IsMine = true;
             }
+            //утверждение положения мины
             IncCountMinesAroundOfTile(field, i, j);
             field[i][j].setId("mine");
         }

@@ -101,7 +101,6 @@ public class Tile extends Button {
                 }
             }
             else {
-                //setDisable(true);
                 setClicked(true);
                 if (getMinesAround() == 0) {
                     if (_callHandler != null) {
@@ -163,7 +162,9 @@ public class Tile extends Button {
     }
 
     public void setClicked(boolean clicked) {
-        this._clicked.set(clicked);
+        if (!isFlag()) {
+            this._clicked.set(clicked);
+        }
     }
 
     public boolean isFlag() {
@@ -171,7 +172,10 @@ public class Tile extends Button {
     }
 
     public void setFlag(boolean flag) {
-        _flag.set(flag);
+        if (!isClicked()) {
+            this._flag.set(flag);
+        }
+
     }
 
     public interface CallNearby {
