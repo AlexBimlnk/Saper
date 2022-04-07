@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.paint.Color;
 
 
 import java.net.URL;
@@ -48,7 +49,6 @@ public class GameController implements Initializable {
         return _gameDif;
     }
 
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         _isGameStarted = false;
@@ -60,6 +60,7 @@ public class GameController implements Initializable {
             _gameDif = SaperApplication.getDif();
         }
 
+        _lTimer.setText("Time 00:00");
         StartGame();
     }
 
@@ -87,15 +88,19 @@ public class GameController implements Initializable {
     }
     @FXML
     private void restartButtonClick(ActionEvent event) {
-        ClearField();
-        _isGameStarted = false;
+
+        if (_isGameStarted) {
+            ClearGameSession();
+            OverGame();
+            _isGameStarted = false;
+        }
         if (SaperApplication.getDif() != null) {
             StartGame();
         }
     }
 
 
-    private void ResetTimer(){
+    private void ResetTimer() {
         _timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -105,8 +110,30 @@ public class GameController implements Initializable {
 
                             int minutes = _gameTimeInSeconds / 60;
                             int seconds = _gameTimeInSeconds % 60;
+                            String extraZero4Seconds = "";
+                            String extraZero4Minutes = "";
 
-                            _lTimer.setText("Time " + minutes + ":" + seconds);
+
+                            boolean extraZeroCheck4Seconds = Integer.toString(seconds).length() == 1;
+                            boolean extraZeroCheck4Minutes = Integer.toString(minutes).length() == 1;
+
+                            if (extraZeroCheck4Minutes) {
+                                extraZero4Minutes = "0";
+                            }
+
+                            if (extraZeroCheck4Seconds) {
+                                extraZero4Seconds = "0";
+                            }
+
+                            if (minutes == 0) {
+                                _lTimer.setTextFill(Color.RED);
+                            }
+
+                            _lTimer.setText("Time " + extraZero4Minutes + minutes + ":" + extraZero4Seconds + seconds);
+
+                            if (minutes == 60) {
+                                OverGame();
+                            }
                         }
                 );
             }
@@ -172,7 +199,7 @@ public class GameController implements Initializable {
     }
 
     public void StartGame() {
-        ClearField();
+        ClearGameSession();
         _config = _gameDif.GetConfigField();
 
         _bRestart.setText(": )");
@@ -200,13 +227,14 @@ public class GameController implements Initializable {
 
         ResetTimer();
     }
-    public void ClearField() {
+    public void ClearGameSession() {
+        _lTimer.setText("Time 00:00");
+        _lTimer.setTextFill(Color.BLACK);
         _flowPane.getChildren().clear();
     }
     public void OverGame() {
         _bRestart.setText(":(");
-
-        _lTimer.setText("Time 0:0");
+        _lTimer.setTextFill(Color.DARKBLUE);
         _gameTimeInSeconds = 0;
         _timer.cancel();
 

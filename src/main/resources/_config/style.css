@@ -1,23 +1,32 @@
-#submenu{
+#submenu {
     -fx-background-color: white;
 }
 
-#lTimer{
+#lTimer {
     -fx-font-size: 4.5ex;
 }
-#lMineCount{
+#lMineCount {
     -fx-font-size: 4.5ex;
 }
 
-#bRestart{
+#bRestart {
     -fx-background-color: white;
     -fx-border-color: black;
     -fx-font-size: 1.4em;
 }
 
+
+
 .tile {
     -fx-background-color: white;
+    -fx-background-color: rgba(255, 255, 255, 0);
+    -fx-border-width: 1px;
     -fx-border-color: lightgrey;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-background-size: 100%,100%;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
 }
 
 .tile:disabled, .tile:disabled > *{
@@ -26,16 +35,15 @@
 
 .tile:focused {
     -fx-background-insets: 0, 1, 2;
-    -fx-background-radius: 5, 4, 3;
+    /*-fx-background-radius: 5, 4, 3;*/
 }
 
 .tile:hover {
-    -fx-border-width: 1px;
     -fx-border-color: black;
 }
 
 .tile:pressed {
-    -fx-background-color: #f5f5f5;
+    -fx-background-color: #e5e5e5;
 }
 .tile.hard{
     -fx-border-color: white;
@@ -47,13 +55,13 @@
 
 /*noinspection CssInvalidPseudoSelector*/
 .tile:clicked {
-    -fx-background-color: lightgrey;
+    -fx-border-color: #dedede;
+    -fx-background-color: #dedede;
 }
 
 /*noinspection CssInvalidPseudoSelector*/
 .tile:clicked:hover {
-    -fx-border-color: none;
-    -fx-background-color: #e8e8e8;
+    -fx-background-color: #efefef;
 }
 
 .tile#default{
@@ -66,18 +74,15 @@
 
 /*noinspection CssInvalidPseudoSelector*/
 .tile:flag {
-    -fx-background-size: 100%,100%;
     -fx-background-image: url('../Images/flag_style1.png');
 }
 
 .debug#mine {
-    -fx-background-size: 100%,100%;
     -fx-background-image: url('../Images/mine_style2.png');
     -fx-border-color: red;
 }
 
 #mine:disabled {
-    -fx-background-size: 100%,100%;
     -fx-background-image: url('../Images/mine_style2.png');
     /*-fx-border-color: red;*/
 }

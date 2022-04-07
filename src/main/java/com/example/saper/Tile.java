@@ -124,11 +124,10 @@ public class Tile extends Button {
 
         setMinSize(_size, _size);
         setMaxSize(_size, _size);
-
         addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            if (isClicked())
+            if (isClicked()) {
                 return;
-
+            }
             if (event.getButton() == MouseButton.PRIMARY){
                 setClicked(true);
             }
