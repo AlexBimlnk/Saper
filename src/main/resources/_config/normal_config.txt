@@ -1,0 +1,4 @@
+CountTile=400
+SizeTile=25
+CountMines=64
+StyleName=normal

@@ -47,6 +47,7 @@ public class SaperApplication extends Application {
         stage.setTitle("Сапёр!");
         stage.setScene(scene);
 
+
         scene.getStylesheets().add(getClass().getResource("/_config/style.css").toExternalForm());
 
         stage.setOnCloseRequest(e -> GameController.CloseApp());

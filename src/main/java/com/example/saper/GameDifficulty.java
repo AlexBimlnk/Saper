@@ -3,20 +3,17 @@ package com.example.saper;
 public enum GameDifficulty {
     Easy{
         public Config GetConfigField(){
-            Config config = new Config(100, 50, 16, "Easy");
-            return config;
+            return ConfigLoader.LoadConfig(GameDifficulty.Easy);
         }
     },
     Normal{
         public Config GetConfigField() {
-            Config config = new Config(400, 25, 64, "normal");
-            return config;
+            return ConfigLoader.LoadConfig(GameDifficulty.Normal);
         }
     },
     Hard{
         public Config GetConfigField() {
-            Config config = new Config(400, 25, 64, "hard");
-            return config;
+            return ConfigLoader.LoadConfig(GameDifficulty.Hard);
         }
     };
 

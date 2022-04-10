@@ -1,0 +1,4 @@
+CountTile=100
+SizeTile=50
+CountMines=16
+StyleName=Easy
