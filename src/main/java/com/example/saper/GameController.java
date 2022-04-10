@@ -203,7 +203,7 @@ public class GameController implements Initializable {
         _config = _gameDif.GetConfigField();
 
         _bRestart.setText(": )");
-        _lMineCount.setText(Integer.toString(_config.getCountMines()));
+        _lMineCount.setText(Integer.toString(_config.CountMines));
 
         Tile.setSize(_config.SizeTile);
         int rankOfTileMatrix = 500 / _config.SizeTile;
@@ -223,7 +223,7 @@ public class GameController implements Initializable {
     }
 
     public void StartGen(int i, int y) {
-        FieldGenerator.MineGeneration(_field, _config.getCountMines());
+        FieldGenerator.MineGeneration(_field, _config.CountMines);
 
         ResetTimer();
     }
