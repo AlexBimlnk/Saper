@@ -18,6 +18,11 @@ import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 
+
+/**
+Игровое поле сапёра, обрабатывающее события UI.
+@version 1.0
+*/
 public class GameController implements Initializable {
 
     @FXML
@@ -41,14 +46,28 @@ public class GameController implements Initializable {
     private Tile[][] _field;
 
     private static boolean _isGameStarted;
+    /**
+     * Возвращает поле {@link GameController#_isGameStarted}.
+     * @return Возвращает true, если игра начата, иначе - false.
+     */
+    public static boolean GetGameCondition() {
+        return _isGameStarted;
+    }
 
     private Config _config;
 
     private static GameDifficulty _gameDif = GameDifficulty.Easy;
-    public static GameDifficulty GetGameDifficulty(){
+    /**
+     * Возврщает поле {@link GameController#_gameDif}.
+     * @return Перечисление {@link GameDifficulty} определяющее сложность игры.
+     */
+    public static GameDifficulty GetGameDifficulty() {
         return _gameDif;
     }
 
+    /**
+     * Метод, вызывающийся при инициализации игровой сцены.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         _isGameStarted = false;
@@ -100,6 +119,9 @@ public class GameController implements Initializable {
     }
 
 
+    /**
+     * Метод перезапускает игровой таймер.
+     */
     private void ResetTimer() {
         _timerTask = new TimerTask() {
             @Override
@@ -110,20 +132,12 @@ public class GameController implements Initializable {
 
                             int minutes = _gameTimeInSeconds / 60;
                             int seconds = _gameTimeInSeconds % 60;
-                            String extraZero4Seconds = "";
-                            String extraZero4Minutes = "";
 
+                            boolean extraZeroCheck4Seconds = seconds / 10 == 0;
+                            boolean extraZeroCheck4Minutes = minutes / 10 == 0;
 
-                            boolean extraZeroCheck4Seconds = Integer.toString(seconds).length() == 1;
-                            boolean extraZeroCheck4Minutes = Integer.toString(minutes).length() == 1;
-
-                            if (extraZeroCheck4Minutes) {
-                                extraZero4Minutes = "0";
-                            }
-
-                            if (extraZeroCheck4Seconds) {
-                                extraZero4Seconds = "0";
-                            }
+                            String extraZero4Seconds = extraZeroCheck4Seconds ? "0" : "";
+                            String extraZero4Minutes = extraZeroCheck4Minutes ? "0" : "";
 
                             if (minutes == 0) {
                                 _lTimer.setTextFill(Color.RED);
@@ -142,62 +156,84 @@ public class GameController implements Initializable {
         _timer = new Timer();
         _timer.schedule(_timerTask, 0, 1000);
     }
-    private void OpenAll(boolean isDisabling,boolean isShowAll){
-        for (int i = 0;i < _field.length;i++)
-            for (int y = 0;y < _field[i].length;y++) {
+
+    /**
+     * Открывает все игровые клетки.
+     * @param isDisabling
+     * @param isShowAll
+     */
+    private void OpenAll(boolean isDisabling, boolean isShowAll) {
+        for (int i = 0; i < _field.length; i++) {
+            for (int j = 0; j < _field[i].length; j++) {
                 if (isShowAll) {
-                    _field[i][y].TextView.Invoke();
+                    _field[i][j].TextView.Invoke();
                 }
                 if (isDisabling) {
-                    _field[i][y].setDisable(true);
+                    _field[i][j].setDisable(true);
                 }
                 else {
-                    _field[i][y].getStyleClass().add("debug");
+                    _field[i][j].getStyleClass().add("debug");
                 }
 
             }
+        }
     }
-    private void OpenTile(int i, int j){
-        if(0 <= i && i < _field.length &&
-           0 <= j && j < _field.length) {
 
-            Tile tile = _field[i][j];
+    /**
+     * Метод открывает игровую клетку, если она закрыта и не зафлагирована.
+     * @param iPos Позиция клетки в координатах.
+     * @param jPos Позиция клетки в координатах.
+     */
+    private void OpenTile(int iPos, int jPos) {
+        if(0 <= iPos && iPos < _field.length &&
+           0 <= jPos && jPos < _field.length) {
+
+            Tile tile = _field[iPos][jPos];
             if(!tile.isClicked() && !tile.isFlag()) {
                 tile.MouseHandler(MouseButton.PRIMARY);
             }
         }
     }
-    private void CallNearby(int i, int y) {
+
+    /**
+     * Метод вызывает открытие соседних клеток относительно заданной.
+     * @param iPos Позиция заданной клетки в координатах.
+     * @param jPos Позиция заданной клетки в координатах.
+     */
+    private void CallNearby(int iPos, int jPos) {
         if (!_isGameStarted) {
             _isGameStarted = true;
-            _field[i][y].IsStartPoint = true;
-            StartGen(i,y);
+            _field[iPos][jPos].IsStartPoint = true;
+            StartGen();
 
-            _field[i][y].MouseHandler(MouseButton.PRIMARY);
+            _field[iPos][jPos].MouseHandler(MouseButton.PRIMARY);
             return;
         }
-        OpenTile(i + 1,y + 1);
-        OpenTile(i - 1,y - 1);
-        OpenTile(i + 1,y - 1);
-        OpenTile(i - 1,y + 1);
 
-        OpenTile(i,y + 1);
-        OpenTile(i,y - 1);
-        OpenTile(i + 1, y);
-        OpenTile(i - 1,y);
+        //Перебор всех индексов, находящихся вокруг
+        for(int i = -1; i <= 1; i++) {
+            for(int j = -1; j <= 1; j++) {
+                if(i == 0 && j == 0)
+                    continue;
+                OpenTile(iPos + i, jPos + j);
+            }
+        }
     }
 
 
-    public static boolean GetGameCondition() {
-        return _isGameStarted;
-    }
-    public static void CloseApp(){
+    /**
+     * Метод, вызывающийся при закрытии приложения.
+     */
+    public static void CloseApp() {
         if(_timer != null) {
             _timer.cancel();
         }
-
     }
 
+    /**
+     * Метод, вызывающийся при старте игры. Генерирует
+     * игровое поле и настройки к нему.
+     */
     public void StartGame() {
         ClearGameSession();
         _config = _gameDif.GetConfigField();
@@ -214,24 +250,34 @@ public class GameController implements Initializable {
         Tile.ExplosionEvent explosionEvent = this::OverGame;
         Tile.setExplosionEvent(explosionEvent);
 
-
-        for (int i = 0; i < _field.length; i++)
+        for (int i = 0; i < _field.length; i++) {
             for (int j = 0; j < _field.length; j++) {
                 _flowPane.getChildren().add(_field[i][j]);
-
             }
+        }
     }
 
-    public void StartGen(int i, int y) {
+    /**
+     * Метод, вызывающий генерацию мин.
+     */
+    public void StartGen() {
         FieldGenerator.MineGeneration(_field, _config.CountMines);
 
         ResetTimer();
     }
+
+    /**
+     * Метод очищает игровую сессию. Обнуляет таймер, очищает игровое поле.
+     */
     public void ClearGameSession() {
         _lTimer.setText("Time 00:00");
         _lTimer.setTextFill(Color.BLACK);
         _flowPane.getChildren().clear();
     }
+
+    /**
+     * Метод, вызывающийся при проигрыше.
+     */
     public void OverGame() {
         _bRestart.setText(":(");
         _lTimer.setTextFill(Color.DARKBLUE);

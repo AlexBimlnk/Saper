@@ -1,10 +1,12 @@
 package com.example.saper;
 
 
-import java.security.InvalidParameterException;
-import java.util.*;
-
 import javafx.util.Pair;
+
+import java.security.InvalidParameterException;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class FieldGenerator{
 
@@ -28,8 +30,8 @@ public class FieldGenerator{
         ArrayList<Tile> tiles = new ArrayList<>();
 
         //Перебор всех индексов, находящихся вокруг
-        for(int i = -1; i < 2; i++){
-            for(int j = -1; j < 2; j++){
+        for(int i = -1; i <= 1; i++){
+            for(int j = -1; j <= 1; j++){
                 if(i == 0 && j == 0)
                     continue;
                 if(IsCorrectCoordinate(field.length, iPos + i, jPos + j)){
