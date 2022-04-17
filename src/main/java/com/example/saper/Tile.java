@@ -21,12 +21,14 @@ public class Tile extends Button {
     private static CallNearby _callHandler; //используется при нажатии по пустой клетке
     private static ExplosionEvent _explosionEventHandler; //вызывается при взрыве мины
 
-    public final ShownTextHandler TextView;
-
     private BooleanProperty _clicked;
     private BooleanProperty _flag;
+    private boolean _isTwoButtonPressed = false;
+    private boolean _isTwoButtonPressedHandler = true;
 
     private final static Random rnd = (SaperApplication.getSeed() != -1 ? new Random(SaperApplication.getSeed()) : new Random());
+
+    public final ShownTextHandler TextView;
 
     public Tile(int rowIndex, int columnIndex){
         _clicked = new SimpleBooleanProperty(false);
@@ -48,6 +50,54 @@ public class Tile extends Button {
         }
     }
 
+
+    public boolean IsMine = false; //prop
+    public boolean IsStartPoint = false; //prop
+
+
+    private void LoadDefaultSettings() {
+
+        setMinSize(_size, _size);
+        setMaxSize(_size, _size);
+        addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
+            _isTwoButtonPressed = event.isPrimaryButtonDown() && event.isSecondaryButtonDown();
+            _isTwoButtonPressedHandler = _isTwoButtonPressed;
+        });
+        addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            //Todo нажатие сразу на две кнопки
+            if(_isTwoButtonPressed){
+                if(isClicked()){
+                    //К сожалению при двойном щелчке он войдет в эту секцию два раза
+                    //Так как нажаты и левая и правая, у них обоих сработает кликед.
+                    //Таким образом этот блок кода вызовется два раза
+                    //Решение - вставить ещё одну проверку сюда через буль. Костыль но
+                    //Если сетить _isTwoButtonPressed = false после выхода первого срабатывания
+                    //Хоть второй раз он и не зайдет, но отработает нажатие на коде ниже
+                    //Т.е вызовется блок else.
+                    //В связи с чем если даблкликать по закрытым клеткам они будут или открываться
+                    //Или "флаггироваться"
+                    //Сейчас же этот участок как и положено срабатывает только на уже открытых клетках
+                    //Но два раза. Как я уже говорил, после перового срабатывания нужно сетить доп свойство
+                    //Костыль сделал ниже:
+                    if(_isTwoButtonPressedHandler){
+                        int i = 123; //logic
+
+                        _isTwoButtonPressedHandler = false;
+                    }
+                }
+            }
+            else{
+                if (isClicked()) {
+                    return;
+                }
+                else if (event.getButton() == MouseButton.PRIMARY){
+                    setClicked(true);
+                }
+
+                MouseHandler(event.getButton());
+            }
+        });
+    }
     private void ShowTextSimple(){
         if (_minesAround == 0)
             return;
@@ -91,6 +141,7 @@ public class Tile extends Button {
             ShowTextSimple();
     }
 
+
     public void MouseHandler(MouseButton button) {
         //Если нажали на ЛКМ
         if(button == MouseButton.PRIMARY && !isFlag()) {
@@ -117,24 +168,6 @@ public class Tile extends Button {
         }
     }
 
-    public boolean IsMine = false; //prop
-    public boolean IsStartPoint = false; //prop
-
-    private void LoadDefaultSettings() {
-
-        setMinSize(_size, _size);
-        setMaxSize(_size, _size);
-        addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            if (isClicked()) {
-                return;
-            }
-            if (event.getButton() == MouseButton.PRIMARY){
-                setClicked(true);
-            }
-
-            MouseHandler(event.getButton());
-        });
-    }
 
     public void setMinesAround(int value) {
         if(value < 0)
