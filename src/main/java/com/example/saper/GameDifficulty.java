@@ -1,5 +1,8 @@
 package com.example.saper;
 
+/**
+ * Перечисление, представляющее игровую сложноость.
+ */
 public enum GameDifficulty {
     Easy{
         public Config GetConfigField(){
@@ -17,5 +20,9 @@ public enum GameDifficulty {
         }
     };
 
+    /**
+     * Возвращает конфигурацию соотвественно игровой сложности.
+     * @return Объект типа {@link Config}.
+     */
     public abstract Config GetConfigField();
 }

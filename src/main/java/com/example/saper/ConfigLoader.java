@@ -3,11 +3,21 @@ package com.example.saper;
 import java.io.*;
 import java.util.Properties;
 
+/**
+ * Класс, загружающий конфигурационные данные из внешнего файла.
+ */
 public class ConfigLoader {
 
-    public static Config LoadConfig(GameDifficulty difficulty){
+    /**
+     * Метод загружает данные внешнего файла в
+     * объект {@link Config} и возвращает его.
+     * @param difficulty Игровая сложность.
+     * @return Объект типа {@link Config}.
+     */
+    public static Config LoadConfig(GameDifficulty difficulty) {
+
         InputStream inputStream = null;
-        switch (difficulty){
+        switch (difficulty) {
             case Easy -> inputStream = ConfigLoader.class.getResourceAsStream("/_config/easy_config.txt");
             case Normal -> inputStream = ConfigLoader.class.getResourceAsStream("/_config/normal_config.txt");
             case Hard -> inputStream = ConfigLoader.class.getResourceAsStream("/_config/hard_config.txt");
@@ -15,7 +25,7 @@ public class ConfigLoader {
 
         Config config = null;
 
-        try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))){
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             Properties properties = new Properties();
             properties.load(reader);
 
