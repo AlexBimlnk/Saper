@@ -139,7 +139,7 @@ public class GameController implements Initializable {
                             String extraZero4Seconds = extraZeroCheck4Seconds ? "0" : "";
                             String extraZero4Minutes = extraZeroCheck4Minutes ? "0" : "";
 
-                            if (minutes == 0) {
+                            if (minutes == 55) {
                                 _lTimer.setTextFill(Color.RED);
                             }
 
@@ -273,6 +273,10 @@ public class GameController implements Initializable {
         _lTimer.setText("Time 00:00");
         _lTimer.setTextFill(Color.BLACK);
         _flowPane.getChildren().clear();
+        if (_timer != null) {
+            _gameTimeInSeconds = 0;
+            _timer.cancel();
+        }
     }
 
     /**
