@@ -10,99 +10,26 @@ import java.util.Random;
 
 public class FieldGenerator{
 
-    //Проверяет корректны ли заданные коориднаты, т.е. индексы не выходят за границы поля.
-    private static boolean IsCorrectCoordinate(int iLen, int jLen, int iPos, int jPos) {
-        return 0 <= iPos && iPos < iLen &&
-                0 <= jPos && jPos < jLen;
-    }
-
-    private static boolean IsCorrectCoordinate(int fieldLength, int iPos, int jPos){
-        return IsCorrectCoordinate(fieldLength, fieldLength, iPos, jPos);
-    }
+    private static Field _field;
 
     //Проверяет находится ли точка рядом с границей поля
-    private static boolean IsNearWithBorder(Tile[][] field, int iPos, int jpos){
-        return (iPos < 1 || jpos < 1 || iPos > field.length - 2 || jpos > field[0].length - 2);
+    private static boolean IsNearWithBorder(int iPos, int jpos){
+        return iPos < 1 || jpos < 1 || iPos > _field.GetField().length - 2 || jpos > _field.GetField().length - 2;
     }
 
     //Возвращает список всех клеток, находящихся вокруг заданной индексами клеткой.
-    private static ArrayList<Tile> GetTilesAround(Tile[][] field, int iPos, int jPos){
+    private static ArrayList<Tile> GetTilesAround(int iPos, int jPos){
         ArrayList<Tile> tiles = new ArrayList<>();
 
-        //Перебор всех индексов, находящихся вокруг
-        for(int i = -1; i <= 1; i++){
-            for(int j = -1; j <= 1; j++){
-                if(i == 0 && j == 0)
-                    continue;
-                if(IsCorrectCoordinate(field.length, iPos + i, jPos + j)){
-                    tiles.add(field[iPos + i][jPos + j]);
-                }
-            }
-        }
+        _field.ApplyToAround(iPos, jPos, (coordinate) -> {
+            tiles.add(_field.GetField()[coordinate.getKey()][coordinate.getValue()]);
+        });
 
         return  tiles;
     }
 
-//    не удолять
-//    private static ArrayList<Tile> GetSetBorderTiles(Tile[][]field, Pair<Integer,Integer> upLeft, Pair<Integer,Integer> downRight)
-//    {
-//        if (field.length == 0)
-//            throw new InvalidParameterException();
-//
-//        if (upLeft.getKey() > downRight.getKey() ||
-//                upLeft.getValue() > downRight.getValue())
-//            throw new InvalidParameterException();
-//
-//        ArrayList<Tile> ret = new ArrayList<>();
-//
-//        /*
-//        * >@######
-//        *  .......
-//        *  .......
-//        *  ######@<
-//        */
-//        int index = 0;
-//        for (int i = 0;i <= downRight.getValue() - upLeft.getValue();i++)
-//        {
-//            if (IsCorrectCoordinate(field.length, field[0].length, upLeft.getKey(), upLeft.getValue() + i))
-//            {
-//                ret.add(index,field[upLeft.getKey()][upLeft.getValue() + i]);
-//                field[upLeft.getKey()][upLeft.getValue() + i].SetMinesAround(index + 1);
-//                index++;
-//            }
-//            if (IsCorrectCoordinate(field.length, field[0].length, downRight.getKey(), downRight.getValue() - i) &&
-//                    (upLeft.getKey() != downRight.getKey() && upLeft.getValue() + i != downRight.getValue() - i)){
-//                ret.add(field[downRight.getKey()][downRight.getValue()-i]);
-//            }
-//
-//        }
-//
-//        /*
-//         *  @......
-//         * >#.....#
-//         *  #.....#<
-//         *  ......@
-//         */
-//
-//        for (int i = 1;i < downRight.getKey() - upLeft.getKey();i++)
-//        {
-//
-//            if (IsCorrectCoordinate(field.length, field[0].length, downRight.getKey() - i, downRight.getValue())){
-//                ret.add(index,field[downRight.getKey() - i][downRight.getValue()]);
-//                field[downRight.getKey() - i][downRight.getValue()].SetMinesAround(index+downRight.getKey() - upLeft.getKey()-i);
-//                //index++;
-//            }
-//
-//
-//            if (IsCorrectCoordinate(field.length, field[0].length, upLeft.getKey() + i, upLeft.getValue()) &&
-//                    (upLeft.getKey() + i != downRight.getKey() - i && upLeft.getValue() != downRight.getValue()))
-//            {
-//                ret.add(index,field[upLeft.getKey() + i][upLeft.getValue()]);
-//            }
-//        }
-//        return ret;
-//    }
 
+    //САМ ПЕРЕПИШИ ЭТУ ЕБАНИНУ
     private static ArrayList<Tile> GetTilesAround(Tile[][] field, int iPos, int jPos, int depth){
         if (depth <= 0)
             throw new InvalidParameterException("depth has dispositive value");
@@ -114,10 +41,10 @@ public class FieldGenerator{
             int p1 = -1*depth;
             int p2 = i;
 
-            if (IsCorrectCoordinate(field.length,field[0].length, p1 + iPos,p2 + jPos)){
+            if (_field.IsCorrectCoordinate(p1 + iPos,p2 + jPos)){
                 tiles.add(field[p1 + iPos][p2 + jPos]);
             }
-            if (IsCorrectCoordinate(field.length,field[0].length, p2 + iPos,p1 + jPos) && p1 != p2){
+            if (_field.IsCorrectCoordinate(p2 + iPos,p1 + jPos) && p1 != p2){
                 tiles.add(field[p2 + iPos][p1 + jPos]);
             }
         }
@@ -127,10 +54,10 @@ public class FieldGenerator{
             int p1 = depth;
             int p2 = i;
 
-            if (IsCorrectCoordinate(field.length,field[0].length, p1 + iPos,p2 + jPos)){
+            if (_field.IsCorrectCoordinate(p1 + iPos,p2 + jPos)){
                 tiles.add(field[p1 + iPos][p2 + jPos]);
             }
-            if (IsCorrectCoordinate(field.length,field[0].length, p2 + iPos,p1 + jPos) && p1 != p2){
+            if (_field.IsCorrectCoordinate(p2 + iPos,p1 + jPos) && p1 != p2){
                 tiles.add(field[p2 + iPos][p1 + jPos]);
             }
         }
@@ -138,41 +65,44 @@ public class FieldGenerator{
         return tiles;
     }
 
+    //Обсуждали что его нужно убрать и привести все к интерфейсу работы с координатами
     //Возвращает список координат всех клеток, находящихся вокруг заданной индексами клеткой.
-    private static ArrayList<Pair<Integer, Integer>> GetCoordinateTilesAround(Tile[][] field, int iPos, int jPos){
-        ArrayList<Pair<Integer, Integer>> tiles = new ArrayList<>();
+    private static ArrayList<Pair<Integer, Integer>> GetCoordinateTilesAround(int iPos, int jPos){
+        ArrayList<Pair<Integer, Integer>> coordinateTiles = new ArrayList<>();
 
-        //Перебор всех индексов, находящихся вокруг
-        for(int i = -1; i < 2; i++){
-            for(int j = -1; j < 2; j++){
-                if(i == 0 && j == 0)
-                    continue;
-                if(IsCorrectCoordinate(field.length, iPos + i, jPos + j)){
-                    tiles.add(new Pair<>(iPos + i, jPos + j));
-                }
-            }
-        }
+        _field.ApplyToAround(iPos, jPos, coordinateTiles::add);
 
-        return  tiles;
+        return  coordinateTiles;
     }
 
     //Инкрементирует свойство MinesAround у всех клеток вокруг заданной с помощью координат клетки
-    private static void IncCountMinesAroundOfTile(Tile[][] field, int iPos, int jPos){
-        for(Tile tile : GetTilesAround(field, iPos, jPos)){
+    private static void IncCountMinesAroundOfTile(int iPos, int jPos) {
+        _field.ApplyToAround(iPos, jPos, (coordinatePair) -> {
+            //Если можно написать в джаве индекстор то надо написать
+            //Если нет, то можно сделать метод возвращающий клетку по координате
+            Tile tile = _field.GetField()[coordinatePair.getKey()][coordinatePair.getValue()];
             tile.setMinesAround(tile.getMinesAround() + 1);
-        }
+        });
     }
 
-    private static int CountMinesAround(Tile [][] field, int i, int j){
-        int count = 0;
-        for(Tile tile : GetTilesAround(field, i, j)){
-            if (tile.IsMine){
-                count++;
+    //Здесь накостылено потому что простой инт не захватывается "делегатом".
+    private static int CountMinesAround(int iPos, int jPos) {
+        class A{
+            public int Value;
+        }
+        A a = new A();
+
+        _field.ApplyToAround(iPos, jPos, (coordinatePair) -> {
+            Tile tile = _field.GetField()[coordinatePair.getKey()][coordinatePair.getValue()];
+            if (tile.IsMine) {
+                a.Value++;
             }
-        }
-        return count;
+        });
+
+        return a.Value;
     }
 
+    //Переделать, может старт поинт вообще в филд заинкапсулировать!!
     private static int CheckStartPointAround(Tile[][] field, int iPos, int jPos){
         int depth;
 
@@ -223,7 +153,7 @@ public class FieldGenerator{
     }
 
     private static TilePrior GetTilePrior(Tile[][] field, int iPos, int jPos){
-        int sum = CountMinesAround(field, iPos, jPos) + (IsNearWithBorder(field, iPos, jPos) ? 2 : 0) + CheckStartPointAround(field, iPos, jPos);
+        int sum = CountMinesAround(iPos, jPos) + (IsNearWithBorder(iPos, jPos) ? 2 : 0) + CheckStartPointAround(field, iPos, jPos);
 
         if (sum <= TilePrior.counts[0]) {
             return TilePrior.UltraHigh;
@@ -249,7 +179,7 @@ public class FieldGenerator{
             arr[y] = new ArrayList<>();
         }
 
-        for (var way : GetCoordinateTilesAround(field, iPos, jPos))
+        for (var way : GetCoordinateTilesAround(iPos, jPos))
         {
             int tI = way.getKey();
             int tJ = way.getValue();
@@ -406,28 +336,22 @@ public class FieldGenerator{
                 field[i][j].IsMine = true;
             }
             //утверждение положения мины
-            IncCountMinesAroundOfTile(field, i, j);
+            IncCountMinesAroundOfTile(i, j);
             field[i][j].setId("mine");
         }
 
     }
 
-    public static Tile[][] FieldGeneration(int rank, String style) {
-        Tile[][] field = new Tile[rank][rank];
+    public static Tile[][] FieldGeneration(int size, String style) {
 
-        for (int i = 0; i < rank; i++)
-            for (int y = 0; y < rank; y++)
-            {
-                field[i][y] = new Tile(i,y);
-
-                field[i][y].getStyleClass().add("tile");
-                field[i][y].getStyleClass().add(style);
-                field[i][y].setId("default");
-
-                field[i][y].setMinesAround(0);
-            }
-
-        return field;
+        Field field = new Field(size);
+        field.ApplyToAll(tile -> {
+            tile.getStyleClass().add("tile");
+            tile.getStyleClass().add(style);
+            tile.setId("default");
+        });
+        _field = field;
+        return field.GetField();
     }
 
     private enum TilePrior {
