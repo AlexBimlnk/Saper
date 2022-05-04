@@ -7,4 +7,6 @@ module com.example.saper {
 
     opens com.example.saper to javafx.fxml;
     exports com.example.saper;
+    exports com.example.saper.gamefield;
+    opens com.example.saper.gamefield to javafx.fxml;
 }

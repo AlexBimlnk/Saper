@@ -1,5 +1,8 @@
-package com.example.saper;
+package com.example.saper.gamefield;
 
+import com.example.saper.GameController;
+import com.example.saper.GameDifficulty;
+import com.example.saper.SaperApplication;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.PseudoClass;
@@ -52,7 +55,7 @@ public class Tile extends Button {
 
 
     public boolean IsMine = false; //prop
-    public boolean IsStartPoint = false; //prop
+    //public boolean IsStartPoint = false; //prop
 
 
     private void LoadDefaultSettings() {
@@ -65,6 +68,7 @@ public class Tile extends Button {
         });
         addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             //Todo нажатие сразу на две кнопки
+
             if(_isTwoButtonPressed){
                 if(isClicked()){
                     //К сожалению при двойном щелчке он войдет в эту секцию два раза
@@ -207,7 +211,6 @@ public class Tile extends Button {
         if (!isClicked()) {
             this._flag.set(flag);
         }
-
     }
 
     public interface CallNearby {

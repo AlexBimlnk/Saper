@@ -1,6 +1,7 @@
 package com.example.saper;
 
 
+import com.example.saper.gamefield.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -43,7 +44,7 @@ public class GameController implements Initializable {
     @FXML
     private Menu _debugMenu;
 
-    private Tile[][] _field;
+    private Field _field;
 
     private static boolean _isGameStarted;
     /**
@@ -163,19 +164,17 @@ public class GameController implements Initializable {
      * @param isShowAll
      */
     private void OpenAll(boolean isDisabling, boolean isShowAll) {
-        for (int i = 0; i < _field.length; i++) {
-            for (int j = 0; j < _field[i].length; j++) {
-                if (isShowAll) {
-                    _field[i][j].TextView.Invoke();
-                }
-                if (isDisabling) {
-                    _field[i][j].setDisable(true);
-                }
-                else {
-                    _field[i][j].getStyleClass().add("debug");
-                }
-
+        for (var coordinate : _field.getAllCoordinates()) {
+            if (isShowAll) {
+                _field.getTile(coordinate.getKey(), coordinate.getValue()).TextView.Invoke();
             }
+            if (isDisabling) {
+                _field.getTile(coordinate.getKey(), coordinate.getValue()).setDisable(true);
+            }
+            else {
+                _field.getTile(coordinate.getKey(), coordinate.getValue()).getStyleClass().add("debug");
+            }
+
         }
     }
 
@@ -185,13 +184,14 @@ public class GameController implements Initializable {
      * @param jPos Позиция клетки в координатах.
      */
     private void OpenTile(int iPos, int jPos) {
-        if(0 <= iPos && iPos < _field.length &&
-           0 <= jPos && jPos < _field.length) {
+        Tile tile = _field.getTile(iPos, jPos);
 
-            Tile tile = _field[iPos][jPos];
-            if(!tile.isClicked() && !tile.isFlag()) {
-                tile.MouseHandler(MouseButton.PRIMARY);
-            }
+        if (tile == null) {
+            return;
+        }
+
+        if(!tile.isClicked() && !tile.isFlag()) {
+            tile.MouseHandler(MouseButton.PRIMARY);
         }
     }
 
@@ -203,10 +203,12 @@ public class GameController implements Initializable {
     private void CallNearby(int iPos, int jPos) {
         if (!_isGameStarted) {
             _isGameStarted = true;
-            _field[iPos][jPos].IsStartPoint = true;
+
+            _field.setStartPoint(iPos,jPos);
+
             StartGen();
 
-            _field[iPos][jPos].MouseHandler(MouseButton.PRIMARY);
+            _field.getTile(iPos, jPos).MouseHandler(MouseButton.PRIMARY);
             return;
         }
 
@@ -219,7 +221,6 @@ public class GameController implements Initializable {
             }
         }
     }
-
 
     /**
      * Метод, вызывающийся при закрытии приложения.
@@ -250,10 +251,8 @@ public class GameController implements Initializable {
         Tile.ExplosionEvent explosionEvent = this::OverGame;
         Tile.setExplosionEvent(explosionEvent);
 
-        for (int i = 0; i < _field.length; i++) {
-            for (int j = 0; j < _field.length; j++) {
-                _flowPane.getChildren().add(_field[i][j]);
-            }
+        for (var coordinate : _field.getAllCoordinates()) {
+            _flowPane.getChildren().add(_field.getTile(coordinate.getKey(), coordinate.getValue()));
         }
     }
 

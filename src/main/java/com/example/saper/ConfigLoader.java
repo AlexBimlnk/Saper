@@ -35,7 +35,6 @@ public class ConfigLoader {
             String styleName = properties.getProperty("StyleName");
 
             config = new Config(countTile, sizeTile, countMines, styleName);
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
