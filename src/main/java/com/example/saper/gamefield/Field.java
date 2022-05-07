@@ -1,5 +1,6 @@
 package com.example.saper.gamefield;
 
+import com.example.saper.Config;
 import javafx.scene.paint.Paint;
 import javafx.util.Pair;
 
@@ -16,13 +17,27 @@ public class Field {
 
     private Pair<Integer, Integer> _startPointCoordinates = new Pair<>(-1,-1);
 
-    public Field(int iSize, int ySize) {
-        _field = new Tile[iSize][ySize];
-        for (int i = 0; i < iSize; i++) {
-            for (int y = 0; y < ySize; y++) {
+    public final int countMines;
+    public final int countSimpleTiles;
+
+    public Field(Config config) {
+        int rankOfTileMatrix = 500 / config.SizeTile;
+        _field = new Tile[rankOfTileMatrix][rankOfTileMatrix];
+
+        for (int i = 0; i < _field.length; i++) {
+            for (int y = 0; y < _field[i].length; y++) {
                 _field[i][y] = new Tile(i, y);
             }
         }
+
+        countMines = config.CountMines;
+        countSimpleTiles = config.CountTile - config.CountMines;
+
+        ApplyToAll(tile -> {
+            tile.getStyleClass().add("tile");
+            tile.getStyleClass().add(config.StyleName);
+            tile.setId("default");
+        });
     }
 
     public boolean IsCorrectCoordinate(int iPos, int jPos) {
@@ -175,6 +190,10 @@ public class Field {
         if (IsCorrectCoordinate(iPos, jPos) && (_startPointCoordinates.getValue() == -1 && _startPointCoordinates.getKey() == -1)) {
             _startPointCoordinates = new Pair<>(iPos, jPos);
         }
+    }
+
+    public Pair<Integer,Integer> getStartPoint() {
+        return _startPointCoordinates;
     }
 
     public boolean isStartPoint(Pair <Integer, Integer> point) {

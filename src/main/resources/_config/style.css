@@ -72,15 +72,16 @@
 
 }
 
-/*noinspection CssInvalidPseudoSelector*/
-.tile:flag {
-    -fx-background-image: url('../Images/flag_style1.png');
-}
-
 .debug#mine {
     -fx-background-image: url('../Images/mine_style2.png');
     -fx-border-color: red;
 }
+
+/*noinspection CssInvalidPseudoSelector*/
+.tile:flag, .debug:flag {
+    -fx-background-image: url('../Images/flag_style1.png');
+}
+
 
 #mine:disabled {
     -fx-background-image: url('../Images/mine_style2.png');

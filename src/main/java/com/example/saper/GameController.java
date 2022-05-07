@@ -3,7 +3,12 @@ package com.example.saper;
 
 import com.example.saper.gamefield.*;
 import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -13,6 +18,9 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.event.*;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -37,6 +45,8 @@ public class GameController implements Initializable {
     private int _gameTimeInSeconds = 0;
     private static Timer _timer;
     private static TimerTask _timerTask;
+    private IntegerProperty mineCount;
+    private IntegerProperty simpleTileCount;
 
     @FXML
     private Label _lMineCount;
@@ -54,6 +64,9 @@ public class GameController implements Initializable {
     public static boolean GetGameCondition() {
         return _isGameStarted;
     }
+
+    public static FlagListener listener;
+    public static ClickListener clickListener;
 
     private Config _config;
 
@@ -164,35 +177,20 @@ public class GameController implements Initializable {
      * @param isShowAll
      */
     private void OpenAll(boolean isDisabling, boolean isShowAll) {
-        for (var coordinate : _field.getAllCoordinates()) {
+
+        _field.ApplyToAll(tile -> {
             if (isShowAll) {
-                _field.getTile(coordinate.getKey(), coordinate.getValue()).TextView.Invoke();
+                if (!tile.IsMine) {
+                    tile.TextView.Invoke();
+                }
             }
             if (isDisabling) {
-                _field.getTile(coordinate.getKey(), coordinate.getValue()).setDisable(true);
+                tile.setDisable(true);
             }
             else {
-                _field.getTile(coordinate.getKey(), coordinate.getValue()).getStyleClass().add("debug");
+                tile.getStyleClass().add("debug");
             }
-
-        }
-    }
-
-    /**
-     * Метод открывает игровую клетку, если она закрыта и не зафлагирована.
-     * @param iPos Позиция клетки в координатах.
-     * @param jPos Позиция клетки в координатах.
-     */
-    private void OpenTile(int iPos, int jPos) {
-        Tile tile = _field.getTile(iPos, jPos);
-
-        if (tile == null) {
-            return;
-        }
-
-        if(!tile.isClicked() && !tile.isFlag()) {
-            tile.MouseHandler(MouseButton.PRIMARY);
-        }
+        });
     }
 
     /**
@@ -212,14 +210,13 @@ public class GameController implements Initializable {
             return;
         }
 
-        //Перебор всех индексов, находящихся вокруг
-        for(int i = -1; i <= 1; i++) {
-            for(int j = -1; j <= 1; j++) {
-                if(i == 0 && j == 0)
-                    continue;
-                OpenTile(iPos + i, jPos + j);
+        _field.ApplyToAround(iPos,jPos, (coordiniates) -> {
+            Tile tile = _field.getTile(coordiniates.getKey(),coordiniates.getValue());
+
+            if (!tile.isClicked() && !tile.isFlag()) {
+                tile.MouseHandler(MouseButton.PRIMARY);
             }
-        }
+        }, 1);
     }
 
     /**
@@ -243,8 +240,19 @@ public class GameController implements Initializable {
         _lMineCount.setText(Integer.toString(_config.CountMines));
 
         Tile.setSize(_config.SizeTile);
-        int rankOfTileMatrix = 500 / _config.SizeTile;
-        _field = FieldGenerator.FieldGeneration(rankOfTileMatrix, _config.StyleName);
+
+        listener = new FlagListener();
+        clickListener = new ClickListener();
+
+        _field = new Field(_config);
+
+        mineCount = new SimpleIntegerProperty(_field.countMines);
+
+        mineCount.addListener(new IntegerListener());
+
+        simpleTileCount = new SimpleIntegerProperty(_field.countSimpleTiles);
+
+        simpleTileCount.addListener(new IntegerListener());
 
         Tile.CallNearby call = this::CallNearby;
         Tile.setCall(call);
@@ -260,6 +268,7 @@ public class GameController implements Initializable {
      * Метод, вызывающий генерацию мин.
      */
     public void StartGen() {
+        //FieldGenerator.MineGen(_field,_config.CountMines);
         FieldGenerator.MineGeneration(_field, _config.CountMines);
 
         ResetTimer();
@@ -289,4 +298,34 @@ public class GameController implements Initializable {
 
         OpenAll(true,false);
     }
+
+    public class FlagListener implements javafx.beans.value.ChangeListener<Boolean>{
+        @Override
+        public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
+            mineCount.set(mineCount.getValue() +
+                    (observableValue.getValue().booleanValue()
+                            ? -1
+                            : 1)
+            );
+
+            _lMineCount.setText(Integer.toString(mineCount.getValue()));
+        }
+    }
+
+    public class ClickListener implements javafx.beans.value.ChangeListener<Boolean>{
+        @Override
+        public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1) {
+            simpleTileCount.set(simpleTileCount.getValue() - 1);
+        }
+    }
+
+    public class IntegerListener implements javafx.beans.value.ChangeListener<Number> {
+        @Override
+        public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+            if (mineCount.getValue() == simpleTileCount.getValue() && mineCount.getValue() == 0) {
+                OverGame();
+            }
+        }
+    }
+
 }

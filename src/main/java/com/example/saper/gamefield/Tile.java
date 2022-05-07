@@ -3,16 +3,24 @@ package com.example.saper.gamefield;
 import com.example.saper.GameController;
 import com.example.saper.GameDifficulty;
 import com.example.saper.SaperApplication;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
+import javax.swing.event.ChangeEvent;
 import java.security.InvalidParameterException;
 import java.util.Random;
+import javafx.beans.value.*;
+
 
 public class Tile extends Button {
     private static int _size;
@@ -37,8 +45,12 @@ public class Tile extends Button {
         _clicked = new SimpleBooleanProperty(false);
         _clicked.addListener( e -> pseudoClassStateChanged(PseudoClass.getPseudoClass("clicked"),_clicked.get()));
 
+        _clicked.addListener(GameController.clickListener);
+
         _flag = new SimpleBooleanProperty(false);
         _flag.addListener( e -> pseudoClassStateChanged(PseudoClass.getPseudoClass("flag"),_flag.get()));
+
+        _flag.addListener(GameController.listener);
 
         LoadDefaultSettings();
         _rowIndex = rowIndex;
@@ -101,6 +113,8 @@ public class Tile extends Button {
                 MouseHandler(event.getButton());
             }
         });
+
+
     }
     private void ShowTextSimple(){
         if (_minesAround == 0)
@@ -226,5 +240,9 @@ public class Tile extends Button {
 
     public interface ShownTextHandler {
         void Invoke();
+    }
+
+    public interface ClickEvent {
+        void Invoke(int i, int j);
     }
 }

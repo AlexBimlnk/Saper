@@ -4,6 +4,7 @@ module com.example.saper {
 
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
+    requires java.desktop;
 
     opens com.example.saper to javafx.fxml;
     exports com.example.saper;
