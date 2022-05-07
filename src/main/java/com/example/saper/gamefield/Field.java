@@ -1,20 +1,17 @@
 package com.example.saper.gamefield;
 
 import com.example.saper.Config;
-import javafx.scene.paint.Paint;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.util.Pair;
 
-import java.net.Inet4Address;
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class Field {
 
-    private Tile[][] _field;
-
-    public Tile[][] GetField() { return _field; }
-
+    private final Tile[][] _field;
     private Pair<Integer, Integer> _startPointCoordinates = new Pair<>(-1,-1);
 
     public final int countMines;
@@ -23,6 +20,8 @@ public class Field {
     public Field(Config config) {
         int rankOfTileMatrix = 500 / config.SizeTile;
         _field = new Tile[rankOfTileMatrix][rankOfTileMatrix];
+
+        Tile.setSize(config.SizeTile);
 
         for (int i = 0; i < _field.length; i++) {
             for (int y = 0; y < _field[i].length; y++) {
@@ -40,6 +39,14 @@ public class Field {
         });
     }
 
+    public static int GetDistanceToPoints(Pair<Integer, Integer> p1, Pair<Integer, Integer> p2) {
+        int d1 = Math.abs(p2.getKey() - p1.getKey());
+
+        int d2 = Math.abs(p2.getValue() - p1.getValue());
+
+        return Math.max(d1,d2);
+    }
+
     public boolean IsCorrectCoordinate(int iPos, int jPos) {
         return 0 <= iPos && iPos < _field.length &&
                 0 <= jPos && jPos < _field[0].length;
@@ -49,18 +56,6 @@ public class Field {
         for (int i = 0; i < _field.length; i++) {
             for (int j = 0; j < _field.length; j++) {
                 action.accept(_field[i][j]);
-            }
-        }
-    }
-
-    public void ApplyToAround(int iPos, int jPos, Consumer<Pair<Integer, Integer>> action) {
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                if (i == 0 && j == 0)
-                    continue;
-                if (IsCorrectCoordinate(iPos + i, jPos + j)) {
-                    action.accept(new Pair<>(iPos + i, jPos + j));
-                }
             }
         }
     }
@@ -96,94 +91,33 @@ public class Field {
             }
         }
     }
-    //Проверяет находится ли точка рядом с границей поля
-    public boolean IsNearWithBorder(int iPos, int jpos){
-        return iPos < 1 || jpos < 1 || iPos > _field.length - 2 || jpos > _field.length - 2;
-    }
-
-    public Tile getTile(int iPos, int jPos) throws IndexOutOfBoundsException {
-        if (IsCorrectCoordinate(iPos,jPos)) {
-            return _field[iPos][jPos];
-        }
-        return null;
-    }
-
-    public ArrayList<Pair<Integer, Integer>> getAllCoordinates() {
-        ArrayList<Pair <Integer,Integer>> coordinates = new ArrayList<>(_field.length * _field[0].length);
-
-        for (int i = 0;i < _field.length; i++) {
-            for (int y = 0;y < _field[0].length; y++) {
-                coordinates.add(new Pair<>(i,y));
-            }
-        }
-
-        return coordinates;
-    }
-
-
-    public ArrayList<Pair<Integer,Integer>> GetCoordinateTilesAround(int iPos, int jPos, int depth){
-        if (depth <= 0) {
-            throw new InvalidParameterException("depth has dispositive value");
-        }
-
-        ArrayList<Pair<Integer, Integer>> coordinateTiles = new ArrayList<>();
-
-        ApplyToAround(iPos, jPos, coordinateTiles::add ,depth);
-
-        return  coordinateTiles;
-    }
 
     //Инкрементирует свойство MinesAround у всех клеток вокруг заданной с помощью координат клетки
     public void IncCountMinesAroundOfTile(int iPos, int jPos) {
         ApplyToAround(iPos, jPos, (coordinatePair) -> {
-            //Если можно написать в джаве индекстор то надо написать
-            //Если нет, то можно сделать метод возвращающий клетку по координате
             Tile tile = getTile(coordinatePair.getKey(),coordinatePair.getValue());
             tile.setMinesAround(tile.getMinesAround() + 1);
-        });
+        },1);
     }
 
-    //Здесь накостылено потому что простой инт не захватывается "делегатом".
     public int CountMinesAround(int iPos, int jPos) {
-        class A{
-            public int Value;
-        }
-        A a = new A();
+        IntegerProperty value = new SimpleIntegerProperty(0);
 
         ApplyToAround(iPos, jPos, (coordinatePair) -> {
             Tile tile = getTile(coordinatePair.getKey(), coordinatePair.getValue());
             if (tile.IsMine) {
-                a.Value++;
+                value.set(value.getValue() + 1);
             }
-        });
+        },1);
 
-        return a.Value;
+        return value.getValue();
     }
 
-    //Переделать, может старт поинт вообще в филд заинкапсулировать!!
-    public int StartPointCheckAround(int iPos, int jPos, int[] debuff){
-        int depth;
-
-        for (depth = 0; depth < debuff.length - 1; depth++){
-            for (var tile : GetCoordinateTilesAround(iPos, jPos,depth + 1)){
-                if (tile.getKey() == _startPointCoordinates.getKey() && tile.getValue() == _startPointCoordinates.getValue()){
-                    break;
-                }
-            }
+    public Tile getTile(int iPos, int jPos) {
+        if (IsCorrectCoordinate(iPos,jPos)) {
+            return _field[iPos][jPos];
         }
-
-        return debuff[depth];
-    }
-
-    public boolean StartPointCheckInBlock(Pair<Integer,Integer> upLeft, Pair<Integer,Integer> downRight){
-        for (int i = upLeft.getKey();i <= downRight.getKey();i++){
-            for (int j = upLeft.getValue();j <= downRight.getValue();j++)
-                if (i == _startPointCoordinates.getKey() && j == _startPointCoordinates.getValue()){
-                    return true;
-                }
-        }
-
-        return false;
+        return null;
     }
 
     public void setStartPoint(int iPos, int jPos) {
@@ -197,14 +131,15 @@ public class Field {
     }
 
     public boolean isStartPoint(Pair <Integer, Integer> point) {
-        return (point.getKey() == _startPointCoordinates.getKey() && point.getValue() == _startPointCoordinates.getValue());
+        return (Objects.equals(point.getKey(), _startPointCoordinates.getKey()) && Objects.equals(point.getValue(), _startPointCoordinates.getValue()));
+    }
+
+    //Проверяет находится ли точка рядом с границей поля
+    public boolean isNearWithBorder(int iPos, int jpos){
+        return iPos < 1 || jpos < 1 || iPos > _field.length - 2 || jpos > _field.length - 2;
     }
 
     public Pair<Integer, Integer> getSizes() {
         return new Pair<>(_field.length, _field[0].length);
-    }
-
-    public interface Action{
-        void Invoke();
     }
 }

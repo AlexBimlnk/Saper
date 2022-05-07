@@ -3,27 +3,21 @@ package com.example.saper.gamefield;
 import com.example.saper.GameController;
 import com.example.saper.GameDifficulty;
 import com.example.saper.SaperApplication;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.css.PseudoClass;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
-import javax.swing.event.ChangeEvent;
 import java.security.InvalidParameterException;
 import java.util.Random;
-import javafx.beans.value.*;
 
 
 public class Tile extends Button {
     private static int _size;
+    private final static Random rnd = (SaperApplication.getSeed() != -1 ? new Random(SaperApplication.getSeed()) : new Random());
 
     private int _minesAround; //quantity of mines around
     private final int _rowIndex;
@@ -32,32 +26,28 @@ public class Tile extends Button {
     private static CallNearby _callHandler; //используется при нажатии по пустой клетке
     private static ExplosionEvent _explosionEventHandler; //вызывается при взрыве мины
 
-    private BooleanProperty _clicked;
-    private BooleanProperty _flag;
+    private final BooleanProperty _clicked;
+    private final BooleanProperty _flag;
+
     private boolean _isTwoButtonPressed = false;
     private boolean _isTwoButtonPressedHandler = true;
-
-    private final static Random rnd = (SaperApplication.getSeed() != -1 ? new Random(SaperApplication.getSeed()) : new Random());
 
     public final ShownTextHandler TextView;
 
     public Tile(int rowIndex, int columnIndex){
         _clicked = new SimpleBooleanProperty(false);
         _clicked.addListener( e -> pseudoClassStateChanged(PseudoClass.getPseudoClass("clicked"),_clicked.get()));
-
         _clicked.addListener(GameController.clickListener);
 
         _flag = new SimpleBooleanProperty(false);
         _flag.addListener( e -> pseudoClassStateChanged(PseudoClass.getPseudoClass("flag"),_flag.get()));
-
-        _flag.addListener(GameController.listener);
+        _flag.addListener(GameController.flagListener);
 
         LoadDefaultSettings();
         _rowIndex = rowIndex;
         _columIndex = columnIndex;
 
-
-        if (GameController.GetGameDifficulty() == GameDifficulty.Hard) {
+        if (GameController.getGameDifficulty() == GameDifficulty.Hard) {
             TextView = (rnd.nextBoolean() ? this::ShowTextHard : this::ShowTextSimple);
         }
         else {
@@ -65,10 +55,7 @@ public class Tile extends Button {
         }
     }
 
-
     public boolean IsMine = false; //prop
-    //public boolean IsStartPoint = false; //prop
-
 
     private void LoadDefaultSettings() {
 
@@ -159,7 +146,6 @@ public class Tile extends Button {
             ShowTextSimple();
     }
 
-
     public void MouseHandler(MouseButton button) {
         //Если нажали на ЛКМ
         if(button == MouseButton.PRIMARY && !isFlag()) {
@@ -181,7 +167,7 @@ public class Tile extends Button {
                 }
             }
         }
-        if(button == MouseButton.SECONDARY && GameController.GetGameCondition()) {
+        if(button == MouseButton.SECONDARY && GameController.getGameCondition()) {
             setFlag(!isFlag());
         }
     }
@@ -210,7 +196,6 @@ public class Tile extends Button {
     public boolean isClicked() {
         return _clicked.get();
     }
-
     public void setClicked(boolean clicked) {
         if (!isFlag()) {
             this._clicked.set(clicked);
@@ -220,7 +205,6 @@ public class Tile extends Button {
     public boolean isFlag() {
         return _flag.get();
     }
-
     public void setFlag(boolean flag) {
         if (!isClicked()) {
             this._flag.set(flag);
@@ -240,9 +224,5 @@ public class Tile extends Button {
 
     public interface ShownTextHandler {
         void Invoke();
-    }
-
-    public interface ClickEvent {
-        void Invoke(int i, int j);
     }
 }
