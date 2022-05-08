@@ -73,29 +73,27 @@ public class Tile extends Button {
             _isTwoButtonPressedHandler = _isTwoButtonPressed;
         });
         addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            //Todo нажатие сразу на две кнопки
-
             if(_isTwoButtonPressed) {
-                if(isClicked() && _isTwoButtonPressedHandler) {
+                if(isClicked() && _isTwoButtonPressedHandler &&
+                   GameController.getGameDifficulty() != GameDifficulty.Hard) {
+
+                    int countMines = Field.CountMinesAround(_rowIndex, _columIndex);
+                    class Container {
+                        public int countFlags = 0;
+                    }
+                    Container container = new Container();
+                    
+                    Field.ApplyToAround(_rowIndex, _columIndex, (coordinate) -> {
+                        Tile tile = Field.getTile(coordinate.getKey(), coordinate.getValue());
+                        if (tile.isFlag())
+                            container.countFlags++;
+                    }, 1);
+                    
+                    if (countMines == container.countFlags) {
+                        _callHandler.Invoke(_rowIndex, _columIndex);
+                    }
 
                     _isTwoButtonPressedHandler = false;
-                    //К сожалению при двойном щелчке он войдет в эту секцию два раза
-                    //Так как нажаты и левая и правая, у них обоих сработает кликед.
-                    //Таким образом этот блок кода вызовется два раза
-                    //Решение - вставить ещё одну проверку сюда через буль. Костыль но
-                    //Если сетить _isTwoButtonPressed = false после выхода первого срабатывания
-                    //Хоть второй раз он и не зайдет, но отработает нажатие на коде ниже
-                    //Т.е вызовется блок else.
-                    //В связи с чем если даблкликать по закрытым клеткам они будут или открываться
-                    //Или "флаггироваться"
-                    //Сейчас же этот участок как и положено срабатывает только на уже открытых клетках
-                    //Но два раза. Как я уже говорил, после перового срабатывания нужно сетить доп свойство
-                    //Костыль сделал ниже:
-                    if(_isTwoButtonPressedHandler){
-                        int i = 123; //logic
-
-                        _isTwoButtonPressedHandler = false;
-                    }
                 }
             }
             else{
