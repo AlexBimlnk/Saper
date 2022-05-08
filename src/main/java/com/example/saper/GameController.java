@@ -1,11 +1,12 @@
 package com.example.saper;
 
 
-import com.example.saper.gamefield.*;
+import com.example.saper.gamefield.Field;
+import com.example.saper.gamefield.MineGenerator;
+import com.example.saper.gamefield.Tile;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,6 +18,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -81,7 +83,7 @@ public class GameController implements Initializable {
 
         if (_isGameStarted) {
             ClearGameSession();
-            OverGame();
+            OverGame(false);
             _isGameStarted = false;
         }
         if (SaperApplication.getDif() != null) {
@@ -116,7 +118,7 @@ public class GameController implements Initializable {
                             _lTimer.setText("Time " + extraZero4Minutes + minutes + ":" + extraZero4Seconds + seconds);
 
                             if (minutes == 60) {
-                                OverGame();
+                                OverGame(false);
                             }
                         }
                 );
@@ -151,8 +153,8 @@ public class GameController implements Initializable {
 
     /**
      * Метод вызывает открытие соседних клеток относительно заданной.
-     * @param iPos Позиция заданной клетки в координатах.
-     * @param jPos Позиция заданной клетки в координатах.
+     * @param iPos Координата строки клетки.
+     * @param jPos Координата столбца клетки.
      */
     private void CallNearby(int iPos, int jPos) {
         if (!_isGameStarted) {
@@ -212,10 +214,9 @@ public class GameController implements Initializable {
         _config = _gameDif.GetConfigField();
 
         flagListener = (observableValue, aBoolean, t1) -> {
-            _mineCount.set(_mineCount.getValue() +
+            _mineCount.set(
                     (observableValue.getValue().booleanValue()
-                            ? -1
-                            : 1)
+                    ? -1 : 1) + _mineCount.getValue()
             );
 
             _lMineCount.setText(Integer.toString(_mineCount.getValue()));
@@ -229,8 +230,8 @@ public class GameController implements Initializable {
         _field = new Field(_config);
 
         javafx.beans.value.ChangeListener<Number> numberChangeListener = (observableValue, number, t1) -> {
-            if (_mineCount.getValue() == _simpleTileCount.getValue() && _mineCount.getValue() == 0) {
-                OverGame();
+            if (Objects.equals(_mineCount.getValue(), _simpleTileCount.getValue()) && _mineCount.getValue() == 0) {
+                OverGame(true);
             }
         };
 
@@ -242,7 +243,7 @@ public class GameController implements Initializable {
 
         Tile.CallNearby call = this::CallNearby;
         Tile.setCall(call);
-        Tile.ExplosionEvent explosionEvent = this::OverGame;
+        Tile.ExplosionEvent explosionEvent = () -> OverGame(false);
         Tile.setExplosionEvent(explosionEvent);
 
         _field.ApplyToAll(tile -> _flowPane.getChildren().add(tile));
@@ -252,7 +253,7 @@ public class GameController implements Initializable {
      * Метод, вызывающий генерацию мин.
      */
     public void StartGen() {
-        FieldGenerator.MineGen(_field,_config.CountMines);
+        MineGenerator.MineGen(_field, _config.CountMines);
 
         ResetTimer();
     }
@@ -273,8 +274,9 @@ public class GameController implements Initializable {
     /**
      * Метод, вызывающийся при проигрыше.
      */
-    public void OverGame() {
-        _bRestart.setText(":(");
+    public void OverGame(boolean isWin) {
+        var smile = isWin ? ":)" : ":(";
+        _bRestart.setText(smile);
         _lTimer.setTextFill(Color.DARKBLUE);
         _gameTimeInSeconds = 0;
         _timer.cancel();

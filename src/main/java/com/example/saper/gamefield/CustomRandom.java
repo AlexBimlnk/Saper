@@ -4,7 +4,11 @@ import javafx.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Random;
-
+//TODO: Написать документацию к пользовательскому рандому
+/**
+ * Пользовательский рандом.
+ * @param <T> TODO:
+ */
 public class CustomRandom<T extends Number> {
 
     private ArrayList<Pair<Integer,T>> _set;
@@ -13,15 +17,13 @@ public class CustomRandom<T extends Number> {
 
     private int _upperBound;
 
-    public CustomRandom() {
-        _upperBound = 0;
-        _random = new Random();
-        _set = new ArrayList<>();
-    }
-
+    /**
+     * Констуктор пользовательского рандома.
+     * @param random TODO:дока
+     */
     public CustomRandom(Random random) {
+        _random = random == null ? new Random() : random;
         _upperBound = 0;
-        _random = random;
         _set = new ArrayList<>();
     }
 
@@ -30,13 +32,23 @@ public class CustomRandom<T extends Number> {
         _set.clear();
     }
 
+    /**
+     *
+     * @param probability
+     * @param elem
+     */
     public void addNewElem(int probability, T elem) {
         if (elem == null)
             return;
         _upperBound += probability;
-        _set.add(new Pair<>(probability,elem));
+        _set.add(new Pair<>(probability, elem));
     }
 
+    /**
+     *
+     * @param removeAfterRandom
+     * @return
+     */
     public T GetRandomElem(boolean removeAfterRandom) {
         int randomVal = _random.nextInt(_upperBound);
 
@@ -65,7 +77,7 @@ public class CustomRandom<T extends Number> {
 
         Pair<Integer, T> updatedPair = new Pair<>(newValue, _set.get(index).getValue());
         _set.remove(index);
-        _set.add(index,updatedPair);
+        _set.add(index, updatedPair);
     }
 
     public int getSize() {

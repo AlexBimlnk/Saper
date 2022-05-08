@@ -17,6 +17,10 @@ public class Field {
     public final int countMines;
     public final int countSimpleTiles;
 
+    /**
+     * Конструктор поля.
+     * @param config Объект конфигурации.
+     */
     public Field(Config config) {
         int rankOfTileMatrix = 500 / config.SizeTile;
         _field = new Tile[rankOfTileMatrix][rankOfTileMatrix];
@@ -24,8 +28,8 @@ public class Field {
         Tile.setSize(config.SizeTile);
 
         for (int i = 0; i < _field.length; i++) {
-            for (int y = 0; y < _field[i].length; y++) {
-                _field[i][y] = new Tile(i, y);
+            for (int j = 0; j < _field[i].length; j++) {
+                _field[i][j] = new Tile(i, j);
             }
         }
 
@@ -39,6 +43,12 @@ public class Field {
         });
     }
 
+    /**
+     * Возвращает дистанцию между точками.
+     * @param p1 Первая точка.
+     * @param p2 Вторая точка.
+     * @return Расстояние между точками.
+     */
     public static int GetDistanceToPoints(Pair<Integer, Integer> p1, Pair<Integer, Integer> p2) {
         int d1 = Math.abs(p2.getKey() - p1.getKey());
 
@@ -47,11 +57,21 @@ public class Field {
         return Math.max(d1,d2);
     }
 
+    /**
+     * Метод проверяет корректность переданных координат.
+     * @param iPos Координата строки клетки.
+     * @param jPos Координата столбца клетки.
+     * @return Возвращает true, если пара представляет точку внутри поля, false - если вышли за границы.
+     */
     public boolean IsCorrectCoordinate(int iPos, int jPos) {
         return 0 <= iPos && iPos < _field.length &&
-                0 <= jPos && jPos < _field[0].length;
+               0 <= jPos && jPos < _field[0].length;
     }
 
+    /**
+     * Метод применяет ко всем клеткам поля действие, определенное в делегате.
+     * @param action Действие, которое следует применить.
+     */
     public void ApplyToAll(Consumer<Tile> action) {
         for (int i = 0; i < _field.length; i++) {
             for (int j = 0; j < _field.length; j++) {
@@ -60,6 +80,13 @@ public class Field {
         }
     }
 
+    /**
+     * Метод применяет ко всем клеткам вокруг заданной действите, определенное в делегате.
+     * @param iPos Координата строки клетки.
+     * @param jPos Координата столбца клетки.
+     * @param action Действие, которое следует применить.
+     * @param step TODO: описать step в документации
+     */
     public void ApplyToAround(int iPos, int jPos, Consumer<Pair<Integer, Integer>> action, int step) {
         if (step < 0 ) {
             throw new InvalidParameterException("step has dispositive value");
@@ -92,7 +119,11 @@ public class Field {
         }
     }
 
-    //Инкрементирует свойство MinesAround у всех клеток вокруг заданной с помощью координат клетки
+    /**
+     * Инкрементирует свойство MinesAround у всех клеток вокруг заданной с помощью координат клетки
+     * @param iPos Координата строки клетки.
+     * @param jPos Координата столбца клетки.
+     */
     public void IncCountMinesAroundOfTile(int iPos, int jPos) {
         ApplyToAround(iPos, jPos, (coordinatePair) -> {
             Tile tile = getTile(coordinatePair.getKey(),coordinatePair.getValue());
@@ -100,6 +131,12 @@ public class Field {
         },1);
     }
 
+    /**
+     * Возвращает кол-во мин вокруг клетки, заданной в координатах.
+     * @param iPos Координата строки.
+     * @param jPos Координата столбца.
+     * @return Количество мин.
+     */
     public int CountMinesAround(int iPos, int jPos) {
         IntegerProperty value = new SimpleIntegerProperty(0);
 
@@ -113,6 +150,12 @@ public class Field {
         return value.getValue();
     }
 
+    /**
+     * Возвращает объект типа {@link Tile}, соотвествующий заданным координатам.
+     * @param iPos Координата строки клетки.
+     * @param jPos Координата столбца клетки.
+     * @return Объект типа {@link Tile}
+     */
     public Tile getTile(int iPos, int jPos) {
         if (IsCorrectCoordinate(iPos,jPos)) {
             return _field[iPos][jPos];
@@ -120,25 +163,49 @@ public class Field {
         return null;
     }
 
+    /**
+     * Устанавливает координаты клетки с которой была начата игра.
+     * @param iPos Координата строки клетки.
+     * @param jPos Координата столбца клетки.
+     */
     public void setStartPoint(int iPos, int jPos) {
         if (IsCorrectCoordinate(iPos, jPos) && (_startPointCoordinates.getValue() == -1 && _startPointCoordinates.getKey() == -1)) {
             _startPointCoordinates = new Pair<>(iPos, jPos);
         }
     }
 
+    /**
+     * Возвращает пару координат клетки, с которой была начата игра.
+     * @return
+     */
     public Pair<Integer,Integer> getStartPoint() {
         return _startPointCoordinates;
     }
 
+    /**
+     * Проверяет является ли клетка стартовой.
+     * @param point Пара координат клетки.
+     * @return true, если точка является начальной, иначе - false.
+     */
     public boolean isStartPoint(Pair <Integer, Integer> point) {
-        return (Objects.equals(point.getKey(), _startPointCoordinates.getKey()) && Objects.equals(point.getValue(), _startPointCoordinates.getValue()));
+        return Objects.equals(point.getKey(), _startPointCoordinates.getKey()) &&
+               Objects.equals(point.getValue(), _startPointCoordinates.getValue());
     }
 
-    //Проверяет находится ли точка рядом с границей поля
-    public boolean isNearWithBorder(int iPos, int jpos){
+    /**
+     * Проверяет находится ли точка рядом с границей поля.
+     * @param iPos Координата строки клетки.
+     * @param jpos Координата столбца клетки.
+     * @return true, если точка находиться рядом с границей, иначе - false.
+     */
+    public boolean isNearWithBorder(int iPos, int jpos) {
         return iPos < 1 || jpos < 1 || iPos > _field.length - 2 || jpos > _field.length - 2;
     }
 
+    /**
+     * Возвращает размер игрового поля.
+     * @return Пару {@link Pair}, представляющую размеры поля.
+     */
     public Pair<Integer, Integer> getSizes() {
         return new Pair<>(_field.length, _field[0].length);
     }

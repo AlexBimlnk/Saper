@@ -7,30 +7,33 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class FieldGenerator{
+/**
+ * Генератор мин.
+ */
+public class MineGenerator {
 
     private static final int _mineWeight = 10;
     private static final int _startPointWeight = 180;
     private static final int _borderWeight = 15;
     private static final int[] _startPointPunish = {175, 55, 30, 15 ,5, 0};
 
+    /**
+     * Запускает генерацию мин.
+     * @param field Поля, на котором нужно сгенерировать мины.
+     * @param countMine Кол-во мин.
+     */
     public static void MineGen(Field field, int countMine) {
-        Random random;
-        if (SaperApplication.getSeed() != -1) {
-            random = new Random(SaperApplication.getSeed());
-        }
-        else {
-            random = new Random();
-        }
+        Random random = SaperApplication.getSeed() != -1
+                        ? new Random(SaperApplication.getSeed())
+                        : new Random();
 
         ArrayList<Pair<Integer,Pair<Integer,Integer>>> vectors = new ArrayList<>();
 
         int[][] indexes = new int[field.getSizes().getKey()][field.getSizes().getValue()];
 
-        for (int i = 0;i < field.getSizes().getKey();i++) {
-            for (int y = 0;y < field.getSizes().getValue();y++) {
-                //indexes[i][y] = -1;
-                Pair<Integer,Integer> curTile = new Pair<>(i,y);
+        for (int i = 0; i < field.getSizes().getKey(); i++) {
+            for (int j = 0; j < field.getSizes().getValue(); j++) {
+                Pair<Integer,Integer> curTile = new Pair<>(i,j);
                 if (!field.isStartPoint(curTile)) {
                     int distToStart = Field.GetDistanceToPoints(curTile, field.getStartPoint()) - 1;
                     int probability = 9 * _mineWeight + _startPointWeight;
@@ -46,23 +49,23 @@ public class FieldGenerator{
                     probability -= _startPointPunish[distToStart];
 
 
-                    indexes[i][y] = vectors.size();
+                    indexes[i][j] = vectors.size();
                     vectors.add(new Pair<>(probability,curTile));
-                    System.out.println(indexes[i][y]);
+                    System.out.println(indexes[i][j]);
                 }
             }
         }
 
-        for (int i = 0;i < countMine;i++) {
+        for (int i = 0; i < countMine; i++) {
             CustomRandom<Integer> customRandom = new CustomRandom<>(random);
 
-            for (int y = 0;y < vectors.size();y++) {
-                var elem = vectors.get(y);
+            for (int j = 0; j < vectors.size(); j++) {
+                var elem = vectors.get(j);
                 if (indexes[elem.getValue().getKey()][elem.getValue().getValue()] == -1) {
                     continue;
                 }
 
-                customRandom.addNewElem(elem.getKey(),y);
+                customRandom.addNewElem(elem.getKey(),j);
             }
 
             int randomIndex = customRandom.GetRandomElem(false);
@@ -74,7 +77,7 @@ public class FieldGenerator{
 
             field.IncCountMinesAroundOfTile(newMineCord.getKey(),newMineCord.getValue());
 
-            field.ApplyToAround(newMineCord.getKey(),newMineCord.getValue(), (coordinateAround) -> {
+            field.ApplyToAround(newMineCord.getKey(), newMineCord.getValue(), (coordinateAround) -> {
                 if (indexes[coordinateAround.getKey()][coordinateAround.getValue()] != -1) {
                     var oldPair = vectors.get(indexes[coordinateAround.getKey()][coordinateAround.getValue()]);
 
@@ -87,7 +90,6 @@ public class FieldGenerator{
             },1);
 
             indexes[vectors.get(randomIndex).getValue().getKey()][vectors.get(randomIndex).getValue().getValue()] = -1;
-            //System.out.println(i);
         }
 
     }

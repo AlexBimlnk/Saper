@@ -14,7 +14,9 @@ import javafx.scene.paint.Color;
 import java.security.InvalidParameterException;
 import java.util.Random;
 
-
+/**
+ * Класс представляющий сущность игровой клетки.
+ */
 public class Tile extends Button {
     private static int _size;
     private final static Random rnd = (SaperApplication.getSeed() != -1 ? new Random(SaperApplication.getSeed()) : new Random());
@@ -34,6 +36,11 @@ public class Tile extends Button {
 
     public final ShownTextHandler TextView;
 
+    /**
+     * Конструктор клетки.
+     * @param rowIndex Координата клетки в строке.
+     * @param columnIndex Координата клетки в столбце.
+     */
     public Tile(int rowIndex, int columnIndex){
         _clicked = new SimpleBooleanProperty(false);
         _clicked.addListener( e -> pseudoClassStateChanged(PseudoClass.getPseudoClass("clicked"),_clicked.get()));
@@ -103,7 +110,7 @@ public class Tile extends Button {
 
 
     }
-    private void ShowTextSimple(){
+    private void ShowTextSimple() {
         if (_minesAround == 0)
             return;
 
@@ -126,7 +133,7 @@ public class Tile extends Button {
         else if(_minesAround == 8)
             setTextFill(Color.BLACK);
     }
-    private void ShowTextHard(){
+    private void ShowTextHard() {
         if (_minesAround == 0)
             return;
 
@@ -146,6 +153,10 @@ public class Tile extends Button {
             ShowTextSimple();
     }
 
+    /**
+     * Обработчик события нажатия мыши по кнопке.
+     * @param button Нажатая кнопка.
+     */
     public void MouseHandler(MouseButton button) {
         //Если нажали на ЛКМ
         if(button == MouseButton.PRIMARY && !isFlag()) {
@@ -172,56 +183,101 @@ public class Tile extends Button {
         }
     }
 
-
-    public void setMinesAround(int value) {
+    /**
+     * Метод устанавливает кол-во мин вокруг клетки.
+     * @param value Кол-во мин.
+     */
+    public void setMinesAround(int value) throws InvalidParameterException {
         if(value < 0)
             throw new InvalidParameterException();
         _minesAround = value;
     }
+
+    /**
+     * Метод получает кол-во мин вокруг клетки.
+     * @return Кол-во мин.
+     */
     public int getMinesAround() {
         return _minesAround;
     }
 
+    /**
+     * Метод устанавливает размер клетки.
+     * @param size Размер.
+     */
     public static void setSize(int size) {
         _size = size;
     }
-    public static int getSize() {
-        return _size;
-    }
 
+    /**
+     * Устанавливает действие, которое вызовется при взрыве, если клетка оказалась миной.
+     * @param explosion Действие, которое следует применить.
+     */
     public static void setExplosionEvent(ExplosionEvent explosion) {
         _explosionEventHandler = explosion;
     }
 
+    /**
+     * Показывает, была ли открыта клетка или нет.
+     * @return true, если клетка уже была открыта, иначе - false
+     */
     public boolean isClicked() {
         return _clicked.get();
     }
+
+    /**
+     * Устанавливает статус открытия клетки.
+     * @param clicked Статус.
+     */
     public void setClicked(boolean clicked) {
         if (!isFlag()) {
-            this._clicked.set(clicked);
+            _clicked.set(clicked);
         }
     }
 
+    /**
+     * Метод проверяет устанавку флага на клетку.
+     * @return true, если клетка помечена флагом, иначе - false
+     */
     public boolean isFlag() {
         return _flag.get();
     }
+
+    /**
+     * Устанавливает статус, отражающий положение установки флага.
+     * @param flag Статус.
+     */
     public void setFlag(boolean flag) {
         if (!isClicked()) {
             this._flag.set(flag);
         }
     }
 
+    /**
+     * Делегат, вызывающийся при открытии соседних клеток.
+     */
     public interface CallNearby {
         void Invoke(int i,int y);
     }
+
+    /**
+     * Устанавливает делегат, который следует вызвать при открытии соседних клеток.
+     * @param call
+     */
     public static void setCall(CallNearby call) {
         _callHandler = call;
     }
 
+    /**
+     * Делегат, вызывающийся при взрыве.
+     */
     public interface ExplosionEvent {
         void Invoke();
     }
 
+    /**
+     * Делегат, вызывающийся при отображении текста на кнопке.
+     */
     public interface ShownTextHandler {
         void Invoke();
     }
