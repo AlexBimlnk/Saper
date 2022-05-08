@@ -48,7 +48,6 @@ public class GameController implements Initializable {
     private int _gameTimeInSeconds = 0;
     private IntegerProperty _mineCount;
     private IntegerProperty _simpleTileCount;
-    private Field _field;
     private Config _config;
 
     public static javafx.beans.value.ChangeListener<Boolean> flagListener ;
@@ -131,12 +130,12 @@ public class GameController implements Initializable {
 
     /**
      * Открывает все игровые клетки.
-     * @param isDisabling
-     * @param isShowAll
+     * @param isDisabling TODO:
+     * @param isShowAll TODO:
      */
     private void OpenAll(boolean isDisabling, boolean isShowAll) {
 
-        _field.ApplyToAll(tile -> {
+        Field.ApplyToAll(tile -> {
             if (isShowAll) {
                 if (!tile.IsMine) {
                     tile.TextView.Invoke();
@@ -160,16 +159,16 @@ public class GameController implements Initializable {
         if (!_isGameStarted) {
             _isGameStarted = true;
 
-            _field.setStartPoint(iPos,jPos);
+            Field.setStartPoint(iPos,jPos);
 
             StartGen();
 
-            _field.getTile(iPos, jPos).MouseHandler(MouseButton.PRIMARY);
+            Field.getTile(iPos, jPos).MouseHandler(MouseButton.PRIMARY);
             return;
         }
 
-        _field.ApplyToAround(iPos,jPos, (coordinate) -> {
-            Tile tile = _field.getTile(coordinate.getKey(),coordinate.getValue());
+        Field.ApplyToAround(iPos,jPos, (coordinate) -> {
+            Tile tile = Field.getTile(coordinate.getKey(),coordinate.getValue());
 
             if (!tile.isClicked() && !tile.isFlag()) {
                 tile.MouseHandler(MouseButton.PRIMARY);
@@ -227,7 +226,7 @@ public class GameController implements Initializable {
         _bRestart.setText(": )");
         _lMineCount.setText(Integer.toString(_config.CountMines));
 
-        _field = new Field(_config);
+        new Field(_config);
 
         javafx.beans.value.ChangeListener<Number> numberChangeListener = (observableValue, number, t1) -> {
             if (Objects.equals(_mineCount.getValue(), _simpleTileCount.getValue()) && _mineCount.getValue() == 0) {
@@ -235,10 +234,10 @@ public class GameController implements Initializable {
             }
         };
 
-        _mineCount = new SimpleIntegerProperty(_field.countMines);
+        _mineCount = new SimpleIntegerProperty(Field.GetCountMines());
         _mineCount.addListener(numberChangeListener);
 
-        _simpleTileCount = new SimpleIntegerProperty(_field.countSimpleTiles);
+        _simpleTileCount = new SimpleIntegerProperty(Field.GetCountSimleTiles());
         _simpleTileCount.addListener(numberChangeListener);
 
         Tile.CallNearby call = this::CallNearby;
@@ -246,14 +245,14 @@ public class GameController implements Initializable {
         Tile.ExplosionEvent explosionEvent = () -> OverGame(false);
         Tile.setExplosionEvent(explosionEvent);
 
-        _field.ApplyToAll(tile -> _flowPane.getChildren().add(tile));
+        Field.ApplyToAll(tile -> _flowPane.getChildren().add(tile));
     }
 
     /**
      * Метод, вызывающий генерацию мин.
      */
     public void StartGen() {
-        MineGenerator.MineGen(_field, _config.CountMines);
+        MineGenerator.MineGen(_config.CountMines);
 
         ResetTimer();
     }

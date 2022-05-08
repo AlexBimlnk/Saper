@@ -19,26 +19,25 @@ public class MineGenerator {
 
     /**
      * Запускает генерацию мин.
-     * @param field Поля, на котором нужно сгенерировать мины.
      * @param countMine Кол-во мин.
      */
-    public static void MineGen(Field field, int countMine) {
+    public static void MineGen(int countMine) {
         Random random = SaperApplication.getSeed() != -1
                         ? new Random(SaperApplication.getSeed())
                         : new Random();
 
         ArrayList<Pair<Integer,Pair<Integer,Integer>>> vectors = new ArrayList<>();
 
-        int[][] indexes = new int[field.getSizes().getKey()][field.getSizes().getValue()];
+        int[][] indexes = new int[Field.getSizes().getKey()][Field.getSizes().getValue()];
 
-        for (int i = 0; i < field.getSizes().getKey(); i++) {
-            for (int j = 0; j < field.getSizes().getValue(); j++) {
+        for (int i = 0; i < Field.getSizes().getKey(); i++) {
+            for (int j = 0; j < Field.getSizes().getValue(); j++) {
                 Pair<Integer,Integer> curTile = new Pair<>(i,j);
-                if (!field.isStartPoint(curTile)) {
-                    int distToStart = Field.GetDistanceToPoints(curTile, field.getStartPoint()) - 1;
+                if (!Field.isStartPoint(curTile)) {
+                    int distToStart = Field.GetDistanceToPoints(curTile, Field.getStartPoint()) - 1;
                     int probability = 9 * _mineWeight + _startPointWeight;
 
-                    if (!field.isNearWithBorder(curTile.getKey(), curTile.getValue())) {
+                    if (!Field.isNearWithBorder(curTile.getKey(), curTile.getValue())) {
                         probability += _borderWeight;
                     }
 
@@ -72,16 +71,16 @@ public class MineGenerator {
 
             Pair<Integer,Integer> newMineCord = vectors.get(randomIndex).getValue();
 
-            field.getTile(newMineCord.getKey(),newMineCord.getValue()).IsMine = true;
-            field.getTile(newMineCord.getKey(),newMineCord.getValue()).setId("mine");
+            Field.getTile(newMineCord.getKey(),newMineCord.getValue()).IsMine = true;
+            Field.getTile(newMineCord.getKey(),newMineCord.getValue()).setId("mine");
 
-            field.IncCountMinesAroundOfTile(newMineCord.getKey(),newMineCord.getValue());
+            Field.IncCountMinesAroundOfTile(newMineCord.getKey(),newMineCord.getValue());
 
-            field.ApplyToAround(newMineCord.getKey(), newMineCord.getValue(), (coordinateAround) -> {
+            Field.ApplyToAround(newMineCord.getKey(), newMineCord.getValue(), (coordinateAround) -> {
                 if (indexes[coordinateAround.getKey()][coordinateAround.getValue()] != -1) {
                     var oldPair = vectors.get(indexes[coordinateAround.getKey()][coordinateAround.getValue()]);
 
-                    if (field.CountMinesAround(coordinateAround.getKey(),coordinateAround.getValue()) > 1) {
+                    if (Field.CountMinesAround(coordinateAround.getKey(),coordinateAround.getValue()) > 1) {
                         Pair<Integer,Pair<Integer,Integer>> newPair = new Pair<>(oldPair.getKey() - _mineWeight,oldPair.getValue());
 
                         vectors.set(indexes[coordinateAround.getKey()][coordinateAround.getValue()],newPair);

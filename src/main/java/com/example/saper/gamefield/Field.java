@@ -11,11 +11,17 @@ import java.util.function.Consumer;
 
 public class Field {
 
-    private final Tile[][] _field;
-    private Pair<Integer, Integer> _startPointCoordinates = new Pair<>(-1,-1);
+    private static Tile[][] _field;
+    private static Pair<Integer, Integer> _startPointCoordinates = new Pair<>(-1,-1);
 
-    public final int countMines;
-    public final int countSimpleTiles;
+    private static int countMines;
+    public static int GetCountMines() {
+        return countMines;
+    }
+    private static int countSimpleTiles;
+    public static int GetCountSimleTiles() {
+        return countSimpleTiles;
+    }
 
     /**
      * Конструктор поля.
@@ -63,7 +69,7 @@ public class Field {
      * @param jPos Координата столбца клетки.
      * @return Возвращает true, если пара представляет точку внутри поля, false - если вышли за границы.
      */
-    public boolean IsCorrectCoordinate(int iPos, int jPos) {
+    public static boolean IsCorrectCoordinate(int iPos, int jPos) {
         return 0 <= iPos && iPos < _field.length &&
                0 <= jPos && jPos < _field[0].length;
     }
@@ -72,7 +78,7 @@ public class Field {
      * Метод применяет ко всем клеткам поля действие, определенное в делегате.
      * @param action Действие, которое следует применить.
      */
-    public void ApplyToAll(Consumer<Tile> action) {
+    public static void ApplyToAll(Consumer<Tile> action) {
         for (int i = 0; i < _field.length; i++) {
             for (int j = 0; j < _field.length; j++) {
                 action.accept(_field[i][j]);
@@ -87,7 +93,7 @@ public class Field {
      * @param action Действие, которое следует применить.
      * @param step TODO: описать step в документации
      */
-    public void ApplyToAround(int iPos, int jPos, Consumer<Pair<Integer, Integer>> action, int step) {
+    public static void ApplyToAround(int iPos, int jPos, Consumer<Pair<Integer, Integer>> action, int step) {
         if (step < 0 ) {
             throw new InvalidParameterException("step has dispositive value");
         }
@@ -124,7 +130,7 @@ public class Field {
      * @param iPos Координата строки клетки.
      * @param jPos Координата столбца клетки.
      */
-    public void IncCountMinesAroundOfTile(int iPos, int jPos) {
+    public static void IncCountMinesAroundOfTile(int iPos, int jPos) {
         ApplyToAround(iPos, jPos, (coordinatePair) -> {
             Tile tile = getTile(coordinatePair.getKey(),coordinatePair.getValue());
             tile.setMinesAround(tile.getMinesAround() + 1);
@@ -137,7 +143,7 @@ public class Field {
      * @param jPos Координата столбца.
      * @return Количество мин.
      */
-    public int CountMinesAround(int iPos, int jPos) {
+    public static int CountMinesAround(int iPos, int jPos) {
         IntegerProperty value = new SimpleIntegerProperty(0);
 
         ApplyToAround(iPos, jPos, (coordinatePair) -> {
@@ -156,7 +162,7 @@ public class Field {
      * @param jPos Координата столбца клетки.
      * @return Объект типа {@link Tile}
      */
-    public Tile getTile(int iPos, int jPos) {
+    public static Tile getTile(int iPos, int jPos) {
         if (IsCorrectCoordinate(iPos,jPos)) {
             return _field[iPos][jPos];
         }
@@ -168,7 +174,7 @@ public class Field {
      * @param iPos Координата строки клетки.
      * @param jPos Координата столбца клетки.
      */
-    public void setStartPoint(int iPos, int jPos) {
+    public static void setStartPoint(int iPos, int jPos) {
         if (IsCorrectCoordinate(iPos, jPos) && (_startPointCoordinates.getValue() == -1 && _startPointCoordinates.getKey() == -1)) {
             _startPointCoordinates = new Pair<>(iPos, jPos);
         }
@@ -178,7 +184,7 @@ public class Field {
      * Возвращает пару координат клетки, с которой была начата игра.
      * @return
      */
-    public Pair<Integer,Integer> getStartPoint() {
+    public static Pair<Integer,Integer> getStartPoint() {
         return _startPointCoordinates;
     }
 
@@ -187,7 +193,7 @@ public class Field {
      * @param point Пара координат клетки.
      * @return true, если точка является начальной, иначе - false.
      */
-    public boolean isStartPoint(Pair <Integer, Integer> point) {
+    public static boolean isStartPoint(Pair <Integer, Integer> point) {
         return Objects.equals(point.getKey(), _startPointCoordinates.getKey()) &&
                Objects.equals(point.getValue(), _startPointCoordinates.getValue());
     }
@@ -198,7 +204,7 @@ public class Field {
      * @param jpos Координата столбца клетки.
      * @return true, если точка находиться рядом с границей, иначе - false.
      */
-    public boolean isNearWithBorder(int iPos, int jpos) {
+    public static boolean isNearWithBorder(int iPos, int jpos) {
         return iPos < 1 || jpos < 1 || iPos > _field.length - 2 || jpos > _field.length - 2;
     }
 
@@ -206,7 +212,7 @@ public class Field {
      * Возвращает размер игрового поля.
      * @return Пару {@link Pair}, представляющую размеры поля.
      */
-    public Pair<Integer, Integer> getSizes() {
+    public static Pair<Integer, Integer> getSizes() {
         return new Pair<>(_field.length, _field[0].length);
     }
 }

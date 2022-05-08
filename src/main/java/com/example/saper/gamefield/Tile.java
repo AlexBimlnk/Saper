@@ -75,8 +75,10 @@ public class Tile extends Button {
         addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             //Todo нажатие сразу на две кнопки
 
-            if(_isTwoButtonPressed){
-                if(isClicked()){
+            if(_isTwoButtonPressed) {
+                if(isClicked() && _isTwoButtonPressedHandler) {
+
+                    _isTwoButtonPressedHandler = false;
                     //К сожалению при двойном щелчке он войдет в эту секцию два раза
                     //Так как нажаты и левая и правая, у них обоих сработает кликед.
                     //Таким образом этот блок кода вызовется два раза
