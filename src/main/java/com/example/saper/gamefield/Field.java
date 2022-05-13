@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 public class Field {
 
     private static Tile[][] _field;
-    private static Pair<Integer, Integer> _startPointCoordinates = new Pair<>(-1,-1);
+    private static Pair<Integer, Integer> _startPointCoordinates;
 
     private static int countMines;
     public static int GetCountMines() {
@@ -30,6 +30,8 @@ public class Field {
     public Field(Config config) {
         int rankOfTileMatrix = 500 / config.SizeTile;
         _field = new Tile[rankOfTileMatrix][rankOfTileMatrix];
+
+        _startPointCoordinates = new Pair<>(-1,-1);
 
         Tile.setSize(config.SizeTile);
 
@@ -91,7 +93,7 @@ public class Field {
      * @param iPos Координата строки клетки.
      * @param jPos Координата столбца клетки.
      * @param action Действие, которое следует применить.
-     * @param step TODO: описать step в документации
+     * @param step Расстяоние на котором просматриваются клетки от заданной
      */
     public static void ApplyToAround(int iPos, int jPos, Consumer<Pair<Integer, Integer>> action, int step) {
         if (step < 0 ) {
@@ -121,6 +123,29 @@ public class Field {
                 if (IsCorrectCoordinate(iPos + i, jPos + step)) {
                     action.accept(new Pair<>(iPos + i, jPos + step));
                 }
+            }
+        }
+    }
+
+    /**
+     * Метод применяет ко всем клеткам в области заданной действите, определенное в делегате.
+     * @param iPos Координата строки клетки.
+     * @param jPos Координата столбца клетки.
+     * @param action Действие, которое следует применить.
+     * @param step Радиус области
+     */
+    public static void ApplyToAroundArea(int iPos, int jPos, Consumer<Pair<Integer, Integer>> action,int step) {
+        if (step < 0 ) {
+            throw new InvalidParameterException("step has dispositive value");
+        }
+
+        for (int i = -step;i <= step;i++) {
+            for (int j = -step; j <= step;j++) {
+                if ((i == 0 && j == 0) || !IsCorrectCoordinate(iPos + i, jPos + j)) {
+                    continue;
+                }
+
+                action.accept(new Pair<>(iPos + i, jPos + j));
             }
         }
     }
@@ -182,7 +207,7 @@ public class Field {
 
     /**
      * Возвращает пару координат клетки, с которой была начата игра.
-     * @return
+     * @return Координаты клетки
      */
     public static Pair<Integer,Integer> getStartPoint() {
         return _startPointCoordinates;

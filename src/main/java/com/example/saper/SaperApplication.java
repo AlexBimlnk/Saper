@@ -87,7 +87,6 @@ public class SaperApplication extends Application {
 
         if (_dif == null)
         {
-            //TODO доабвление послденей вырбанной сложности
             _dif = GameDifficulty.Easy;
         }
         launch();

@@ -106,3 +106,9 @@
     -fx-opacity: 0.3;
 }
 
+/*noinspection CssInvalidPseudoSelector*/
+.tile.win:clicked:disabled {
+    -fx-background-image: url('../Images/flag_style1.png');
+    -fx-background-color: rgba(255, 255, 255, 0);
+    -fx-text-fill: rgba(0, 0, 0, 0);
+}

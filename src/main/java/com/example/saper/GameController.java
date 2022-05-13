@@ -75,7 +75,7 @@ public class GameController implements Initializable {
     }
     @FXML
     private void openAllDebugClick(ActionEvent event) {
-        OpenAll(false,true);
+        OpenAll(true);
     }
     @FXML
     private void restartButtonClick(ActionEvent event) {
@@ -130,23 +130,20 @@ public class GameController implements Initializable {
 
     /**
      * Открывает все игровые клетки.
-     * @param isDisabling TODO:
-     * @param isShowAll TODO:
+     * @param isDebugging Параметр используемый для задания поведения метода. Если - {@code true}, то отобразятся все мины и числа на поле.
+     *                    Если - {@code false}, то ко всем клеткам применится метод {@code setDisable}
      */
-    private void OpenAll(boolean isDisabling, boolean isShowAll) {
+    private void OpenAll(boolean isDebugging) {
 
         Field.ApplyToAll(tile -> {
-            if (isShowAll) {
+            if (isDebugging) {
+                tile.getStyleClass().add("debug");
                 if (!tile.IsMine) {
                     tile.TextView.Invoke();
                 }
             }
-            if (isDisabling) {
-                tile.setDisable(true);
-            }
-            else {
-                tile.getStyleClass().add("debug");
-            }
+
+            tile.setDisable(!isDebugging);
         });
     }
 
@@ -280,7 +277,7 @@ public class GameController implements Initializable {
         _gameTimeInSeconds = 0;
         _timer.cancel();
 
-        OpenAll(true,false);
+        OpenAll(false);
     }
 
     /**
