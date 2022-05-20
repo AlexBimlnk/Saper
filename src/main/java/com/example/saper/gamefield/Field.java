@@ -14,6 +14,7 @@ public class Field {
     private static Tile[][] _field;
     private static Pair<Integer, Integer> _startPointCoordinates;
 
+    private static final int FIELD_SIZE = 500;
     private static int countMines;
     public static int GetCountMines() {
         return countMines;
@@ -27,8 +28,11 @@ public class Field {
      * Конструктор поля.
      * @param config Объект конфигурации.
      */
-    public Field(Config config) {
-        int rankOfTileMatrix = 500 / config.SizeTile;
+    public Field(Config config) throws IllegalArgumentException {
+        if (config == null)
+            throw new IllegalArgumentException("Config can't be null.");
+
+        int rankOfTileMatrix = FIELD_SIZE / config.SizeTile;
         _field = new Tile[rankOfTileMatrix][rankOfTileMatrix];
 
         _startPointCoordinates = new Pair<>(-1,-1);
@@ -57,7 +61,11 @@ public class Field {
      * @param p2 Вторая точка.
      * @return Расстояние между точками.
      */
-    public static int getDistanceToPoints(Pair<Integer, Integer> p1, Pair<Integer, Integer> p2) {
+    public static int getDistanceToPoints(Pair<Integer, Integer> p1, Pair<Integer, Integer> p2)
+            throws IllegalArgumentException {
+        if (p1 == null || p2 == null)
+            throw new IllegalArgumentException("Pairs can't be null.");
+
         int d1 = Math.abs(p2.getKey() - p1.getKey());
 
         int d2 = Math.abs(p2.getValue() - p1.getValue());
@@ -80,7 +88,10 @@ public class Field {
      * Метод применяет ко всем клеткам поля действие, определенное в делегате.
      * @param action Действие, которое следует применить.
      */
-    public static void applyToAll(Consumer<Tile> action) {
+    public static void applyToAll(Consumer<Tile> action) throws IllegalArgumentException {
+        if (action == null)
+            throw new IllegalArgumentException("Action can't be null.");
+
         for (int i = 0; i < _field.length; i++) {
             for (int j = 0; j < _field.length; j++) {
                 action.accept(_field[i][j]);
@@ -96,9 +107,12 @@ public class Field {
      * @param step Расстяоние на котором просматриваются клетки от заданной
      */
     public static void applyToAround(int iPos, int jPos, Consumer<Pair<Integer, Integer>> action, int step)
-            throws InvalidParameterException {
+            throws IllegalArgumentException, InvalidParameterException {
+        if (action == null)
+            throw new IllegalArgumentException("Action can't be null.");
+
         if (step < 0 ) {
-            throw new InvalidParameterException("step has dispositive value");
+            throw new InvalidParameterException("Step has dispositive value.");
         }
 
         for (int i = -step;i <= step;i++) {
@@ -136,13 +150,16 @@ public class Field {
      * @param step Радиус области
      */
     public static void applyToAroundArea(int iPos, int jPos, Consumer<Pair<Integer, Integer>> action, int step)
-            throws InvalidParameterException {
+            throws IllegalArgumentException, InvalidParameterException {
+        if (action == null)
+            throw new IllegalArgumentException("Action can't be null.");
+
         if (step < 0 ) {
             throw new InvalidParameterException("step has dispositive value");
         }
 
-        for (int i = -step;i <= step;i++) {
-            for (int j = -step; j <= step;j++) {
+        for (int i = -step; i <= step; i++) {
+            for (int j = -step; j <= step; j++) {
                 if ((i == 0 && j == 0) || !isCorrectCoordinate(iPos + i, jPos + j)) {
                     continue;
                 }
@@ -220,7 +237,10 @@ public class Field {
      * @param point Пара координат клетки.
      * @return true, если точка является начальной, иначе - false.
      */
-    public static boolean isStartPoint(Pair <Integer, Integer> point) {
+    public static boolean isStartPoint(Pair <Integer, Integer> point) throws IllegalArgumentException {
+        if (point == null)
+            throw new IllegalArgumentException("Point can't be null.");
+
         return Objects.equals(point.getKey(), _startPointCoordinates.getKey()) &&
                Objects.equals(point.getValue(), _startPointCoordinates.getValue());
     }

@@ -1,5 +1,7 @@
 package com.example.saper;
 
+import java.security.InvalidParameterException;
+
 /**
  * Класс представляющий сущность конфига.
  */
@@ -28,7 +30,10 @@ public class Config {
      * @param countMines Кол-во мин.
      * @param styleName Название класса стилей.
      */
-    public Config(int countTile, int sizeTile, int countMines, String styleName){
+    public Config(int countTile, int sizeTile, int countMines, String styleName) throws InvalidParameterException {
+        if (countTile <= 0 || sizeTile <= 0 || countMines <= 0 || styleName.isEmpty() || styleName == null)
+            throw new InvalidParameterException("Parameters should be positive and can't be empty or null.");
+
         CountTile = countTile;
         SizeTile = sizeTile;
         CountMines = countMines;

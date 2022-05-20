@@ -26,7 +26,7 @@ public class DSU {
      */
     public DSU(int len) throws InvalidParameterException{
         if (len <= 0) {
-            throw new InvalidParameterException("Length of DSU can't be negative");
+            throw new InvalidParameterException("Length of DSU should be positive.");
         }
 
         _parent = new int[len];
@@ -48,7 +48,7 @@ public class DSU {
      */
     public void makeSet(int indexElement, Pair<Integer,Integer> dataElement) throws IndexOutOfBoundsException {
         if (indexElement >= _parent.length || 0 > indexElement) {
-            throw new IndexOutOfBoundsException("Invalid set element index");
+            throw new IndexOutOfBoundsException("Invalid set element index.");
         }
         _setsCount++;
         _parent[indexElement] = indexElement;
@@ -64,11 +64,11 @@ public class DSU {
      */
     public int findSet(int indexElement) throws IndexOutOfBoundsException, InvalidParameterException {
         if (indexElement >= _parent.length || 0 > indexElement) {
-            throw new IndexOutOfBoundsException("Invalid index element of set");
+            throw new IndexOutOfBoundsException("Invalid index element of set.");
         }
 
         if (_parent[indexElement] == -1) {
-            throw new InvalidParameterException("No set with index element exists");
+            throw new InvalidParameterException("No set with index element exists.");
         }
 
         if (indexElement == _parent[indexElement]) {
@@ -84,12 +84,13 @@ public class DSU {
      * @param secondSetIndexElement Номер элемента множества
      */
     public void unionSets(int firstSetIndexElement, int secondSetIndexElement) throws IndexOutOfBoundsException, InvalidParameterException {
-        if (firstSetIndexElement >= _parent.length || secondSetIndexElement >= _parent.length || 0 > firstSetIndexElement || 0 > secondSetIndexElement) {
-            throw new IndexOutOfBoundsException("Invalid index element of set");
+        if (firstSetIndexElement >= _parent.length || secondSetIndexElement >= _parent.length ||
+            0 > firstSetIndexElement || 0 > secondSetIndexElement) {
+            throw new IndexOutOfBoundsException("Invalid index element of set.");
         }
 
         if (_parent[firstSetIndexElement] == -1 || _parent[secondSetIndexElement] == -1) {
-            throw new InvalidParameterException("No set with index element exists");
+            throw new InvalidParameterException("No set with index element exists.");
         }
 
         firstSetIndexElement = findSet(firstSetIndexElement);
@@ -116,11 +117,11 @@ public class DSU {
      */
     public ArrayList<Integer> getAllSetElem(int indexElement) throws IndexOutOfBoundsException, InvalidParameterException {
         if (indexElement >= _parent.length || 0 > indexElement) {
-            throw new IndexOutOfBoundsException("Invalid index element of set");
+            throw new IndexOutOfBoundsException("Invalid index element of set.");
         }
 
         if (_parent[indexElement] == -1) {
-            throw new InvalidParameterException("No set with index element exists");
+            throw new InvalidParameterException("No set with index element exists.");
         }
 
         indexElement = _parent[indexElement];
@@ -160,11 +161,11 @@ public class DSU {
      */
     public Pair<Integer,Integer> getElemInSet(int indexElement) throws InvalidParameterException, IndexOutOfBoundsException {
         if (indexElement >= _parent.length || 0 > indexElement) {
-            throw new IndexOutOfBoundsException("Invalid set element index");
+            throw new IndexOutOfBoundsException("Invalid set element index.");
         }
 
         if (_parent[indexElement] == -1) {
-            throw new InvalidParameterException("No set with index element exists");
+            throw new InvalidParameterException("No set with index element exists.");
         }
 
         return _data[indexElement];
@@ -177,11 +178,11 @@ public class DSU {
      */
     public int getSetSize(int setLeaderIndex) throws  IndexOutOfBoundsException, InvalidParameterException {
         if (setLeaderIndex >= _parent.length || 0 > setLeaderIndex) {
-            throw new IndexOutOfBoundsException("Invalid set element index");
+            throw new IndexOutOfBoundsException("Invalid set element index.");
         }
 
         if (_parent[setLeaderIndex] == -1) {
-            throw new InvalidParameterException("No set with index leader exists");
+            throw new InvalidParameterException("No set with index leader exists.");
         }
 
         return _size[setLeaderIndex];

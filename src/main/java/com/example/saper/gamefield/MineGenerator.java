@@ -7,6 +7,7 @@ import com.example.saper.custom.structure.RandomWithProbability;
 import com.example.saper.custom.structure.DSU;
 import javafx.util.Pair;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,7 +46,10 @@ public class MineGenerator {
      * </p>
      * @param countMine Кол-во мин.
      */
-    public static void mineGen(int countMine) {
+    public static void mineGen(int countMine) throws InvalidParameterException {
+        if (countMine <= 0)
+            throw new InvalidParameterException("Count of mine should be positive.");
+
         switch (GameController.getGameDifficulty()) {
             case Easy -> _mineSetStep = 2;
             case Normal, Hard -> _mineSetStep = 3;

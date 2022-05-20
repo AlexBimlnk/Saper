@@ -40,7 +40,7 @@ public class RandomWithProbability<T extends Number> {
         }
 
         if (probability <= 0) {
-            throw new InvalidParameterException("Probability should has positive value");
+            throw new InvalidParameterException("Probability should has positive value.");
         }
 
         _upperBound += probability;

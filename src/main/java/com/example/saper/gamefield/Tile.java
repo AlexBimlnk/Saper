@@ -42,7 +42,10 @@ public class Tile extends Button {
      * @param rowIndex Координата клетки в строке.
      * @param columnIndex Координата клетки в столбце.
      */
-    public Tile(int rowIndex, int columnIndex){
+    public Tile(int rowIndex, int columnIndex) throws IndexOutOfBoundsException {
+        if (rowIndex < 0 || columnIndex < 0)
+            throw new IndexOutOfBoundsException("Indexes can't be less than zero.");
+
         _clicked = new SimpleBooleanProperty(false);
         _clicked.addListener( e -> pseudoClassStateChanged(PseudoClass.getPseudoClass("clicked"),_clicked.get()));
         _clicked.addListener(GameController.clickListener);
@@ -187,7 +190,7 @@ public class Tile extends Button {
      * @param value Кол-во мин.
      */
     public void setMinesAround(int value) throws InvalidParameterException {
-        if(value < 0)
+        if (value < 0)
             throw new InvalidParameterException();
         _minesAround = value;
     }
@@ -204,7 +207,10 @@ public class Tile extends Button {
      * Метод устанавливает размер клетки.
      * @param size Размер.
      */
-    public static void setSize(int size) {
+    public static void setSize(int size) throws InvalidParameterException {
+        if (size <= 0)
+            throw new InvalidParameterException("Size should be positive.");
+
         _size = size;
     }
 
