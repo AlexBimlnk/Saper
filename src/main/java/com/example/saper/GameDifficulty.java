@@ -5,18 +5,18 @@ package com.example.saper;
  */
 public enum GameDifficulty {
     Easy{
-        public Config GetConfigField(){
-            return ConfigLoader.LoadConfig(GameDifficulty.Easy);
+        public Config getConfigField(){
+            return ConfigLoader.loadConfig(GameDifficulty.Easy);
         }
     },
     Normal{
-        public Config GetConfigField() {
-            return ConfigLoader.LoadConfig(GameDifficulty.Normal);
+        public Config getConfigField() {
+            return ConfigLoader.loadConfig(GameDifficulty.Normal);
         }
     },
     Hard{
-        public Config GetConfigField() {
-            return ConfigLoader.LoadConfig(GameDifficulty.Hard);
+        public Config getConfigField() {
+            return ConfigLoader.loadConfig(GameDifficulty.Hard);
         }
     };
 
@@ -24,5 +24,5 @@ public enum GameDifficulty {
      * Возвращает конфигурацию соотвественно игровой сложности.
      * @return Объект типа {@link Config}.
      */
-    public abstract Config GetConfigField();
+    public abstract Config getConfigField();
 }

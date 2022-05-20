@@ -38,10 +38,10 @@ class DSUTest {
                 dynamicTest("Throws IndexOutOfBoundsException when index is invalid",
                         () -> assertThrows(
                                 IndexOutOfBoundsException.class,
-                                () -> _dsu.MakeSet(outOfBoundsIndex, simplePair))),
+                                () -> _dsu.makeSet(outOfBoundsIndex, simplePair))),
                 dynamicTest("Can make set",
                         () -> assertDoesNotThrow(
-                                () -> _dsu.MakeSet(validIndex, simplePair)))
+                                () -> _dsu.makeSet(validIndex, simplePair)))
         );
     }
 
@@ -56,20 +56,20 @@ class DSUTest {
         int invalidParameterIndex = 2;
 
         // Act
-        _dsu.MakeSet(validIndex, simplePair);
+        _dsu.makeSet(validIndex, simplePair);
 
         // Assert
         return Arrays.asList(
                 dynamicTest("Throws IndexOutOfBoundsException when index is invalid",
                         () -> assertThrows(
                                 IndexOutOfBoundsException.class,
-                                () -> _dsu.FindSet(outOfBoundsIndex))),
+                                () -> _dsu.findSet(outOfBoundsIndex))),
                 dynamicTest("Throws InvalidParameterException when index is invalid",
                         () -> assertThrows(
                                 InvalidParameterException.class,
-                                () -> _dsu.FindSet(invalidParameterIndex))),
+                                () -> _dsu.findSet(invalidParameterIndex))),
                 dynamicTest("Can make set",
-                        () -> assertEquals(expectedValue, _dsu.FindSet(validIndex)))
+                        () -> assertEquals(expectedValue, _dsu.findSet(validIndex)))
         );
     }
 
@@ -84,38 +84,38 @@ class DSUTest {
 
         // Act
         for (int indexElement : indexElements) {
-            _dsu.MakeSet(indexElement, simplePair);
+            _dsu.makeSet(indexElement, simplePair);
         }
 
-        _dsu.UnionSets(indexElements[0], indexElements[1]);
-        _dsu.UnionSets(indexElements[5], indexElements[4]);
-        _dsu.UnionSets(indexElements[0], indexElements[2]);
-        _dsu.UnionSets(indexElements[1], indexElements[3]);
+        _dsu.unionSets(indexElements[0], indexElements[1]);
+        _dsu.unionSets(indexElements[5], indexElements[4]);
+        _dsu.unionSets(indexElements[0], indexElements[2]);
+        _dsu.unionSets(indexElements[1], indexElements[3]);
 
         // Assert
         return Arrays.asList(
                 dynamicTest("Throws IndexOutOfBoundsException when index is invalid",
                         () -> assertThrows(
                                 IndexOutOfBoundsException.class,
-                                () -> _dsu.UnionSets(outOfBoundsIndex, 0))),
+                                () -> _dsu.unionSets(outOfBoundsIndex, 0))),
                 dynamicTest("Throws InvalidParameterException when index is invalid",
                         () -> assertThrows(
                                 InvalidParameterException.class,
-                                () -> _dsu.UnionSets(invalidParameterIndex, 0))),
+                                () -> _dsu.unionSets(invalidParameterIndex, 0))),
                 dynamicTest("1 union test",
-                        () -> assertEquals(0, _dsu.FindSet(0))),
+                        () -> assertEquals(0, _dsu.findSet(0))),
                 dynamicTest("2 union test",
-                        () -> assertEquals(0, _dsu.FindSet(2))),
+                        () -> assertEquals(0, _dsu.findSet(2))),
                 dynamicTest("3 union test",
-                        () -> assertEquals(0, _dsu.FindSet(3))),
+                        () -> assertEquals(0, _dsu.findSet(3))),
                 dynamicTest("4 union test",
-                        () -> assertEquals(0, _dsu.FindSet(5))),
+                        () -> assertEquals(0, _dsu.findSet(5))),
                 dynamicTest("5 union test",
-                        () -> assertEquals(7, _dsu.FindSet(1))),
+                        () -> assertEquals(7, _dsu.findSet(1))),
                 dynamicTest("6 union test",
-                        () -> assertEquals(7, _dsu.FindSet(7))),
+                        () -> assertEquals(7, _dsu.findSet(7))),
                 dynamicTest("7 union test",
-                        () -> assertEquals(8, _dsu.FindSet(8)))
+                        () -> assertEquals(8, _dsu.findSet(8)))
         );
     }
 
@@ -133,34 +133,34 @@ class DSUTest {
 
         // Act
         for (int indexElement : indexElements) {
-            _dsu.MakeSet(indexElement, simplePair);
+            _dsu.makeSet(indexElement, simplePair);
         }
 
-        _dsu.UnionSets(indexElements[0], indexElements[1]);
-        _dsu.UnionSets(indexElements[5], indexElements[4]);
-        _dsu.UnionSets(indexElements[0], indexElements[2]);
-        _dsu.UnionSets(indexElements[1], indexElements[3]);
+        _dsu.unionSets(indexElements[0], indexElements[1]);
+        _dsu.unionSets(indexElements[5], indexElements[4]);
+        _dsu.unionSets(indexElements[0], indexElements[2]);
+        _dsu.unionSets(indexElements[1], indexElements[3]);
 
         // Assert
         return Arrays.asList(
                 dynamicTest("Throws IndexOutOfBoundsException when index is invalid",
                         () -> assertThrows(
                                 IndexOutOfBoundsException.class,
-                                () -> _dsu.GetAllSetElem(outOfBoundsIndex))),
+                                () -> _dsu.getAllSetElem(outOfBoundsIndex))),
                 dynamicTest("Throws InvalidParameterException when index is invalid",
                         () -> assertThrows(
                                 InvalidParameterException.class,
-                                () -> _dsu.GetAllSetElem(invalidParameterIndex))),
+                                () -> _dsu.getAllSetElem(invalidParameterIndex))),
                 dynamicTest("1 get all set elements", () -> {
                     for (int i = 0; i <= 3; i++) {
-                        assertIterableEquals(expectedListSet1, _dsu.GetAllSetElem(i));
+                        assertIterableEquals(expectedListSet1, _dsu.getAllSetElem(i));
                     }
                 }),
                 dynamicTest("2 get all set elements", () -> {
-                    assertIterableEquals(expectedListSet2, _dsu.GetAllSetElem(1));
-                    assertIterableEquals(expectedListSet2, _dsu.GetAllSetElem(7));
+                    assertIterableEquals(expectedListSet2, _dsu.getAllSetElem(1));
+                    assertIterableEquals(expectedListSet2, _dsu.getAllSetElem(7));
                 }),
-                dynamicTest("3 get all set elements", () -> assertIterableEquals(expectedListSet3, _dsu.GetAllSetElem(8)))
+                dynamicTest("3 get all set elements", () -> assertIterableEquals(expectedListSet3, _dsu.getAllSetElem(8)))
         );
     }
 
@@ -174,16 +174,16 @@ class DSUTest {
 
         // Act
         for (int indexElement : indexElements) {
-            _dsu.MakeSet(indexElement, simplePair);
+            _dsu.makeSet(indexElement, simplePair);
         }
 
-        _dsu.UnionSets(indexElements[0], indexElements[1]);
-        _dsu.UnionSets(indexElements[5], indexElements[4]);
-        _dsu.UnionSets(indexElements[0], indexElements[2]);
-        _dsu.UnionSets(indexElements[1], indexElements[3]);
+        _dsu.unionSets(indexElements[0], indexElements[1]);
+        _dsu.unionSets(indexElements[5], indexElements[4]);
+        _dsu.unionSets(indexElements[0], indexElements[2]);
+        _dsu.unionSets(indexElements[1], indexElements[3]);
 
         // Assert
-        assertIterableEquals(expectedList, _dsu.GetAllUniqueSets());
+        assertIterableEquals(expectedList, _dsu.getAllUniqueSets());
     }
 
 
@@ -196,13 +196,13 @@ class DSUTest {
 
         // Act
         for (int i = 0; i < indexElements.length; i++) {
-            _dsu.MakeSet(indexElements[i], new Pair<>(i+1, i+1));
+            _dsu.makeSet(indexElements[i], new Pair<>(i+1, i+1));
         }
 
-        _dsu.UnionSets(indexElements[0], indexElements[1]);
-        _dsu.UnionSets(indexElements[5], indexElements[4]);
-        _dsu.UnionSets(indexElements[0], indexElements[2]);
-        _dsu.UnionSets(indexElements[1], indexElements[3]);
+        _dsu.unionSets(indexElements[0], indexElements[1]);
+        _dsu.unionSets(indexElements[5], indexElements[4]);
+        _dsu.unionSets(indexElements[0], indexElements[2]);
+        _dsu.unionSets(indexElements[1], indexElements[3]);
 
         // Assert
         return Arrays.asList(
@@ -233,13 +233,13 @@ class DSUTest {
 
         // Act
         for (int indexElement : indexElements) {
-            _dsu.MakeSet(indexElement, simplePair);
+            _dsu.makeSet(indexElement, simplePair);
         }
 
-        _dsu.UnionSets(indexElements[0], indexElements[1]);
-        _dsu.UnionSets(indexElements[5], indexElements[4]);
-        _dsu.UnionSets(indexElements[0], indexElements[2]);
-        _dsu.UnionSets(indexElements[1], indexElements[3]);
+        _dsu.unionSets(indexElements[0], indexElements[1]);
+        _dsu.unionSets(indexElements[5], indexElements[4]);
+        _dsu.unionSets(indexElements[0], indexElements[2]);
+        _dsu.unionSets(indexElements[1], indexElements[3]);
 
         // Assert
         return Arrays.asList(

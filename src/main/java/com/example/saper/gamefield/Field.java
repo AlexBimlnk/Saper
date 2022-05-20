@@ -44,7 +44,7 @@ public class Field {
         countMines = config.CountMines;
         countSimpleTiles = config.CountTile - config.CountMines;
 
-        ApplyToAll(tile -> {
+        applyToAll(tile -> {
             tile.getStyleClass().add("tile");
             tile.getStyleClass().add(config.StyleName);
             tile.setId("default");
@@ -57,7 +57,7 @@ public class Field {
      * @param p2 Вторая точка.
      * @return Расстояние между точками.
      */
-    public static int GetDistanceToPoints(Pair<Integer, Integer> p1, Pair<Integer, Integer> p2) {
+    public static int getDistanceToPoints(Pair<Integer, Integer> p1, Pair<Integer, Integer> p2) {
         int d1 = Math.abs(p2.getKey() - p1.getKey());
 
         int d2 = Math.abs(p2.getValue() - p1.getValue());
@@ -71,7 +71,7 @@ public class Field {
      * @param jPos Координата столбца клетки.
      * @return Возвращает true, если пара представляет точку внутри поля, false - если вышли за границы.
      */
-    public static boolean IsCorrectCoordinate(int iPos, int jPos) {
+    public static boolean isCorrectCoordinate(int iPos, int jPos) {
         return 0 <= iPos && iPos < _field.length &&
                0 <= jPos && jPos < _field[0].length;
     }
@@ -80,7 +80,7 @@ public class Field {
      * Метод применяет ко всем клеткам поля действие, определенное в делегате.
      * @param action Действие, которое следует применить.
      */
-    public static void ApplyToAll(Consumer<Tile> action) {
+    public static void applyToAll(Consumer<Tile> action) {
         for (int i = 0; i < _field.length; i++) {
             for (int j = 0; j < _field.length; j++) {
                 action.accept(_field[i][j]);
@@ -95,18 +95,19 @@ public class Field {
      * @param action Действие, которое следует применить.
      * @param step Расстяоние на котором просматриваются клетки от заданной
      */
-    public static void ApplyToAround(int iPos, int jPos, Consumer<Pair<Integer, Integer>> action, int step) {
+    public static void applyToAround(int iPos, int jPos, Consumer<Pair<Integer, Integer>> action, int step)
+            throws InvalidParameterException {
         if (step < 0 ) {
             throw new InvalidParameterException("step has dispositive value");
         }
 
         for (int i = -step;i <= step;i++) {
-            if (IsCorrectCoordinate(iPos - step, jPos + i)) {
+            if (isCorrectCoordinate(iPos - step, jPos + i)) {
                 action.accept(new Pair<>(iPos - step, jPos + i));
             }
 
             if (-step != i) {
-                if (IsCorrectCoordinate(iPos + i, jPos - step)) {
+                if (isCorrectCoordinate(iPos + i, jPos - step)) {
                     action.accept(new Pair<>(iPos + i, jPos - step));
                 }
             }
@@ -115,12 +116,12 @@ public class Field {
                 continue;
             }
 
-            if (IsCorrectCoordinate(iPos + step, jPos + i)) {
+            if (isCorrectCoordinate(iPos + step, jPos + i)) {
                 action.accept(new Pair<>(iPos + step, jPos + i));
             }
 
             if (step != i) {
-                if (IsCorrectCoordinate(iPos + i, jPos + step)) {
+                if (isCorrectCoordinate(iPos + i, jPos + step)) {
                     action.accept(new Pair<>(iPos + i, jPos + step));
                 }
             }
@@ -134,14 +135,15 @@ public class Field {
      * @param action Действие, которое следует применить.
      * @param step Радиус области
      */
-    public static void ApplyToAroundArea(int iPos, int jPos, Consumer<Pair<Integer, Integer>> action,int step) {
+    public static void applyToAroundArea(int iPos, int jPos, Consumer<Pair<Integer, Integer>> action, int step)
+            throws InvalidParameterException {
         if (step < 0 ) {
             throw new InvalidParameterException("step has dispositive value");
         }
 
         for (int i = -step;i <= step;i++) {
             for (int j = -step; j <= step;j++) {
-                if ((i == 0 && j == 0) || !IsCorrectCoordinate(iPos + i, jPos + j)) {
+                if ((i == 0 && j == 0) || !isCorrectCoordinate(iPos + i, jPos + j)) {
                     continue;
                 }
 
@@ -155,8 +157,8 @@ public class Field {
      * @param iPos Координата строки клетки.
      * @param jPos Координата столбца клетки.
      */
-    public static void IncCountMinesAroundOfTile(int iPos, int jPos) {
-        ApplyToAround(iPos, jPos, (coordinatePair) -> {
+    public static void incCountMinesAroundOfTile(int iPos, int jPos) {
+        applyToAround(iPos, jPos, (coordinatePair) -> {
             Tile tile = getTile(coordinatePair.getKey(),coordinatePair.getValue());
             tile.setMinesAround(tile.getMinesAround() + 1);
         },1);
@@ -168,12 +170,12 @@ public class Field {
      * @param jPos Координата столбца.
      * @return Количество мин.
      */
-    public static int CountMinesAround(int iPos, int jPos) {
+    public static int countMinesAround(int iPos, int jPos) {
         IntegerProperty value = new SimpleIntegerProperty(0);
 
-        ApplyToAround(iPos, jPos, (coordinatePair) -> {
+        applyToAround(iPos, jPos, (coordinatePair) -> {
             Tile tile = getTile(coordinatePair.getKey(), coordinatePair.getValue());
-            if (tile.IsMine) {
+            if (tile.isMine) {
                 value.set(value.getValue() + 1);
             }
         },1);
@@ -188,7 +190,7 @@ public class Field {
      * @return Объект типа {@link Tile}
      */
     public static Tile getTile(int iPos, int jPos) {
-        if (IsCorrectCoordinate(iPos,jPos)) {
+        if (isCorrectCoordinate(iPos,jPos)) {
             return _field[iPos][jPos];
         }
         return null;
@@ -200,7 +202,7 @@ public class Field {
      * @param jPos Координата столбца клетки.
      */
     public static void setStartPoint(int iPos, int jPos) {
-        if (IsCorrectCoordinate(iPos, jPos) && (_startPointCoordinates.getValue() == -1 && _startPointCoordinates.getKey() == -1)) {
+        if (isCorrectCoordinate(iPos, jPos) && (_startPointCoordinates.getValue() == -1 && _startPointCoordinates.getKey() == -1)) {
             _startPointCoordinates = new Pair<>(iPos, jPos);
         }
     }

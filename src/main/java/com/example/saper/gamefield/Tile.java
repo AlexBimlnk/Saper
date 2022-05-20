@@ -35,6 +35,7 @@ public class Tile extends Button {
     private boolean _isTwoButtonPressedHandler = true;
 
     public final ShownTextHandler TextView;
+    public boolean isMine = false; //prop
 
     /**
      * Конструктор клетки.
@@ -50,21 +51,19 @@ public class Tile extends Button {
         _flag.addListener( e -> pseudoClassStateChanged(PseudoClass.getPseudoClass("flag"),_flag.get()));
         _flag.addListener(GameController.flagListener);
 
-        LoadDefaultSettings();
+        loadDefaultSettings();
         _rowIndex = rowIndex;
         _columIndex = columnIndex;
 
         if (GameController.getGameDifficulty() == GameDifficulty.Hard) {
-            TextView = (rnd.nextBoolean() ? this::ShowTextHard : this::ShowTextSimple);
+            TextView = (rnd.nextBoolean() ? this::showTextHard : this::showTextSimple);
         }
         else {
-            TextView = this::ShowTextSimple;
+            TextView = this::showTextSimple;
         }
     }
 
-    public boolean IsMine = false; //prop
-
-    private void LoadDefaultSettings() {
+    private void loadDefaultSettings() {
 
         setMinSize(_size, _size);
         setMaxSize(_size, _size);
@@ -77,13 +76,13 @@ public class Tile extends Button {
                 if(isClicked() && _isTwoButtonPressedHandler &&
                    GameController.getGameDifficulty() != GameDifficulty.Hard) {
 
-                    int countMines = Field.CountMinesAround(_rowIndex, _columIndex);
+                    int countMines = Field.countMinesAround(_rowIndex, _columIndex);
                     class Container {
                         public int countFlags = 0;
                     }
                     Container container = new Container();
                     
-                    Field.ApplyToAround(_rowIndex, _columIndex, (coordinate) -> {
+                    Field.applyToAround(_rowIndex, _columIndex, (coordinate) -> {
                         Tile tile = Field.getTile(coordinate.getKey(), coordinate.getValue());
                         if (tile.isFlag())
                             container.countFlags++;
@@ -104,13 +103,13 @@ public class Tile extends Button {
                     setClicked(true);
                 }
 
-                MouseHandler(event.getButton());
+                mouseHandler(event.getButton());
             }
         });
 
 
     }
-    private void ShowTextSimple() {
+    private void showTextSimple() {
         if (_minesAround == 0)
             return;
 
@@ -133,7 +132,7 @@ public class Tile extends Button {
         else if(_minesAround == 8)
             setTextFill(Color.BLACK);
     }
-    private void ShowTextHard() {
+    private void showTextHard() {
         if (_minesAround == 0)
             return;
 
@@ -150,17 +149,17 @@ public class Tile extends Button {
         if(upperBound != lowerBound)
             setText(lowerBound + "-" + upperBound);
         else
-            ShowTextSimple();
+            showTextSimple();
     }
 
     /**
      * Обработчик события нажатия мыши по кнопке.
      * @param button Нажатая кнопка.
      */
-    public void MouseHandler(MouseButton button) {
+    public void mouseHandler(MouseButton button) {
         //Если нажали на ЛКМ
         if(button == MouseButton.PRIMARY && !isFlag()) {
-            if (IsMine) {
+            if (isMine) {
                 this.setId("mine");
                 if(_explosionEventHandler != null) {
                     _explosionEventHandler.Invoke();
@@ -254,18 +253,18 @@ public class Tile extends Button {
     }
 
     /**
-     * Делегат, вызывающийся при открытии соседних клеток.
-     */
-    public interface CallNearby {
-        void Invoke(int i,int y);
-    }
-
-    /**
      * Устанавливает делегат, который следует вызвать при открытии соседних клеток.
      * @param call
      */
     public static void setCall(CallNearby call) {
         _callHandler = call;
+    }
+
+    /**
+     * Делегат, вызывающийся при открытии соседних клеток.
+     */
+    public interface CallNearby {
+        void Invoke(int i,int y);
     }
 
     /**

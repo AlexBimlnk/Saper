@@ -30,7 +30,7 @@ public class SaperApplication extends Application {
         return _debugOption;
     }
 
-    public static void SetSizeStage(int width, int height){
+    public static void setSizeStage(int width, int height){
         StageApp.setMinHeight(height);
         StageApp.setMaxHeight(height);
 
@@ -41,7 +41,7 @@ public class SaperApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         StageApp = stage;
-        SetSizeStage(WIDTH, HEIGHT);
+        setSizeStage(WIDTH, HEIGHT);
         FXMLLoader fxmlLoader = new FXMLLoader(SaperApplication.class.getResource("MainView.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Сапёр!");
@@ -50,7 +50,7 @@ public class SaperApplication extends Application {
 
         scene.getStylesheets().add(getClass().getResource("/_config/style.css").toExternalForm());
 
-        stage.setOnCloseRequest(e -> GameController.CloseApp());
+        stage.setOnCloseRequest(e -> GameController.closeApp());
 
         stage.show();
 

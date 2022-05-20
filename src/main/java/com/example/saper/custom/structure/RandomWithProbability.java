@@ -34,7 +34,7 @@ public class RandomWithProbability<T extends Number> {
      * @param elem Новый элемнет типа {@link T}, добавляемый в множество остальных
      * @param probability Вероятность выпадения элемента {@code elem}
      */
-    public void addNewElem(int probability, T elem) {
+    public void addNewElem(int probability, T elem) throws InvalidParameterException {
         if (elem == null) {
             return;
         }
@@ -51,7 +51,7 @@ public class RandomWithProbability<T extends Number> {
      * Метод получения случайного элмента с учётом их вероятности.
      * @return Полученный элемент типа {@link T}
      */
-    public T GetRandomElem() {
+    public T getRandomElem() {
         int randomVal = _random.nextInt(_upperBound);
 
         int selectedItem = -1; //выбранная "редкость"

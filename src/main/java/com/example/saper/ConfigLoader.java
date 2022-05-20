@@ -14,7 +14,7 @@ public class ConfigLoader {
      * @param difficulty Игровая сложность.
      * @return Объект типа {@link Config}.
      */
-    public static Config LoadConfig(GameDifficulty difficulty) {
+    public static Config loadConfig(GameDifficulty difficulty) {
 
         InputStream inputStream = null;
         switch (difficulty) {

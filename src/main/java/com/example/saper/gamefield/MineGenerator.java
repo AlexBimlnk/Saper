@@ -26,7 +26,7 @@ public class MineGenerator {
      * @param x Целое число
      * @return Полученная вероятность
      */
-    private static int MathGetProbability(int x) {
+    private static int mathGetProbability(int x) {
         double res = (Math.exp(-(float)x/6+3))*2/3;
 
         return (int)res;
@@ -45,7 +45,7 @@ public class MineGenerator {
      * </p>
      * @param countMine Кол-во мин.
      */
-    public static void MineGen(int countMine) {
+    public static void mineGen(int countMine) {
         switch (GameController.getGameDifficulty()) {
             case Easy -> _mineSetStep = 2;
             case Normal, Hard -> _mineSetStep = 3;
@@ -67,7 +67,7 @@ public class MineGenerator {
                 Pair<Integer,Integer> curTile = new Pair<>(i,j);
                 indexes[i][j] = -(countMine + 1);
                 if (!Field.isStartPoint(curTile)) {
-                    int distToStart = Field.GetDistanceToPoints(curTile, Field.getStartPoint()) - 1;
+                    int distToStart = Field.getDistanceToPoints(curTile, Field.getStartPoint()) - 1;
                     int probability = _startPointWeight;
 
                     if (!Field.isNearWithBorder(curTile.getKey(), curTile.getValue())) {
@@ -93,14 +93,14 @@ public class MineGenerator {
 
         for (int mineIteration = 0;mineIteration < countMine; mineIteration++) {
             int setContinueProbability = 0;
-            for (var set : mineSets.GetAllUniqueSets()) {
-                setContinueProbability += MathGetProbability(mineSets.getSetSize(set));
+            for (var set : mineSets.getAllUniqueSets()) {
+                setContinueProbability += mathGetProbability(mineSets.getSetSize(set));
             }
 
             RandomWithProbability<Integer> choseBehave = new RandomWithProbability<>(random);
 
             if (inSetTilesCount.get() != tilesWithProbability.size()) {
-                choseBehave.addNewElem(MathGetProbability(0),0);
+                choseBehave.addNewElem(mathGetProbability(0),0);
             }
 
             if (setContinueProbability != 0) {
@@ -109,7 +109,7 @@ public class MineGenerator {
 
             RandomWithProbability<Integer> tileRandomize = new RandomWithProbability(random);
 
-            if (choseBehave.GetRandomElem() == 0) {
+            if (choseBehave.getRandomElem() == 0) {
                 for (var elem : tilesWithProbability) {
                     if (setCheckIteration[elem.getValue().getKey()][elem.getValue().getValue()] == 0) {
                         tileRandomize.addNewElem(elem.getKey(), indexes[elem.getValue().getKey()][elem.getValue().getValue()]);
@@ -117,17 +117,17 @@ public class MineGenerator {
                 }
             }
             else {
-                for (var setLeader : mineSets.GetAllUniqueSets()) {
+                for (var setLeader : mineSets.getAllUniqueSets()) {
                     int finalMineIteration = (countMine + 1) * mineIteration + setLeader;
-                    for (var setsMine : mineSets.GetAllSetElem(setLeader)) {
+                    for (var setsMine : mineSets.getAllSetElem(setLeader)) {
 
-                        Field.ApplyToAroundArea(mineSets.getElemInSet(setsMine).getKey(), mineSets.getElemInSet(setsMine).getValue(), (tile) -> {
+                        Field.applyToAroundArea(mineSets.getElemInSet(setsMine).getKey(), mineSets.getElemInSet(setsMine).getValue(), (tile) -> {
 
                             if (setCheckIteration[tile.getKey()][tile.getValue()] != finalMineIteration &&
                                     setCheckIteration[tile.getKey()][tile.getValue()] >= 1) {
                                 setCheckIteration[tile.getKey()][tile.getValue()] = finalMineIteration;
 
-                                int probabilityOfTile = MathGetProbability(mineSets.getSetSize(setLeader)) +
+                                int probabilityOfTile = mathGetProbability(mineSets.getSetSize(setLeader)) +
                                         tilesWithProbability.get(indexes[tile.getKey()][tile.getValue()]).getKey();
                                 tileRandomize.addNewElem(probabilityOfTile, indexes[tile.getKey()][tile.getValue()]);
                             }
@@ -137,29 +137,29 @@ public class MineGenerator {
                 }
             }
 
-            int randomIndex = tileRandomize.GetRandomElem();
+            int randomIndex = tileRandomize.getRandomElem();
 
             Pair<Integer,Integer> newMineCord = tilesWithProbability.get(randomIndex).getValue();
 
             if (setCheckIteration[newMineCord.getKey()][newMineCord.getValue()] == 0) {
 
-                mineSets.MakeSet(mineIteration, newMineCord);
+                mineSets.makeSet(mineIteration, newMineCord);
                 inSetTilesCount.getAndIncrement();
             }
             else {
 
                 int selectedSet = setCheckIteration[newMineCord.getKey()][newMineCord.getValue()] % (countMine + 1);
 
-                mineSets.MakeSet(mineIteration, newMineCord);
-                mineSets.UnionSets(selectedSet, mineIteration);
+                mineSets.makeSet(mineIteration, newMineCord);
+                mineSets.unionSets(selectedSet, mineIteration);
             }
 
-            Field.getTile(newMineCord.getKey(),newMineCord.getValue()).IsMine = true;
+            Field.getTile(newMineCord.getKey(),newMineCord.getValue()).isMine = true;
             Field.getTile(newMineCord.getKey(),newMineCord.getValue()).setId("mine");
-            Field.IncCountMinesAroundOfTile(newMineCord.getKey(),newMineCord.getValue());
+            Field.incCountMinesAroundOfTile(newMineCord.getKey(),newMineCord.getValue());
 
 
-            Field.ApplyToAroundArea(newMineCord.getKey(), newMineCord.getValue(),(coordinate) -> {
+            Field.applyToAroundArea(newMineCord.getKey(), newMineCord.getValue(),(coordinate) -> {
                 if (setCheckIteration[coordinate.getKey()][coordinate.getValue()] == 0) {
                     setCheckIteration[coordinate.getKey()][coordinate.getValue()]= 1;
                     inSetTilesCount.getAndIncrement();

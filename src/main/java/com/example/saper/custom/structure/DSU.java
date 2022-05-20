@@ -46,7 +46,7 @@ public class DSU {
      * @param indexElement Номер элемента в {@link DSU}
      * @param dataElement {@link  Pair} закрепленный за элментом {@code indexElement}
      */
-    public void MakeSet(int indexElement, Pair<Integer,Integer> dataElement) throws IndexOutOfBoundsException {
+    public void makeSet(int indexElement, Pair<Integer,Integer> dataElement) throws IndexOutOfBoundsException {
         if (indexElement >= _parent.length || 0 > indexElement) {
             throw new IndexOutOfBoundsException("Invalid set element index");
         }
@@ -62,7 +62,7 @@ public class DSU {
      * @param indexElement элемент множества
      * @return <i>лидер</i> множества
      */
-    public int FindSet(int indexElement) throws IndexOutOfBoundsException, InvalidParameterException {
+    public int findSet(int indexElement) throws IndexOutOfBoundsException, InvalidParameterException {
         if (indexElement >= _parent.length || 0 > indexElement) {
             throw new IndexOutOfBoundsException("Invalid index element of set");
         }
@@ -75,7 +75,7 @@ public class DSU {
             return indexElement;
         }
 
-        return _parent[indexElement] = FindSet(_parent[indexElement]);
+        return _parent[indexElement] = findSet(_parent[indexElement]);
     }
 
     /**
@@ -83,7 +83,7 @@ public class DSU {
      * @param firstSetIndexElement Номер элемента множества
      * @param secondSetIndexElement Номер элемента множества
      */
-    public void UnionSets(int firstSetIndexElement, int secondSetIndexElement) throws IndexOutOfBoundsException, InvalidParameterException {
+    public void unionSets(int firstSetIndexElement, int secondSetIndexElement) throws IndexOutOfBoundsException, InvalidParameterException {
         if (firstSetIndexElement >= _parent.length || secondSetIndexElement >= _parent.length || 0 > firstSetIndexElement || 0 > secondSetIndexElement) {
             throw new IndexOutOfBoundsException("Invalid index element of set");
         }
@@ -92,8 +92,8 @@ public class DSU {
             throw new InvalidParameterException("No set with index element exists");
         }
 
-        firstSetIndexElement = FindSet(firstSetIndexElement);
-        secondSetIndexElement = FindSet(secondSetIndexElement);
+        firstSetIndexElement = findSet(firstSetIndexElement);
+        secondSetIndexElement = findSet(secondSetIndexElement);
 
         if (firstSetIndexElement == secondSetIndexElement) {
             return;
@@ -114,7 +114,7 @@ public class DSU {
      * @param indexElement Элемент множества.
      * @return {@link ArrayList} со всеми элементами множества.
      */
-    public ArrayList<Integer> GetAllSetElem(int indexElement) throws IndexOutOfBoundsException, InvalidParameterException {
+    public ArrayList<Integer> getAllSetElem(int indexElement) throws IndexOutOfBoundsException, InvalidParameterException {
         if (indexElement >= _parent.length || 0 > indexElement) {
             throw new IndexOutOfBoundsException("Invalid index element of set");
         }
@@ -141,7 +141,7 @@ public class DSU {
      * Метод, возвращающий <i>лидеров</i> для каждого множества в {@link DSU}.
      * @return {@link  ArrayList} с <i>лидерами</i> для кадого множсетва.
      */
-    public ArrayList<Integer> GetAllUniqueSets() {
+    public ArrayList<Integer> getAllUniqueSets() {
         ArrayList<Integer> list = new ArrayList<>(_setsCount);
 
         for (int i = 0; i < _parent.length; i++) {

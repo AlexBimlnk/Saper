@@ -59,41 +59,41 @@ public class GameController implements Initializable {
     private void easyItemClick(ActionEvent event) {
         _gameDif = GameDifficulty.Easy;
         _isGameStarted = false;
-        StartGame();
+        startGame();
     }
     @FXML
     private void normalItemClick(ActionEvent event) {
         _gameDif = GameDifficulty.Normal;
         _isGameStarted = false;
-        StartGame();
+        startGame();
     }
     @FXML
     private void hardItemClick(ActionEvent event) {
         _gameDif = GameDifficulty.Hard;
         _isGameStarted = false;
-        StartGame();
+        startGame();
     }
     @FXML
     private void openAllDebugClick(ActionEvent event) {
-        OpenAll(true);
+        openAll(true);
     }
     @FXML
     private void restartButtonClick(ActionEvent event) {
 
         if (_isGameStarted) {
-            ClearGameSession();
-            OverGame(false);
+            clearGameSession();
+            overGame(false);
             _isGameStarted = false;
         }
         if (SaperApplication.getDif() != null) {
-            StartGame();
+            startGame();
         }
     }
 
     /**
      * Метод перезапускает игровой таймер.
      */
-    private void ResetTimer() {
+    private void resetTimer() {
         _timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -117,7 +117,7 @@ public class GameController implements Initializable {
                             _lTimer.setText("Time " + extraZero4Minutes + minutes + ":" + extraZero4Seconds + seconds);
 
                             if (minutes == 60) {
-                                OverGame(false);
+                                overGame(false);
                             }
                         }
                 );
@@ -133,12 +133,12 @@ public class GameController implements Initializable {
      * @param isDebugging Параметр используемый для задания поведения метода. Если - {@code true}, то отобразятся все мины и числа на поле.
      *                    Если - {@code false}, то ко всем клеткам применится метод {@code setDisable}
      */
-    private void OpenAll(boolean isDebugging) {
+    private void openAll(boolean isDebugging) {
 
-        Field.ApplyToAll(tile -> {
+        Field.applyToAll(tile -> {
             if (isDebugging) {
                 tile.getStyleClass().add("debug");
-                if (!tile.IsMine) {
+                if (!tile.isMine) {
                     tile.TextView.Invoke();
                 }
             }
@@ -152,23 +152,23 @@ public class GameController implements Initializable {
      * @param iPos Координата строки клетки.
      * @param jPos Координата столбца клетки.
      */
-    private void CallNearby(int iPos, int jPos) {
+    private void callNearby(int iPos, int jPos) {
         if (!_isGameStarted) {
             _isGameStarted = true;
 
             Field.setStartPoint(iPos,jPos);
 
-            StartGen();
+            startGen();
 
-            Field.getTile(iPos, jPos).MouseHandler(MouseButton.PRIMARY);
+            Field.getTile(iPos, jPos).mouseHandler(MouseButton.PRIMARY);
             return;
         }
 
-        Field.ApplyToAround(iPos,jPos, (coordinate) -> {
+        Field.applyToAround(iPos,jPos, (coordinate) -> {
             Tile tile = Field.getTile(coordinate.getKey(),coordinate.getValue());
 
             if (!tile.isClicked() && !tile.isFlag()) {
-                tile.MouseHandler(MouseButton.PRIMARY);
+                tile.mouseHandler(MouseButton.PRIMARY);
             }
         }, 1);
     }
@@ -189,13 +189,13 @@ public class GameController implements Initializable {
         }
 
         _lTimer.setText("Time 00:00");
-        StartGame();
+        startGame();
     }
 
     /**
      * Метод, вызывающийся при закрытии приложения.
      */
-    public static void CloseApp() {
+    public static void closeApp() {
         if(_timer != null) {
             _timer.cancel();
         }
@@ -205,9 +205,9 @@ public class GameController implements Initializable {
      * Метод, вызывающийся при старте игры. Генерирует
      * игровое поле и настройки к нему.
      */
-    public void StartGame() {
-        ClearGameSession();
-        _config = _gameDif.GetConfigField();
+    public void startGame() {
+        clearGameSession();
+        _config = _gameDif.getConfigField();
 
         flagListener = (observableValue, aBoolean, t1) -> {
             _mineCount.set(
@@ -227,7 +227,7 @@ public class GameController implements Initializable {
 
         javafx.beans.value.ChangeListener<Number> numberChangeListener = (observableValue, number, t1) -> {
             if (Objects.equals(_mineCount.getValue(), _simpleTileCount.getValue()) && _mineCount.getValue() == 0) {
-                OverGame(true);
+                overGame(true);
             }
         };
 
@@ -237,27 +237,27 @@ public class GameController implements Initializable {
         _simpleTileCount = new SimpleIntegerProperty(Field.GetCountSimleTiles());
         _simpleTileCount.addListener(numberChangeListener);
 
-        Tile.CallNearby call = this::CallNearby;
+        Tile.CallNearby call = this::callNearby;
         Tile.setCall(call);
-        Tile.ExplosionEvent explosionEvent = () -> OverGame(false);
+        Tile.ExplosionEvent explosionEvent = () -> overGame(false);
         Tile.setExplosionEvent(explosionEvent);
 
-        Field.ApplyToAll(tile -> _flowPane.getChildren().add(tile));
+        Field.applyToAll(tile -> _flowPane.getChildren().add(tile));
     }
 
     /**
      * Метод, вызывающий генерацию мин.
      */
-    public void StartGen() {
-        MineGenerator.MineGen(_config.CountMines);
+    public void startGen() {
+        MineGenerator.mineGen(_config.CountMines);
 
-        ResetTimer();
+        resetTimer();
     }
 
     /**
      * Метод очищает игровую сессию. Обнуляет таймер, очищает игровое поле.
      */
-    public void ClearGameSession() {
+    public void clearGameSession() {
         _lTimer.setText("Time 00:00");
         _lTimer.setTextFill(Color.BLACK);
         _flowPane.getChildren().clear();
@@ -270,14 +270,14 @@ public class GameController implements Initializable {
     /**
      * Метод, вызывающийся при проигрыше.
      */
-    public void OverGame(boolean isWin) {
+    public void overGame(boolean isWin) {
         var smile = isWin ? ":)" : ":(";
         _bRestart.setText(smile);
         _lTimer.setTextFill(Color.DARKBLUE);
         _gameTimeInSeconds = 0;
         _timer.cancel();
 
-        OpenAll(false);
+        openAll(false);
     }
 
     /**
