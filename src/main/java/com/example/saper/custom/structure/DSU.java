@@ -2,6 +2,7 @@ package com.example.saper.custom.structure;
 
 import javafx.util.Pair;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 
 /**
@@ -23,101 +24,111 @@ public class DSU {
      * Инициализация нового экземпляра {@link DSU}.
      * @param len максимальное кол-во элементов в {@link DSU}.
      */
-    public DSU(int len) {
+    public DSU(int len) throws InvalidParameterException{
+        if (len <= 0) {
+            throw new InvalidParameterException("Length of DSU can't be negative");
+        }
+
         _parent = new int[len];
         _size = new int[len];
-
         _data = new Pair[len];
 
         _setsCount = 0;
 
-        for (int i = 0;i  <len;i++) {
+        for (int i = 0; i < len; i++) {
             _parent[i] = -1;
             _size[i] = 0;
         }
     }
 
     /**
-     * Создание множества под элемент {@code number} в {@link DSU}.
-     * @param number Номер элемента в {@link DSU}
-     * @param data {@link  Pair} закрепленный за элментом {@code number}
+     * Создание множества под элемент {@code indexElement} в {@link DSU}.
+     * @param indexElement Номер элемента в {@link DSU}
+     * @param dataElement {@link  Pair} закрепленный за элментом {@code indexElement}
      */
-    public void MakeSet(int number, Pair<Integer,Integer> data) {
-        if (number >= _parent.length || 0 > number) {
-            throw new IndexOutOfBoundsException("No set found");
+    public void MakeSet(int indexElement, Pair<Integer,Integer> dataElement) throws IndexOutOfBoundsException {
+        if (indexElement >= _parent.length || 0 > indexElement) {
+            throw new IndexOutOfBoundsException("Invalid set element index");
         }
         _setsCount++;
-        _parent[number] = number;
-        _size[number] = 1;
+        _parent[indexElement] = indexElement;
+        _size[indexElement] = 1;
 
-        _data[number] = data;
+        _data[indexElement] = dataElement;
     }
 
     /**
-     * Метод поиска индетиефикатора ("<i>лидера</i>") множества по его элементу {@code number}.
-     * @param number элемент множества
+     * Метод поиска индетиефикатора ("<i>лидера</i>") множества по его элементу {@code indexElement}.
+     * @param indexElement элемент множества
      * @return <i>лидер</i> множества
      */
-    public int FindSet(int number) {
-        if (number >= _parent.length || 0 > number) {
-            throw new IndexOutOfBoundsException("No set found");
+    public int FindSet(int indexElement) throws IndexOutOfBoundsException, InvalidParameterException {
+        if (indexElement >= _parent.length || 0 > indexElement) {
+            throw new IndexOutOfBoundsException("Invalid index element of set");
         }
 
-        if (number == _parent[number]) {
-            return number;
+        if (_parent[indexElement] == -1) {
+            throw new InvalidParameterException("No set with index element exists");
         }
 
-        return _parent[number] = FindSet(_parent[number]);
+        if (indexElement == _parent[indexElement]) {
+            return indexElement;
+        }
+
+        return _parent[indexElement] = FindSet(_parent[indexElement]);
     }
 
     /**
      * Метод объединения двух множесв в одно новое.
-     * @param a Номер элемента множества
-     * @param b Номер элемента множества
+     * @param firstSetIndexElement Номер элемента множества
+     * @param secondSetIndexElement Номер элемента множества
      */
-    public void UnionSets(int a, int b) {
-        if (a >= _parent.length || b >= _parent.length || 0 > a || 0 > b) {
-            throw new IndexOutOfBoundsException("No set found");
+    public void UnionSets(int firstSetIndexElement, int secondSetIndexElement) throws IndexOutOfBoundsException, InvalidParameterException {
+        if (firstSetIndexElement >= _parent.length || secondSetIndexElement >= _parent.length || 0 > firstSetIndexElement || 0 > secondSetIndexElement) {
+            throw new IndexOutOfBoundsException("Invalid index element of set");
         }
 
-        a = FindSet(a);
-        b = FindSet(b);
+        if (_parent[firstSetIndexElement] == -1 || _parent[secondSetIndexElement] == -1) {
+            throw new InvalidParameterException("No set with index element exists");
+        }
 
-        if (a == b)
+        firstSetIndexElement = FindSet(firstSetIndexElement);
+        secondSetIndexElement = FindSet(secondSetIndexElement);
+
+        if (firstSetIndexElement == secondSetIndexElement) {
             return;
-
-        if (_size[a] < _size[b]) {
-            a += (b - (b = a));
         }
 
-        _parent[b] = a;
+        if (_size[firstSetIndexElement] < _size[secondSetIndexElement]) {
+            firstSetIndexElement += (secondSetIndexElement - (secondSetIndexElement = firstSetIndexElement));
+        }
 
-        _size[a] += _size[b];
+        _parent[secondSetIndexElement] = firstSetIndexElement;
+
+        _size[firstSetIndexElement] += _size[secondSetIndexElement];
         _setsCount--;
-
-
     }
 
     /**
-     * Метод, возращающий все элементы множества, к тоторому относится элмент {@code number}.
-     * @param number Элемент множества.
+     * Метод, возращающий все элементы множества, к тоторому относится элмент {@code indexElement}.
+     * @param indexElement Элемент множества.
      * @return {@link ArrayList} со всеми элементами множества.
      */
-    public ArrayList<Integer> GetAllSetElem(int number) {
-        if (number >= _parent.length || 0 > number) {
-            throw new IndexOutOfBoundsException("No set found");
+    public ArrayList<Integer> GetAllSetElem(int indexElement) throws IndexOutOfBoundsException, InvalidParameterException {
+        if (indexElement >= _parent.length || 0 > indexElement) {
+            throw new IndexOutOfBoundsException("Invalid index element of set");
         }
 
-        if (_parent[number] == -1) {
-            return null;
+        if (_parent[indexElement] == -1) {
+            throw new InvalidParameterException("No set with index element exists");
         }
 
-        number = _parent[number];
-        int size = _size[number];
+        indexElement = _parent[indexElement];
+        int size = _size[indexElement];
         ArrayList<Integer> list = new ArrayList<>(size);
 
-        for (int i = 0;i < _parent.length && size > 0;i++) {
-            if (_parent[i] == number) {
+        for (int i = 0; i < _parent.length && size > 0; i++) {
+            if (_parent[i] == indexElement) {
                 list.add(i);
                 size--;
             }
@@ -133,7 +144,7 @@ public class DSU {
     public ArrayList<Integer> GetAllUniqueSets() {
         ArrayList<Integer> list = new ArrayList<>(_setsCount);
 
-        for (int i = 0;i < _parent.length;i++) {
+        for (int i = 0; i < _parent.length; i++) {
             if (i == _parent[i]) {
                 list.add(i);
             }
@@ -143,33 +154,37 @@ public class DSU {
     }
 
     /**
-     * Метод, возвращающий {@link Pair} хранящуюся в элменте {@code number}.
-     * @param number Номер элемента
-     * @return {@link Pair} в элементе {@code number}
+     * Метод, возвращающий {@link Pair} хранящуюся в элменте {@code indexElement}.
+     * @param indexElement Номер элемента
+     * @return {@link Pair} в элементе {@code indexElement}
      */
-    public Pair<Integer,Integer> getElemInSet(int number) {
-        if (number >= _parent.length || 0 > number) {
-            throw new IndexOutOfBoundsException("No set found");
+    public Pair<Integer,Integer> getElemInSet(int indexElement) throws InvalidParameterException, IndexOutOfBoundsException {
+        if (indexElement >= _parent.length || 0 > indexElement) {
+            throw new IndexOutOfBoundsException("Invalid set element index");
         }
 
-        if (_parent[number] == -1) {
-            return null;
+        if (_parent[indexElement] == -1) {
+            throw new InvalidParameterException("No set with index element exists");
         }
 
-        return _data[number];
+        return _data[indexElement];
     }
 
     /**
-     * Метод, возвращающий размер множества с <i>лидером</i> {@code number}.
-     * @param number Номер <i>лидера</i> множества
+     * Метод, возвращающий размер множества с <i>лидером</i> {@code setLeaderIndex}.
+     * @param setLeaderIndex Номер <i>лидера</i> множества
      * @return Размер множества
      */
-    public int getSetSize(int number) {
-        if (number >= _parent.length || 0 > number) {
-            throw new IndexOutOfBoundsException("No set found");
+    public int getSetSize(int setLeaderIndex) throws  IndexOutOfBoundsException, InvalidParameterException {
+        if (setLeaderIndex >= _parent.length || 0 > setLeaderIndex) {
+            throw new IndexOutOfBoundsException("Invalid set element index");
         }
 
-        return _size[number];
+        if (_parent[setLeaderIndex] == -1) {
+            throw new InvalidParameterException("No set with index leader exists");
+        }
+
+        return _size[setLeaderIndex];
     }
 
     /**
