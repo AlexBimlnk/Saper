@@ -1,8 +1,6 @@
 package com.example.saper.gamefield;
 
-import com.example.saper.GameController;
-import com.example.saper.GameDifficulty;
-import com.example.saper.SaperApplication;
+import com.example.saper.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.PseudoClass;
@@ -25,8 +23,9 @@ public class Tile extends Button {
     private final int _rowIndex;
     private final int _columIndex;
 
-    private static CallNearby _callHandler; //используется при нажатии по пустой клетке
-    private static ExplosionEvent _explosionEventHandler; //вызывается при взрыве мины
+    private static ActionT<Integer, Integer> _callHandler; //используется при нажатии по пустой клетке
+    private static Action _explosionEventHandler; //вызывается при взрыве мины
+    public final Action TextView;
 
     private final BooleanProperty _clicked;
     private final BooleanProperty _flag;
@@ -34,7 +33,6 @@ public class Tile extends Button {
     private boolean _isTwoButtonPressed = false;
     private boolean _isTwoButtonPressedHandler = true;
 
-    public final ShownTextHandler TextView;
     public boolean isMine = false; //prop
 
     /**
@@ -215,14 +213,6 @@ public class Tile extends Button {
     }
 
     /**
-     * Устанавливает действие, которое вызовется при взрыве, если клетка оказалась миной.
-     * @param explosion Действие, которое следует применить.
-     */
-    public static void setExplosionEvent(ExplosionEvent explosion) {
-        _explosionEventHandler = explosion;
-    }
-
-    /**
      * Показывает, была ли открыта клетка или нет.
      * @return true, если клетка уже была открыта, иначе - false
      */
@@ -262,28 +252,14 @@ public class Tile extends Button {
      * Устанавливает делегат, который следует вызвать при открытии соседних клеток.
      * @param call
      */
-    public static void setCall(CallNearby call) {
+    public static void setCall(ActionT<Integer, Integer> call) {
         _callHandler = call;
     }
-
     /**
-     * Делегат, вызывающийся при открытии соседних клеток.
+     * Устанавливает действие, которое вызовется при взрыве, если клетка оказалась миной.
+     * @param explosion Действие, которое следует применить.
      */
-    public interface CallNearby {
-        void Invoke(int i,int y);
-    }
-
-    /**
-     * Делегат, вызывающийся при взрыве.
-     */
-    public interface ExplosionEvent {
-        void Invoke();
-    }
-
-    /**
-     * Делегат, вызывающийся при отображении текста на кнопке.
-     */
-    public interface ShownTextHandler {
-        void Invoke();
+    public static void setExplosionEvent(Action explosion) {
+        _explosionEventHandler = explosion;
     }
 }

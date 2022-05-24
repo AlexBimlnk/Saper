@@ -15,13 +15,13 @@ public class Field {
     private static Pair<Integer, Integer> _startPointCoordinates;
 
     private static final int FIELD_SIZE = 500;
-    private static int countMines;
-    public static int GetCountMines() {
-        return countMines;
+    private static int _countMines;
+    public static int getCountMines() {
+        return _countMines;
     }
-    private static int countSimpleTiles;
-    public static int GetCountSimleTiles() {
-        return countSimpleTiles;
+    private static int _countSimpleTiles;
+    public static int getCountSimpleTiles() {
+        return _countSimpleTiles;
     }
 
     /**
@@ -45,8 +45,8 @@ public class Field {
             }
         }
 
-        countMines = config.CountMines;
-        countSimpleTiles = config.CountTile - config.CountMines;
+        _countMines = config.CountMines;
+        _countSimpleTiles = config.CountTile - config.CountMines;
 
         applyToAll(tile -> {
             tile.getStyleClass().add("tile");

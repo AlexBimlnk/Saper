@@ -231,15 +231,15 @@ public class GameController implements Initializable {
             }
         };
 
-        _mineCount = new SimpleIntegerProperty(Field.GetCountMines());
+        _mineCount = new SimpleIntegerProperty(Field.getCountMines());
         _mineCount.addListener(numberChangeListener);
 
-        _simpleTileCount = new SimpleIntegerProperty(Field.GetCountSimleTiles());
+        _simpleTileCount = new SimpleIntegerProperty(Field.getCountSimpleTiles());
         _simpleTileCount.addListener(numberChangeListener);
 
-        Tile.CallNearby call = this::callNearby;
+        ActionT<Integer, Integer> call = this::callNearby;
         Tile.setCall(call);
-        Tile.ExplosionEvent explosionEvent = () -> overGame(false);
+        Action explosionEvent = () -> overGame(false);
         Tile.setExplosionEvent(explosionEvent);
 
         Field.applyToAll(tile -> _flowPane.getChildren().add(tile));
