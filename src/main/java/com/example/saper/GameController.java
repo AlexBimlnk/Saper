@@ -139,7 +139,7 @@ public class GameController implements Initializable {
             if (isDebugging) {
                 tile.getStyleClass().add("debug");
                 if (!tile.isMine) {
-                    tile.TextView.Invoke();
+                    tile.TextView.run();
                 }
             }
 
@@ -237,10 +237,9 @@ public class GameController implements Initializable {
         _simpleTileCount = new SimpleIntegerProperty(Field.getCountSimpleTiles());
         _simpleTileCount.addListener(numberChangeListener);
 
-        ActionT<Integer, Integer> call = this::callNearby;
-        Tile.setCall(call);
-        Action explosionEvent = () -> overGame(false);
-        Tile.setExplosionEvent(explosionEvent);
+        Tile.setCall((x,y) -> callNearby(x, y));
+
+        Tile.setExplosionEvent(() -> overGame(false));
 
         Field.applyToAll(tile -> _flowPane.getChildren().add(tile));
     }

@@ -8,9 +8,13 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-
+import javafx.scene.paint.Paint;
+import javafx.util.Pair;
 import java.security.InvalidParameterException;
 import java.util.Random;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 /**
  * Класс представляющий сущность игровой клетки.
@@ -23,9 +27,9 @@ public class Tile extends Button {
     private final int _rowIndex;
     private final int _columIndex;
 
-    private static ActionT<Integer, Integer> _callHandler; //используется при нажатии по пустой клетке
-    private static Action _explosionEventHandler; //вызывается при взрыве мины
-    public final Action TextView;
+    private static BiConsumer<Integer, Integer> _callHandler; //используется при нажатии по пустой клетке
+    private static Runnable _explosionEventHandler; //вызывается при взрыве мины
+    public final Runnable TextView;
 
     private final BooleanProperty _clicked;
     private final BooleanProperty _flag;
@@ -57,10 +61,10 @@ public class Tile extends Button {
         _columIndex = columnIndex;
 
         if (GameController.getGameDifficulty() == GameDifficulty.Hard) {
-            TextView = (rnd.nextBoolean() ? this::showTextHard : this::showTextSimple);
+            TextView = (rnd.nextBoolean() ? () -> showTextHard() : () -> showTextSimple());
         }
         else {
-            TextView = this::showTextSimple;
+            TextView = () -> showTextSimple();
         }
     }
 
@@ -90,7 +94,7 @@ public class Tile extends Button {
                     }, 1);
                     
                     if (countMines == container.countFlags) {
-                        _callHandler.Invoke(_rowIndex, _columIndex);
+                        _callHandler.accept(_rowIndex, _columIndex);
                     }
 
                     _isTwoButtonPressedHandler = false;
@@ -163,18 +167,18 @@ public class Tile extends Button {
             if (isMine) {
                 this.setId("mine");
                 if(_explosionEventHandler != null) {
-                    _explosionEventHandler.Invoke();
+                    _explosionEventHandler.run();
                 }
             }
             else {
                 setClicked(true);
                 if (getMinesAround() == 0) {
                     if (_callHandler != null) {
-                        _callHandler.Invoke(_rowIndex,_columIndex);
+                        _callHandler.accept(_rowIndex,_columIndex);
                     }
                 }
                 else {
-                    TextView.Invoke();
+                    TextView.run();
                 }
             }
         }
@@ -252,14 +256,14 @@ public class Tile extends Button {
      * Устанавливает делегат, который следует вызвать при открытии соседних клеток.
      * @param call
      */
-    public static void setCall(ActionT<Integer, Integer> call) {
+    public static void setCall(BiConsumer<Integer, Integer> call) {
         _callHandler = call;
     }
     /**
      * Устанавливает действие, которое вызовется при взрыве, если клетка оказалась миной.
      * @param explosion Действие, которое следует применить.
      */
-    public static void setExplosionEvent(Action explosion) {
+    public static void setExplosionEvent(Runnable explosion) {
         _explosionEventHandler = explosion;
     }
 }
