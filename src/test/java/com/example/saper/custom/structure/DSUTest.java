@@ -152,7 +152,10 @@ class DSUTest {
                                 InvalidParameterException.class,
                                 () -> _dsu.getAllSetElem(invalidParameterIndex))),
                 dynamicTest("1 get all set elements", () -> {
-                    for (int i = 0; i <= 3; i++) {
+                    for (int i = 0; i <= 5; i++) {
+                        if (i == 1 || i == 4) {
+                            continue;
+                        }
                         assertIterableEquals(expectedListSet1, _dsu.getAllSetElem(i));
                     }
                 }),
