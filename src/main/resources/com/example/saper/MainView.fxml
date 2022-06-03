@@ -30,9 +30,9 @@
         </FlowPane>
       <Pane fx:id="submenu" layoutX="-13.0" layoutY="24.0" prefHeight="55.0" prefWidth="524.0">
          <children>
-            <Button fx:id="_bRestart" layoutX="236.0" layoutY="15.0" mnemonicParsing="false" text=": )" onAction="#restartButtonClick"/>
+            <Button fx:id="_bRestart" layoutX="236.0" layoutY="12.0" mnemonicParsing="false" onAction="#restartButtonClick" text=": )" />
             <Label fx:id="_lMineCount" contentDisplay="TOP" layoutX="25.0" layoutY="7.0" text="000" />
-            <Label fx:id="_lTimer" alignment="CENTER_RIGHT" contentDisplay="TOP" layoutX="459.0" layoutY="6.0" text="Time 0:0" textAlignment="RIGHT" />
+            <Label fx:id="_lTimer" alignment="CENTER_RIGHT" contentDisplay="TOP" layoutX="399.0" layoutY="7.0" text="Time 0:0" textAlignment="RIGHT" />
          </children></Pane>
     </children>
 </Pane>

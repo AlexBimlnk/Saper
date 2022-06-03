@@ -226,8 +226,8 @@ public class Field {
     }
 
     /**
-     *
-     * @return
+     * Метод возвращаюий список со всеми координатами клеткок
+     * @return список координат
      */
     public static ArrayList<Pair<Integer,Integer>> getAllCoordinates() {
         ArrayList<Pair<Integer,Integer>> coordinates = new ArrayList<>(_countMines + _countSimpleTiles);

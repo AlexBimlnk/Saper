@@ -1,20 +1,24 @@
+
+
 #submenu {
     -fx-background-color: white;
 }
 
-#lTimer {
-    -fx-font-size: 4.5ex;
-}
-#lMineCount {
-    -fx-font-size: 4.5ex;
+
+#_lMineCount, #_lTimer  {
+    -fx-font-size: 1.8em;
 }
 
-#bRestart {
+#_bRestart {
+
     -fx-background-color: white;
-    -fx-border-color: black;
+    -fx-border-color: lightgrey;
     -fx-font-size: 1.4em;
 }
 
+#_bRestart:hover {
+    -fx-border-color: black;
+}
 
 
 .tile {
