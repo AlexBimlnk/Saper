@@ -10,9 +10,9 @@ import java.util.Random;
  * Класс реализирующий рандомазацию с вероятностью.
  * @param <T> Тип данных, в виде которого будут возвращаться значения после рандомизации
  */
-public class RandomWithProbability<T extends Number> {
+public class RandomWithProbability<T> {
 
-    private final ArrayList<Pair<Integer,T>> _set;
+    private final ArrayList<Pair<Integer, T>> _set;
 
     private final Random _random;
 
@@ -28,18 +28,17 @@ public class RandomWithProbability<T extends Number> {
         _set = new ArrayList<>();
     }
 
-
     /**
      * Добавленеи элемента типа {@link T} в общее множество всех элментов и установление вероянтности его выпадения.
      * @param elem Новый элемнет типа {@link T}, добавляемый в множество остальных
      * @param probability Вероятность выпадения элемента {@code elem}
      */
-    public void addNewElem(int probability, T elem) throws InvalidParameterException {
+    public void addNewElem(int probability, T elem) {
         if (elem == null) {
             return;
         }
 
-        if (probability <= 0) {
+        if (probability < 0) {
             throw new InvalidParameterException("Probability should has positive value.");
         }
 
@@ -51,7 +50,10 @@ public class RandomWithProbability<T extends Number> {
      * Метод получения случайного элмента с учётом их вероятности.
      * @return Полученный элемент типа {@link T}
      */
-    public T getRandomElem() {
+    public T getRandomElem() throws InvalidParameterException {
+        if (_upperBound == 0)
+            throw new InvalidParameterException("Sum probability should has positive value.");
+
         int randomVal = _random.nextInt(_upperBound);
 
         int selectedItem = -1; //выбранная "редкость"

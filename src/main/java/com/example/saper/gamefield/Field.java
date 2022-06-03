@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.util.Pair;
 
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -222,6 +223,22 @@ public class Field {
         if (isCorrectCoordinate(iPos, jPos) && (_startPointCoordinates.getValue() == -1 && _startPointCoordinates.getKey() == -1)) {
             _startPointCoordinates = new Pair<>(iPos, jPos);
         }
+    }
+
+    /**
+     *
+     * @return
+     */
+    public static ArrayList<Pair<Integer,Integer>> getAllCoordinates() {
+        ArrayList<Pair<Integer,Integer>> coordinates = new ArrayList<>(_countMines + _countSimpleTiles);
+
+        for (int i = 0; i < _field.length; i++) {
+            for (int j = 0; j < _field.length; j++) {
+                coordinates.add(new Pair<>(i, j));
+            }
+        }
+
+        return coordinates;
     }
 
     /**

@@ -51,7 +51,6 @@ public class Tile extends Button {
         _clicked = new SimpleBooleanProperty(false);
         _clicked.addListener( e -> pseudoClassStateChanged(PseudoClass.getPseudoClass("clicked"),_clicked.get()));
         _clicked.addListener(GameController.clickListener);
-
         _flag = new SimpleBooleanProperty(false);
         _flag.addListener( e -> pseudoClassStateChanged(PseudoClass.getPseudoClass("flag"),_flag.get()));
         _flag.addListener(GameController.flagListener);
@@ -69,7 +68,6 @@ public class Tile extends Button {
     }
 
     private void loadDefaultSettings() {
-
         setMinSize(_size, _size);
         setMaxSize(_size, _size);
         addEventHandler(MouseEvent.MOUSE_PRESSED, event -> {
