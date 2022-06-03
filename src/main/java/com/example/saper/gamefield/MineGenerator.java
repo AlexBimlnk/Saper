@@ -8,9 +8,9 @@ import com.example.saper.custom.structure.DSU;
 import javafx.util.Pair;
 
 import java.security.InvalidParameterException;
-import java.util.ArrayList;
+
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 /**
  * Генератор мин.
@@ -19,8 +19,7 @@ public class MineGenerator {
 
     private static final int _startPointWeight = 500;
     private static final int _borderWeight = 15;
-    private static final int[] _startPointPunish = {499, 55, 30, 15 ,5, 0};
-    private static int _mineSetStep = 1;
+    private static final int[] _startPointPunish = {499, 155, 90, 65 ,50, 10};
 
     /**
      * Функция получения вероятности по математической формуле
@@ -31,6 +30,17 @@ public class MineGenerator {
         double res = (Math.exp(-(float)x/6+3))*2/3;
 
         return (int)res;
+    }
+
+
+    private static int getMineSetStep() {
+        switch (GameController.getGameDifficulty()) {
+            case Easy:
+                return 2;
+            case Normal, Hard:
+                return 3;
+        }
+        return 0;
     }
 
     private static int countProbability(Pair<Integer, Integer> tile) {
@@ -71,31 +81,27 @@ public class MineGenerator {
         if (countMine <= 0)
             throw new InvalidParameterException("Count of mine should be positive.");
 
-        switch (GameController.getGameDifficulty()) {
-            case Easy -> _mineSetStep = 2;
-            case Normal, Hard -> _mineSetStep = 3;
-        }
-
         Random random = SaperApplication.getSeed() != -1
                         ? new Random(SaperApplication.getSeed())
                         : new Random();
 
-        ArrayList<Pair<Integer,Pair<Integer,Integer>>> tilesWithProbability = new ArrayList<>(); //массив с координатами клеток с дефолтной вероятностью
-
-        AtomicInteger inSetTilesCount = new AtomicInteger(0); //счетчик клеток охватываемых множетсвами
-
         int[][] fieldCheck = new int[Field.getSizes().getKey()][Field.getSizes().getValue()];
 
-        for (var cord : Field.getAllCoordinates()) {
-            fieldCheck[cord.getKey()][cord.getValue()] = 0;
-            if (Field.isStartPoint(cord)) {
-                fieldCheck[cord.getKey()][cord.getValue()] = -1;
-            }
-        }
+        fieldCheck[Field.getStartPoint().getKey()][Field.getStartPoint().getValue()] = -1;
 
         DSU mineSets = new DSU(countMine);
 
         for (int mineIteration = 0; mineIteration < countMine; mineIteration++) {
+
+            RandomWithProbability<Pair<Integer, Integer>> tileRandomize = new RandomWithProbability(random);
+
+            int makeNewSetProbability = 3 * mathGetProbability(0);
+
+            for (var cord : Field.getAllCoordinates()) {
+                if (fieldCheck[cord.getKey()][cord.getValue()] == 0) {
+                    tileRandomize.addNewElem(countProbability(cord) + makeNewSetProbability, cord);
+                }
+            }
 
             int setContinueProbability = 0;
 
@@ -103,55 +109,33 @@ public class MineGenerator {
                 setContinueProbability += mathGetProbability(mineSets.getSetSize(set));
             }
 
-            RandomWithProbability<Integer> choseBehave = new RandomWithProbability<>(random);
+            for (var setLeader : mineSets.getAllUniqueSets()) {
+                for (var setsMine : mineSets.getAllSetElem(setLeader)) {
 
-            if (inSetTilesCount.get() != Field.getSizes().getValue() * Field.getSizes().getKey() - 1) {
-                choseBehave.addNewElem(2*mathGetProbability(0),0);
-            }
+                    int finalSetContinueProbability = setContinueProbability;
+                    Field.applyToAroundArea(mineSets.getElemInSet(setsMine).getKey(), mineSets.getElemInSet(setsMine).getValue(), (tile) -> {
+                        if (fieldCheck[tile.getKey()][tile.getValue()] == setsMine + 1) {
+                            int countMinesAround = Field.countMinesAround(tile.getKey(),tile.getValue());
+                            int probabilityOfTile = mathGetProbability(mineSets.getSetSize(setLeader)) +
+                                    countProbability(tile) +
+                                    mathGetProbability(countMinesAround) +
+                                    finalSetContinueProbability;
 
-            choseBehave.addNewElem(setContinueProbability,1);
+                            tileRandomize.addNewElem(probabilityOfTile, tile);
+                        }
 
-            RandomWithProbability<Pair<Integer, Integer>> tileRandomize = new RandomWithProbability(random);
-
-            if (choseBehave.getRandomElem() == 0) {
-                for (var cord : Field.getAllCoordinates()) {
-                    if (fieldCheck[cord.getKey()][cord.getValue()] == 0) {
-                        tileRandomize.addNewElem(countProbability(cord), cord);
-                    }
-                }
-            }
-            else {
-                //перебор всех клеток множеств - несвободных
-                for (var setLeader : mineSets.getAllUniqueSets()) {
-                    for (var setsMine : mineSets.getAllSetElem(setLeader)) {
-
-                        Field.applyToAroundArea(mineSets.getElemInSet(setsMine).getKey(), mineSets.getElemInSet(setsMine).getValue(), (tile) -> {
-                            if (fieldCheck[tile.getKey()][tile.getValue()] == setsMine + 1) {
-                                int countMinesAround = Field.countMinesAround(tile.getKey(),tile.getValue());
-                                int probabilityOfTile = mathGetProbability(mineSets.getSetSize(setLeader)) +
-                                        countProbability(tile) + mathGetProbability(countMinesAround);
-
-                                tileRandomize.addNewElem(probabilityOfTile, tile);
-                            }
-
-                        }, _mineSetStep);
-                    }
+                    }, getMineSetStep());
                 }
             }
 
             Pair<Integer,Integer> newMineCord = tileRandomize.getRandomElem();
             mineSets.makeSet(mineIteration, newMineCord);
 
-            //произошло либо добавление либо создание
-            if (fieldCheck[newMineCord.getKey()][newMineCord.getValue()] == 0) {
-                inSetTilesCount.getAndIncrement();
-            }
-            else {
-
+            if (fieldCheck[newMineCord.getKey()][newMineCord.getValue()] != 0) {
                 int selectedSet = fieldCheck[newMineCord.getKey()][newMineCord.getValue()] - 1;
-
                 mineSets.unionSets(selectedSet, mineIteration);
             }
+
 
             Field.getTile(newMineCord.getKey(),newMineCord.getValue()).isMine = true;
             Field.getTile(newMineCord.getKey(),newMineCord.getValue()).setId("mine");
@@ -161,9 +145,9 @@ public class MineGenerator {
             Field.applyToAroundArea(newMineCord.getKey(), newMineCord.getValue(),(coordinate) -> {
                 if (fieldCheck[coordinate.getKey()][coordinate.getValue()] == 0) {
                     fieldCheck[coordinate.getKey()][coordinate.getValue()] = finalMineIteration;
-                    inSetTilesCount.getAndIncrement();
+
                 }
-            },_mineSetStep);
+            },getMineSetStep());
 
             fieldCheck[newMineCord.getKey()][newMineCord.getValue()] = -1;
         }
