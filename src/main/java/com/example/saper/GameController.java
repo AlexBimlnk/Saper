@@ -270,9 +270,11 @@ public class GameController implements Initializable {
      * Метод, вызывающийся при проигрыше.
      */
     public void overGame(boolean isWin) {
-        var smile = isWin ? ":)" : ":(";
+        var smile = isWin ? ": D" : ": (";
+        var color = isWin ? Color.GREEN : Color.DARKBLUE;
+
         _bRestart.setText(smile);
-        _lTimer.setTextFill(Color.DARKBLUE);
+        _lTimer.setTextFill(color);
         _gameTimeInSeconds = 0;
         _timer.cancel();
 
