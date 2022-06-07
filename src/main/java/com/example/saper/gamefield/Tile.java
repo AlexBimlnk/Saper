@@ -1,6 +1,8 @@
 package com.example.saper.gamefield;
 
-import com.example.saper.*;
+import com.example.saper.GameController;
+import com.example.saper.GameDifficulty;
+import com.example.saper.SaperApplication;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.css.PseudoClass;
@@ -8,13 +10,10 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.util.Pair;
+
 import java.security.InvalidParameterException;
 import java.util.Random;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 /**
  * Класс представляющий сущность игровой клетки.
@@ -43,6 +42,7 @@ public class Tile extends Button {
      * Конструктор клетки.
      * @param rowIndex Координата клетки в строке.
      * @param columnIndex Координата клетки в столбце.
+     * @throws IndexOutOfBoundsException Когда индексы меньше нуля.
      */
     public Tile(int rowIndex, int columnIndex) throws IndexOutOfBoundsException {
         if (rowIndex < 0 || columnIndex < 0)
@@ -118,22 +118,16 @@ public class Tile extends Button {
 
         setText(Integer.toString(_minesAround));
 
-        if(_minesAround == 1)
-            setTextFill(Color.BLUE);
-        else if(_minesAround == 2)
-            setTextFill(Color.GREEN);
-        else if(_minesAround == 3)
-            setTextFill(Color.RED);
-        else if(_minesAround == 4)
-            setTextFill(Color.PURPLE);
-        else if(_minesAround == 5)
-            setTextFill(Color.ORANGE);
-        else if(_minesAround == 6)
-            setTextFill(Color.YELLOW);
-        else if(_minesAround == 7)
-            setTextFill(Color.PINK);
-        else if(_minesAround == 8)
-            setTextFill(Color.BLACK);
+        switch (_minesAround) {
+            case 1 -> setTextFill(Color.BLUE);
+            case 2 -> setTextFill(Color.GREEN);
+            case 3 -> setTextFill(Color.RED);
+            case 4 -> setTextFill(Color.PURPLE);
+            case 5 -> setTextFill(Color.ORANGE);
+            case 6 -> setTextFill(Color.YELLOW);
+            case 7 -> setTextFill(Color.PINK);
+            case 8 -> setTextFill(Color.BLACK);
+        }
     }
     private void showTextHard() {
         if (_minesAround == 0)
@@ -188,6 +182,7 @@ public class Tile extends Button {
     /**
      * Метод устанавливает кол-во мин вокруг клетки.
      * @param value Кол-во мин.
+     * @throws InvalidParameterException Когда кол-во мин меньше единицы.
      */
     public void setMinesAround(int value) throws InvalidParameterException {
         if (value < 0)
@@ -206,6 +201,7 @@ public class Tile extends Button {
     /**
      * Метод устанавливает размер клетки.
      * @param size Размер.
+     * @throws InvalidParameterException Когда размер меньше единицы.
      */
     public static void setSize(int size) throws InvalidParameterException {
         if (size <= 0)
@@ -253,15 +249,21 @@ public class Tile extends Button {
     /**
      * Устанавливает делегат, который следует вызвать при открытии соседних клеток.
      * @param call делегат
+     * @throws IllegalArgumentException Когда передаваемы делегат равен null.
      */
-    public static void setCall(BiConsumer<Integer, Integer> call) {
+    public static void setCall(BiConsumer<Integer, Integer> call) throws IllegalArgumentException {
+        if (call == null)
+            throw new IllegalArgumentException();
         _callHandler = call;
     }
     /**
      * Устанавливает действие, которое вызовется при взрыве, если клетка оказалась миной.
      * @param explosion Действие, которое следует применить.
+     * @throws IllegalArgumentException Когда передаваемы делегат равен null.
      */
     public static void setExplosionEvent(Runnable explosion) {
+        if (explosion == null)
+            throw new IllegalArgumentException();
         _explosionEventHandler = explosion;
     }
 }

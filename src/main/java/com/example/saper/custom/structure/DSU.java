@@ -23,6 +23,7 @@ public class DSU {
     /**
      * Инициализация нового экземпляра {@link DSU}.
      * @param len максимальное кол-во элементов в {@link DSU}.
+     * @throws InvalidParameterException Если длина меньше единицы.
      */
     public DSU(int len) throws InvalidParameterException{
         if (len <= 0) {
@@ -45,6 +46,7 @@ public class DSU {
      * Создание множества под элемент {@code indexElement} в {@link DSU}.
      * @param indexElement Номер элемента в {@link DSU}
      * @param dataElement {@link  Pair} закрепленный за элментом {@code indexElement}
+     * @throws IndexOutOfBoundsException Если индекс меньше нуля или выходи за границы родительского множества.
      */
     public void makeSet(int indexElement, Pair<Integer,Integer> dataElement) throws IndexOutOfBoundsException {
         if (indexElement >= _parent.length || 0 > indexElement) {
@@ -61,6 +63,8 @@ public class DSU {
      * Метод поиска индетиефикатора ("<i>лидера</i>") множества по его элементу {@code indexElement}.
      * @param indexElement элемент множества
      * @return <i>лидер</i> множества
+     * @throws IndexOutOfBoundsException Если индекс меньше нуля или выходи за границы родительского множества.
+     * @throws InvalidParameterException TODO: ТРЕБУЕТСЯ ОПИСАНИЕ.
      */
     public int findSet(int indexElement) throws IndexOutOfBoundsException, InvalidParameterException {
         if (indexElement >= _parent.length || 0 > indexElement) {
@@ -82,6 +86,8 @@ public class DSU {
      * Метод объединения двух множесв в одно новое.
      * @param firstSetIndexElement Номер элемента множества
      * @param secondSetIndexElement Номер элемента множества
+     * @throws IndexOutOfBoundsException Если индекс меньше нуля или выходи за границы родительского множества.
+     * @throws InvalidParameterException TODO: ТРЕБУЕТСЯ ОПИСАНИЕ.
      */
     public void unionSets(int firstSetIndexElement, int secondSetIndexElement) throws IndexOutOfBoundsException, InvalidParameterException {
         if (firstSetIndexElement >= _parent.length || secondSetIndexElement >= _parent.length ||
@@ -114,6 +120,8 @@ public class DSU {
      * Метод, возращающий все элементы множества, к тоторому относится элмент {@code indexElement}.
      * @param indexElement Элемент множества.
      * @return {@link ArrayList} со всеми элементами множества.
+     * @throws IndexOutOfBoundsException Если индекс меньше нуля или выходи за границы родительского множества.
+     * @throws InvalidParameterException TODO: ТРЕБУЕТСЯ ОПИСАНИЕ.
      */
     public ArrayList<Integer> getAllSetElem(int indexElement) throws IndexOutOfBoundsException, InvalidParameterException {
         if (indexElement >= _parent.length || 0 > indexElement) {
@@ -158,6 +166,8 @@ public class DSU {
      * Метод, возвращающий {@link Pair} хранящуюся в элменте {@code indexElement}.
      * @param indexElement Номер элемента
      * @return {@link Pair} в элементе {@code indexElement}
+     * @throws IndexOutOfBoundsException Если индекс меньше нуля или выходи за границы родительского множества.
+     * @throws InvalidParameterException TODO: ТРЕБУЕТСЯ ОПИСАНИЕ.
      */
     public Pair<Integer,Integer> getElemInSet(int indexElement) throws InvalidParameterException, IndexOutOfBoundsException {
         if (indexElement >= _parent.length || 0 > indexElement) {
@@ -175,6 +185,8 @@ public class DSU {
      * Метод, возвращающий размер множества с <i>лидером</i> {@code setLeaderIndex}.
      * @param setLeaderIndex Номер <i>лидера</i> множества
      * @return Размер множества
+     * @throws IndexOutOfBoundsException Если индекс меньше нуля или выходи за границы родительского множества.
+     * @throws InvalidParameterException TODO: ТРЕБУЕТСЯ ОПИСАНИЕ.
      */
     public int getSetSize(int setLeaderIndex) throws  IndexOutOfBoundsException, InvalidParameterException {
         if (setLeaderIndex >= _parent.length || 0 > setLeaderIndex) {

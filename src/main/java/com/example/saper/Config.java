@@ -29,6 +29,8 @@ public class Config {
      * @param sizeTile Размер игровых клеток.
      * @param countMines Кол-во мин.
      * @param styleName Название класса стилей.
+     * @throws InvalidParameterException Когда размер поля или клетки или кол-во мин меньше единицы,
+     * а также, когда имя стиля отсутсвует.
      */
     public Config(int countTile, int sizeTile, int countMines, String styleName) throws InvalidParameterException {
         if (countTile <= 0 || sizeTile <= 0 || countMines <= 0 || styleName.isEmpty() || styleName == null)

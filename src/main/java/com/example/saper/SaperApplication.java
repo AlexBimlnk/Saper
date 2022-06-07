@@ -13,12 +13,20 @@ public class SaperApplication extends Application {
     private static final int WIDTH = 520;
     private static final int HEIGHT = 625;
 
+    private static Stage StageApp;
+
     // для args[]
     private static GameDifficulty _dif = null;
     private static int _seed = -1;
     private static boolean _debugOption = false;
 
-    public static Stage StageApp;
+    private static void setSizeStage(int width, int height){
+        StageApp.setMinHeight(height);
+        StageApp.setMaxHeight(height);
+
+        StageApp.setMinWidth(width);
+        StageApp.setMaxWidth(width);
+    }
 
     public static GameDifficulty getDif()
     {
@@ -28,14 +36,6 @@ public class SaperApplication extends Application {
     public static boolean getDebugOption()
     {
         return _debugOption;
-    }
-
-    public static void setSizeStage(int width, int height){
-        StageApp.setMinHeight(height);
-        StageApp.setMaxHeight(height);
-
-        StageApp.setMinWidth(width);
-        StageApp.setMaxWidth(width);
     }
 
     @Override
@@ -71,17 +71,17 @@ public class SaperApplication extends Application {
             }
             else if (argWithVal[0].equals("-seed")) //задание сида генрации мин
             {
-                try{
+                try {
                     int number = Integer.parseInt(argWithVal[1]);
                     _seed = (number >= 0)?number:-1;
                 }
-                catch (NumberFormatException ex){
+                catch (NumberFormatException ex) {
                     _seed = -1;
                 }
             }
             else if (argWithVal[0].equals("-debugtool")) //включение пункта debug в menubar
             {
-                    _debugOption = true;
+                 _debugOption = true;
             }
         }
 

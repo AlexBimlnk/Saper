@@ -73,6 +73,7 @@ public class MineGenerator {
      *     Вероятность в существующее - {@code MathGetProbability(<i>размер множесвта</i>)}.
      * </p>
      * @param countMine Кол-во мин.
+     * @throws InvalidParameterException Когда кол-во мин меньше единицы.
      */
     public static void mineGen(int countMine) throws InvalidParameterException {
         if (countMine <= 0)

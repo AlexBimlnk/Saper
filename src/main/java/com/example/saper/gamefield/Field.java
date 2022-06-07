@@ -28,6 +28,7 @@ public class Field {
     /**
      * Конструктор поля.
      * @param config Объект конфигурации.
+     * @throws IllegalArgumentException Когда объект конфига равен null.
      */
     public Field(Config config) throws IllegalArgumentException {
         if (config == null)
@@ -61,6 +62,7 @@ public class Field {
      * @param p1 Первая точка.
      * @param p2 Вторая точка.
      * @return Расстояние между точками.
+     * @throws IllegalArgumentException Когда одна из пар равна null.
      */
     public static int getDistanceToPoints(Pair<Integer, Integer> p1, Pair<Integer, Integer> p2)
             throws IllegalArgumentException {
@@ -88,6 +90,7 @@ public class Field {
     /**
      * Метод применяет ко всем клеткам поля действие, определенное в делегате.
      * @param action Действие, которое следует применить.
+     * @throws IllegalArgumentException Когда делегат равен null.
      */
     public static void applyToAll(Consumer<Tile> action) throws IllegalArgumentException {
         if (action == null)
@@ -106,6 +109,8 @@ public class Field {
      * @param jPos Координата столбца клетки.
      * @param action Действие, которое следует применить.
      * @param step Расстяоние на котором просматриваются клетки от заданной
+     * @throws IllegalArgumentException Когда делегат null.
+     * @throws InvalidParameterException Когда шаг меньше нуля.
      */
     public static void applyToAround(int iPos, int jPos, Consumer<Pair<Integer, Integer>> action, int step)
             throws IllegalArgumentException, InvalidParameterException {
@@ -149,6 +154,8 @@ public class Field {
      * @param jPos Координата столбца клетки.
      * @param action Действие, которое следует применить.
      * @param step Радиус области
+     * @throws IllegalArgumentException Когда делегат null.
+     * @throws InvalidParameterException Когда шаг меньше нуля.
      */
     public static void applyToAroundArea(int iPos, int jPos, Consumer<Pair<Integer, Integer>> action, int step)
             throws IllegalArgumentException, InvalidParameterException {
@@ -253,6 +260,7 @@ public class Field {
      * Проверяет является ли клетка стартовой.
      * @param point Пара координат клетки.
      * @return true, если точка является начальной, иначе - false.
+     * @throws IllegalArgumentException Когда точка равна null.
      */
     public static boolean isStartPoint(Pair <Integer, Integer> point) throws IllegalArgumentException {
         if (point == null)
