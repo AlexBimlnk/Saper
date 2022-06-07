@@ -34,13 +34,10 @@ public class MineGenerator {
 
 
     private static int getMineSetStep() {
-        switch (GameController.getGameDifficulty()) {
-            case Easy:
-                return 2;
-            case Normal, Hard:
-                return 3;
-        }
-        return 0;
+        return switch (GameController.getGameDifficulty()) {
+            case Easy -> 2;
+            default -> 3;
+        };
     }
 
     private static int countProbability(Pair<Integer, Integer> tile) {

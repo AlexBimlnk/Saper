@@ -27,7 +27,7 @@ class DSUTest {
 
 
     @TestFactory
-    public Collection<DynamicTest> can_Make_Set() {
+    public Collection<DynamicTest> canMakeSet() {
         // Arrange
         var simplePair = new Pair<>(1, 1);
         int validIndex = 1;
@@ -47,7 +47,7 @@ class DSUTest {
 
 
     @TestFactory
-    public Collection<DynamicTest> can_Find_Set() {
+    public Collection<DynamicTest> canFindSet() {
         // Arrange
         var simplePair = new Pair<>(1, 1);
         int validIndex = 1;
@@ -75,7 +75,7 @@ class DSUTest {
 
 
     @TestFactory
-    public Collection<DynamicTest> can_Union_Sets() {
+    public Collection<DynamicTest> canUnionSets() {
         // Arrange
         int[] indexElements = {0, 2, 3, 5, 1, 7, 8};
         var simplePair = new Pair<>(1, 1);
@@ -121,7 +121,7 @@ class DSUTest {
 
 
     @TestFactory
-    public Collection<DynamicTest> can_Get_All_Set_Elements() {
+    public Collection<DynamicTest> canGetAllSetElements() {
         // Arrange
         int[] indexElements = {0, 2, 3, 5, 1, 7, 8};
         var simplePair = new Pair<>(1, 1);
@@ -169,7 +169,7 @@ class DSUTest {
 
 
     @Test
-    public void can_Get_All_Unique_Sets() {
+    public void canGetAllUniqueSets() {
         // Arrange
         int[] indexElements = {0, 2, 3, 5, 1, 7, 8};
         var simplePair = new Pair<>(1, 1);
@@ -191,7 +191,7 @@ class DSUTest {
 
 
     @TestFactory
-    public Collection<DynamicTest> can_Get_Elements_In_Set() {
+    public Collection<DynamicTest> canGetElementsInSet() {
         // Arrange
         int[] indexElements = {0, 2, 3, 5, 1, 7, 8};
         int invalidParameterIndex = 9;
@@ -227,7 +227,7 @@ class DSUTest {
 
 
     @TestFactory
-    public Collection<DynamicTest> can_Get_Size() {
+    public Collection<DynamicTest> canGetSize() {
         // Arrange
         int[] indexElements = {0, 2, 3, 5, 1, 7, 8};
         int invalidParameterIndex = 9;
@@ -272,7 +272,7 @@ class DSUTest {
     }
 
     @Test
-    void can_Get_Sets_Space() {
+    void canGetSetsSpace() {
         assertEquals(_size, _dsu.getSetsSpace());
     }
 }

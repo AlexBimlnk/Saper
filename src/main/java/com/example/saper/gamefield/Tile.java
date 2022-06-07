@@ -60,10 +60,10 @@ public class Tile extends Button {
         _columIndex = columnIndex;
 
         if (GameController.getGameDifficulty() == GameDifficulty.Hard) {
-            TextView = (rnd.nextBoolean() ? () -> showTextHard() : () -> showTextSimple());
+            TextView = (rnd.nextBoolean() ? this::showTextHard : this::showTextSimple);
         }
         else {
-            TextView = () -> showTextSimple();
+            TextView = this::showTextSimple;
         }
     }
 
@@ -162,6 +162,7 @@ public class Tile extends Button {
     public void mouseHandler(MouseButton button) {
         //Если нажали на ЛКМ
         if(button == MouseButton.PRIMARY && !isFlag()) {
+            setClicked(true);
             if (isMine) {
                 this.setId("mine");
                 if(_explosionEventHandler != null) {
@@ -169,7 +170,6 @@ public class Tile extends Button {
                 }
             }
             else {
-                setClicked(true);
                 if (getMinesAround() == 0) {
                     if (_callHandler != null) {
                         _callHandler.accept(_rowIndex,_columIndex);
@@ -252,7 +252,7 @@ public class Tile extends Button {
 
     /**
      * Устанавливает делегат, который следует вызвать при открытии соседних клеток.
-     * @param call
+     * @param call делегат
      */
     public static void setCall(BiConsumer<Integer, Integer> call) {
         _callHandler = call;

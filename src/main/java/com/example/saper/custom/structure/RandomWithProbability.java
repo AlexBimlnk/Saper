@@ -33,7 +33,7 @@ public class RandomWithProbability<T> {
      * @param elem Новый элемнет типа {@link T}, добавляемый в множество остальных
      * @param probability Вероятность выпадения элемента {@code elem}
      */
-    public void addNewElem(int probability, T elem) {
+    public void addNewElem(int probability, T elem) throws InvalidParameterException{
         if (elem == null) {
             return;
         }
