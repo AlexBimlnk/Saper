@@ -78,14 +78,14 @@
 
 .debug#mine {
     -fx-background-image: url('../Images/mine_style4.png');
-    -fx-background-size: 2.8em;
+    -fx-background-size: 70%;
     -fx-border-color: red;
 }
 
 /*noinspection CssInvalidPseudoSelector*/
 .tile:flag, .debug:flag {
     -fx-background-image: url('../Images/flag_style2.png');
-    -fx-background-size: 2.4em;
+    -fx-background-size: 60%;
 }
 
 /*noinspection CssInvalidPseudoSelector*/
@@ -96,7 +96,7 @@
 
 #mine:disabled {
     -fx-background-image: url('../Images/mine_style4.png');
-    -fx-background-size: 2.8em;
+    -fx-background-size: 70%;
     /*-fx-border-color: red;*/
 }
 
@@ -121,7 +121,7 @@
 /*noinspection CssInvalidPseudoSelector*/
 .tile.win:clicked:disabled {
     -fx-background-image: url('../Images/flag_style2.png');
-    -fx-background-size: 2.4em;
+    -fx-background-size: 60%;
     -fx-background-color: rgba(255, 255, 255, 0);
     -fx-text-fill: rgba(0, 0, 0, 0);
 }
