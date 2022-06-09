@@ -158,23 +158,21 @@ public class Tile extends Button {
         if(button == MouseButton.PRIMARY && !isFlag()) {
             setClicked(true);
             if (isMine) {
-                this.setId("mine");
+                setId("mine");
                 if(_explosionEventHandler != null) {
                     _explosionEventHandler.run();
                 }
             }
             else {
-                if (getMinesAround() == 0) {
-                    if (_callHandler != null) {
+                if (getMinesAround() == 0 && _callHandler != null) {
                         _callHandler.accept(_rowIndex,_columIndex);
-                    }
                 }
                 else {
                     TextView.run();
                 }
             }
         }
-        if(button == MouseButton.SECONDARY && GameController.getGameCondition()) {
+        else if(button == MouseButton.SECONDARY && GameController.getGameCondition()) {
             setFlag(!isFlag());
         }
     }
@@ -242,7 +240,7 @@ public class Tile extends Button {
      */
     public void setFlag(boolean flag) {
         if (!isClicked()) {
-            this._flag.set(flag);
+            _flag.set(flag);
         }
     }
 
